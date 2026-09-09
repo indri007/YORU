@@ -286,3 +286,7 @@ Ini masih versi awal. Yang belum ada, ditulis apa adanya:
   harus dihitung ulang per server. Masuk akal untuk disk 10–100 GB, tidak
   untuk di luar itu.
 - Dashboard, bot Telegram, dan kontrol untuk lapisan web sedang dikerjakan.
+
+---
+# YORU
+Automated VPS protection hook that intercepts system/network events and applies defensive actions (blocking, alerting, or logging) to harden the server against unauthorized access.
