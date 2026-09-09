@@ -89,6 +89,55 @@ def send_decision(server, kontrol, nilai):
     except Exception as e:
         st.error(f"Gagal menyimpan: {e}")
 
+def init_mock_db():
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        # Check if table exists and has data
+        try:
+            count = conn.execute("SELECT COUNT(*) FROM laporan").fetchone()[0]
+            if count > 0:
+                conn.close()
+                return
+        except sqlite3.OperationalError:
+            pass # Table doesn't exist
+
+        # Create table and insert mock data
+        conn.execute("""CREATE TABLE IF NOT EXISTS laporan (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            server TEXT NOT NULL,
+            waktu TEXT NOT NULL,
+            siklus TEXT NOT NULL,
+            skor INTEGER NOT NULL,
+            isi TEXT NOT NULL,
+            diterima REAL NOT NULL)""")
+        
+        conn.execute("""CREATE TABLE IF NOT EXISTS keputusan (
+            server TEXT NOT NULL,
+            kontrol TEXT NOT NULL,
+            nilai TEXT NOT NULL,
+            catatan TEXT,
+            dibuat REAL NOT NULL,
+            diambil INTEGER NOT NULL DEFAULT 0,
+            PRIMARY KEY (server, kontrol))""")
+            
+        repo_dir = Path(__file__).resolve().parent.parent
+        for berkas in ["report-fix.json", "report-watch.json"]:
+            file_path = repo_dir / "examples" / berkas
+            if file_path.exists():
+                d = json.loads(file_path.read_text(encoding="utf-8"))
+                conn.execute(
+                    "INSERT INTO laporan (server, waktu, siklus, skor, isi, diterima) VALUES (?,?,?,?,?,?)",
+                    (str((d.get("server") or {}).get("nama") or "contoh"),
+                     str(d.get("waktu")), str(d.get("siklus")),
+                     int((d.get("ringkasan") or {}).get("skor") or 0),
+                     json.dumps(d, ensure_ascii=False), time.time()),
+                )
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print("Mock DB Init Error:", e)
+
+init_mock_db()
 report = fetch_latest_report()
 
 if not report:
