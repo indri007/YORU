@@ -18,29 +18,39 @@ st.set_page_config(
 st.markdown("""
 <style>
     .metric-card {
-        background-color: #1E1E1E;
-        padding: 20px;
-        border-radius: 10px;
+        background-color: #ffffff;
+        padding: 24px;
+        border-radius: 24px;
         text-align: center;
-        border: 1px solid #333;
+        border: none;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+        color: #1d1b20;
     }
-    .score-high { color: #4ade80; font-size: 48px; font-weight: bold; }
-    .score-med { color: #fbbf24; font-size: 48px; font-weight: bold; }
-    .score-low { color: #f87171; font-size: 48px; font-weight: bold; }
+    .score-high { color: #146c2e; font-size: 56px; font-weight: 800; letter-spacing: -1px; }
+    .score-med { color: #b3261e; font-size: 56px; font-weight: 800; letter-spacing: -1px; }
+    .score-low { color: #b3261e; font-size: 56px; font-weight: 800; letter-spacing: -1px; }
     
     .drift-alert {
-        background-color: #2a1416;
-        border-left: 5px solid #f87171;
-        padding: 15px;
-        border-radius: 5px;
-        margin-bottom: 10px;
+        background-color: #fce8e8;
+        border-left: 6px solid #b3261e;
+        padding: 18px;
+        border-radius: 12px;
+        margin-bottom: 16px;
+        color: #1d1b20;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
     }
     .control-card {
-        background-color: #181c22;
-        border: 1px solid #2a3038;
-        padding: 15px;
-        border-radius: 8px;
-        margin-bottom: 10px;
+        background-color: #ffffff;
+        border: 1px solid #e0e0e0;
+        padding: 18px;
+        border-radius: 16px;
+        margin-bottom: 12px;
+        color: #1d1b20;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .control-card:hover {
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
 </style>
 """, unsafe_allow_html=True)
