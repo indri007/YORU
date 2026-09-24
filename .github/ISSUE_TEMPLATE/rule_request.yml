@@ -1,0 +1,38 @@
+name: Rule Request
+description: Propose a new detection rule
+labels: ["rule"]
+body:
+  - type: input
+    attributes:
+      label: Rule ID
+      description: Proposed ID (e.g., K11)
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Target Path / Syscall
+      description: What is monitored?
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: Severity
+      options:
+        - Critical
+        - High
+        - Medium
+        - Low
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Example Trigger
+      description: Example of a command or action that triggers this rule.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: False Positive Risks
+      description: Known scenarios where this might trigger falsely.
+    validations:
+      required: true

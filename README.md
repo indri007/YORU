@@ -1,82 +1,100 @@
-<div align="center">
-  <img src="https://img.icons8.com/color/96/000000/artificial-intelligence.png" alt="Hermes AI Logo">
-  <h1>Yoru: AI DevSecOps Agent</h1>
-  <p><i>Server kamu tidur. Yoru nggak. Melindungi VPS UMKM & Indie Hackers 24/7.</i></p>
-  <p>🏆 <b>Proyek ini dibuat untuk Hackathon 2026</b> 🏆</p>
-</div>
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/banner-dark.svg">
+  <img alt="YORU Banner" src="assets/banner-light.svg">
+</picture>
 
----
+# YORU: Linux Security Auditing & Forensics
 
-## 🚨 Masalah yang Kami Pecahkan (The Problem)
+> Lightweight, systemd-managed Linux security auditing designed for AUID forensics and AI-assisted analysis (runtime validation pending).
 
-Sebagai Indie Hackers dan pemilik UMKM, mendeploy aplikasi ke VPS (Virtual Private Server) adalah hal biasa. **Tapi mengamankannya? Itu cerita lain.** 
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](#license)
+[![Platform](https://img.shields.io/badge/Platform-Ubuntu%2024.04-orange.svg)](#quick-start)
+[![Static Validation](https://img.shields.io/badge/Static%20Validation-PASS-brightgreen.svg)](#-validation-status)
+[![Runtime Validation](https://img.shields.io/badge/Runtime%20Validation-Pending-yellow.svg)](#-validation-status)
 
-1. **Serangan Hitungan Menit:** Begitu VPS menyala, botnet global langsung memindai celah keamanan (brute force SSH, port database yang terbuka).
-2. **Keterbatasan Skill:** Konfigurasi *Firewall*, *Auditd*, dan *Sysctl Linux* terlalu rumit dan teknis bagi developer yang hanya ingin fokus ngoding produknya.
-3. **Hasilnya:** Banyak server dibiarkan dengan setelan pabrik, mengundang peretas dan *Ransomware* yang bisa menghancurkan bisnis dalam semalam.
 
-## 💡 Solusi Kami (The Solution)
+## 🚨 The Incident
+It’s 3 AM. Your server's critical configuration was altered. You check the logs, but the actor appears as `root`. Was it an automated script? An attacker? A junior developer who `sudo su`'d into root? You have no idea because the original identity is masked. The forensic trail is gone.
 
-**Yoru** hadir sebagai AI Agent yang mengambil alih pekerjaan IT Security (DevSecOps) Anda. Yoru secara otomatis memeriksa keamanan server berstandar **CIS Ubuntu 24.04**, mendeteksi perubahan ilegal, dan menyajikannya dalam **Dashboard Interaktif berbasis AI**.
+## 💡 Why YORU Exists (The Problem)
+* **Forensics Lost After `sudo`:** Standard logging masks the original actor's identity once they switch to root.
+* **Alert Fatigue & Noise:** Too many logs make it impossible to separate critical changes from regular system noise.
+* **Lack of Context:** Traditional audit logs are cryptic and require deep Linux expertise to interpret.
+* **Resource Constraints:** Small teams lack a dedicated Security Operations Center (SOC) to monitor endpoints 24/7.
 
-Bintang utamanya adalah **Hermes**, asisten AI cerdas di dalam dashboard yang siap menerjemahkan log bahasa mesin (Linux auditd) yang ribet menjadi peringatan bahasa manusia yang mudah dipahami.
+## 🛠️ The Solution
+| The Problem | The YORU Answer |
+| --- | --- |
+| Forensic trail lost after `sudo` | **AUID Tracking:** YORU is designed to extract the Audit User ID (`auid`), which supports attributing the original actor (runtime validation pending). |
+| Alert Noise | **Targeted K08 Rules:** Monitors critical paths. Note: Known false positives like `apt-get` exist; see [RULES.md#known-false-positives](docs/RULES.md#known-false-positives). |
+| Cryptic Logs | **Optional AI Proxy & Dashboard:** Designed to summarize auditd events via an LLM proxy with primary + fallback (runtime validation pending). |
+| No Dedicated SOC | **Automated Watcher:** Managed via `systemd` timers, acting as a lightweight, automated guard (runtime validation pending). |
 
----
+## 🌟 Key Features
+* **Auditd Rules (K08):** Hardened path monitoring.
+* **AUID Forensics:** Actor attribution (runtime validation pending).
+* **Systemd Managed:** `yoru-watch.service` & `yoru-watch.timer` for scheduling.
+* **Web Dashboard:** `yoru-web.service` powered by FastAPI.
+* **AI Model Proxy:** `yoru-model-proxy` designed to summarize with fallback mechanisms.
 
-## ✨ Fitur Unggulan (The "Wow" Factor)
-
-- 🤖 **Hermes Copilot:** Chatbot AI di dashboard Anda! Tidak mengerti kenapa port 3306 berbahaya? Cukup *chat* Hermes, dan ia akan menjelaskannya layaknya pakar *cybersecurity*.
-- 📊 **Real-time Security Score:** Visualisasi metrik keamanan (0-100) dan kondisi server yang di-update setiap kali siklus penjagaan selesai.
-- ❤️ **Tinder for SecOps (Action Center):** Mendeteksi *Drift* (perubahan konfigurasi tanpa izin). Yoru tidak main hapus, melainkan menyajikan "kartu kasus". Anda tinggal klik **"Setuju, amankan"** atau **"Tolak"**.
-- 🛡️ **Katalog Standar CIS:** Mengimplementasikan 10 aturan emas (K01-K10) seperti mematikan login root, enforcing SSH Key, hingga manajemen Firewall UFW otomatis.
-
----
-
-## 🏗️ Arsitektur & Teknologi (Tech Stack)
+## ⚙️ How It Works
 
 ```mermaid
-flowchart TD
-    UI["💻 Streamlit Dashboard<br/>(AI Chat & Visualisasi)"] <--> API["⚙️ FastAPI Backend<br/>(Manajemen Keputusan)"]
-    API <--> DB[("🗄️ SQLite<br/>(yoru.db)")]
-    DB <--> YC["🛡️ yoructl (Dispatcher)<br/>(Satu-satunya akses ke Root)"]
-    YC -- Eksekusi --> OS["🐧 Ubuntu Server"]
-    OS -- Pantau Jejak --> AU["🔍 auditd"]
-    AU -- Analisis --> UI
+flowchart LR
+    A[Linux Kernel] -->|Modifies critical path| B(auditd)
+    B -->|Logs event| C(ausearch)
+    C -->|Extracts AUID| D{YORU Engine}
+    D -->|Formats Alert| E[yoru-model-proxy]
+    E -->|Summarizes| F[Web Dashboard / Alert]
 ```
 
-- **Frontend/Dashboard:** Python, Streamlit, Pandas, Plotly.
-- **Backend/API:** Python, FastAPI, SQLite (One-way communication untuk keamanan maksimal).
-- **Core Security Agent:** Bash, Linux Systemd, Auditd, UFW, SSH Daemon.
+## 🚀 Quick Start
+### Prerequisites
+- Ubuntu 24.04
+- `auditd`, `audispd-plugins`, `python3`
 
----
+### Installation
+```bash
+git clone https://github.com/indri007/YORU.git
+cd YORU
+sudo ./install.sh
+```
 
-## 🚀 Cara Menjalankan Prototipe Secara Lokal (Demo)
+*(Try on macOS via Multipass)*
+```bash
+multipass launch 24.04 --name yoru-a --cpus 2 --memory 4G
+multipass mount ./ yoru-a:/home/ubuntu/yoru
+multipass exec yoru-a -- bash -lc 'cd /home/ubuntu/yoru && sudo ./install.sh'
+```
 
-Juri atau penguji dapat menjalankan dashboard Yoru di komputer lokal dengan cara berikut:
+## 📊 Validation Status
+| Item | Status | Evidence |
+| --- | --- | --- |
+| Static Validation (Shell, Python, Git) | **PASS** | `docs/LINUX_RUNTIME_TEST.md` |
+| Linux auditd | *PENDING* (Needs Ubuntu 24.04) | TBD |
+| K08 Runtime | *PENDING* | TBD |
+| AUID Forensic | *PENDING* | TBD |
+| yoru-watch.service | *PENDING* | TBD |
+| yoru-web.service | *PARTIAL PASS* (macOS app-level) | TBD |
+| yoru-model-proxy | *PARTIAL PASS* (Error handling) | TBD |
 
-1. **Kloning Repositori:**
-   ```bash
-   git clone https://github.com/indri007/YORU.git
-   cd YORU/web
-   ```
+## 📂 Project Structure
+- `bin/`: Executables (`yoru-agent`, `yoructl`, `yoru-model-proxy`).
+- `catalog/`: Control YAML definitions (K01-K10).
+- `systemd/`: Daemons (`yoru-watch.service`, `yoru-web.service`).
+- `web/`: Dashboard application.
+- `docs/`: Extensive documentation.
 
-2. **Buat Virtual Environment & Install Dependensi:**
-   ```bash
-   python3 -m venv venv
-   source venv/bin/activate
-   pip install -r requirements.txt
-   ```
+## 📖 Documentation
+- [PRD (Product Requirements)](docs/PRD.md)
+- [ERD (Entity-Relationship)](docs/ERD.md)
+- [Schema](docs/SCHEMA.md)
+- [Detection Rules](docs/RULES.md)
+- [UI/UX Guide](docs/UI-UX.md)
+- [Usage Guide](docs/USAGE.md)
 
-3. **Jalankan Dashboard Streamlit:**
-   ```bash
-   streamlit run streamlit_app.py
-   ```
-   *Dashboard akan terbuka di browser Anda pada `http://localhost:8501`*
+## 🇮🇩 Ringkasan Bahasa Indonesia
+YORU adalah agen keamanan ringan untuk Linux Ubuntu 24.04 yang dikelola langsung oleh `systemd`. YORU melacak perubahan pada sistem menggunakan `auditd` dan didesain untuk mengidentifikasi pelaku awal (`auid`) meskipun mereka menggunakan `sudo` (validasi runtime tertunda). YORU juga mengintegrasikan proxy AI untuk menerjemahkan log audit yang rumit menjadi peringatan yang lebih mudah dipahami.
 
----
-
-## 🤝 Tim Kami
-
-Kami adalah tim yang percaya bahwa keamanan level enterprise berhak dimiliki oleh semua kalangan, termasuk UMKM yang tidak punya dana untuk menyewa tim keamanan khusus.
-
-*Dibuat dengan ❤️ dan ☕ untuk Hackathon 2026.*
+## License
+MIT License. See [LICENSE](LICENSE) for details.
