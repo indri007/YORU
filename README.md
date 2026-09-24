@@ -1,6 +1,6 @@
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/banner-dark.svg">
-  <img alt="YORU Banner" src="assets/banner-light.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="./assets/banner-dark.svg">
+  <img alt="YORU Banner" src="./assets/banner-light.svg">
 </picture>
 
 # YORU: Linux Security Auditing & Forensics
