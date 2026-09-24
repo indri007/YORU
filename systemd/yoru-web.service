@@ -19,7 +19,7 @@ Environment=YORUCTL=/opt/yoru/bin/yoructl
 # supaya tokennya tidak muncul di "ps".
 EnvironmentFile=-/etc/yoru/web.env
 
-ExecStart=/opt/yoru/web/venv/bin/uvicorn api:app --host @HOST@ --port @PORT@
+ExecStart=/opt/yoru/web/venv/bin/uvicorn api:app --host 127.0.0.1 --port 8080
 
 # Satu-satunya unit Yoru yang boleh mencoba ulang sendiri. Siklus penjagaan
 # yang gagal harus kelihatan gagal, tapi dashboard yang mati diam-diam bikin
