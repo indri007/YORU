@@ -1,0 +1,298 @@
+#!/usr/bin/env python3
+"""Local bridge from Yoru to Google Gemini.
+
+Yoru speaks one shape - POST /v1/chat/completions, no credentials. This holds
+the API key and forwards. Yoru itself never sees it.
+
+Two upstream shapes, because Google runs two:
+
+  openai   /v1beta/openai/chat/completions          Authorization: Bearer
+  native   /v1beta/models/<model>:generateContent   x-goog-api-key
+
+Each endpoint accepts only its own header; sending the other one is a 400.
+
+Model names go stale - Google stops offering a model to new accounts while it
+still appears in listings. So a 404 is not fatal: the candidate list is walked
+until one answers, and the winner is reported.
+
+A reply with no text counts as a refusal too. Thinking models can spend the
+whole token budget reasoning and come back with a message that has no content
+at all, which is exactly as useless as an error - so it is reported the same
+way, with Google's own finish_reason attached.
+
+  --diagnose   try everything once, print what Google actually said
+
+Its output is English: it is only ever read at install time or while
+troubleshooting, both of which happen at a terminal.
+"""
+
+import json
+import os
+import re
+import sys
+import urllib.error
+import urllib.request
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+
+BASE = os.environ.get("GEMINI_BASE", "https://generativelanguage.googleapis.com")
+MAX_BODY = 256 * 1024
+TIMEOUT = 30
+
+API_KEY = os.environ.get("GEMINI_API_KEY", "").strip()
+MODEL = os.environ.get("GEMINI_MODEL", "").strip() or "gemini-flash-latest"
+HOST = os.environ.get("LISTEN_HOST", "127.0.0.1")
+PORT = int(os.environ.get("LISTEN_PORT", "8080"))
+
+WAYS = ("openai", "native")
+
+
+class Upstream(Exception):
+    """Google said no. Carries its words, already read off the response."""
+
+
+class NoText(Exception):
+    """Google said yes and sent nothing usable."""
+
+# Ranked when Google refuses the configured model. "-latest" first: those are
+# the aliases that do not go stale.
+PREFERRED = ("gemini-flash-latest", "gemini-pro-latest", "gemini-flash-lite-latest")
+UNUSABLE = re.compile(r"tts|embedding|image|vision|aqa|gemma", re.I)
+
+way = os.environ.get("GEMINI_WAY", "").strip() or None
+model = MODEL
+
+
+def call(url, headers, payload=None):
+    body = json.dumps(payload).encode() if payload is not None else None
+    req = urllib.request.Request(url, data=body, method="POST" if body else "GET")
+    if body:
+        req.add_header("Content-Type", "application/json")
+    for k, v in headers.items():
+        req.add_header(k, v)
+    with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
+        return json.loads(r.read().decode("utf-8", "replace") or "{}")
+
+
+def to_native(payload):
+    """OpenAI chat body -> Gemini generateContent body."""
+    contents, system = [], []
+    for m in payload.get("messages") or []:
+        text = m.get("content") or ""
+        if m.get("role") == "system":
+            system.append(text)
+        else:
+            contents.append({"role": "model" if m.get("role") == "assistant" else "user",
+                             "parts": [{"text": text}]})
+    body = {"contents": contents, "generationConfig": {}}
+    if system:
+        body["systemInstruction"] = {"parts": [{"text": "\n".join(system)}]}
+    if payload.get("temperature") is not None:
+        body["generationConfig"]["temperature"] = payload["temperature"]
+    if payload.get("max_tokens") is not None:
+        body["generationConfig"]["maxOutputTokens"] = payload["max_tokens"]
+    return body
+
+
+def from_native(answer, name):
+    """Gemini generateContent reply -> OpenAI chat reply."""
+    first = (answer.get("candidates") or [{}])[0]
+    parts = ((first.get("content") or {}).get("parts") or [])
+    return {"choices": [{"message": {"role": "assistant",
+                                     "content": "".join(p.get("text") or "" for p in parts)},
+                         "finish_reason": first.get("finishReason") or "stop"}],
+            "model": name}
+
+
+def text_of(reply):
+    """(text, finish_reason) from an OpenAI-shaped reply. Never raises - a
+    crash here would break the very tool meant to explain what went wrong."""
+    if not isinstance(reply, dict):
+        return "", "reply was not a JSON object"
+    choices = reply.get("choices") or []
+    first = choices[0] if choices and isinstance(choices[0], dict) else {}
+    message = first.get("message") if isinstance(first.get("message"), dict) else {}
+    text = (message.get("content") or "").strip()
+    return text, str(first.get("finish_reason") or first.get("finishReason") or "?")
+
+
+def attempt(how, name, payload):
+    """One upstream call with one way and one model. Raises on failure, and a
+    reply with no text counts as one."""
+    body = dict(payload)
+    body["model"] = name
+    body.pop("stream", None)
+
+    if how == "openai":
+        url = f"{BASE}/v1beta/openai/chat/completions"
+        head = {"Authorization": f"Bearer {API_KEY}"}
+        # Google documents reasoning_effort on this endpoint, and "none" turns
+        # thinking off for 2.5 models. Without it a small token budget can be
+        # spent entirely on reasoning, and the answer comes back empty.
+        body.setdefault("reasoning_effort", "none")
+        try:
+            reply = call(url, head, body)
+        except urllib.error.HTTPError as e:
+            said = describe(e)
+            if e.code == 400 and "reasoning" in said.lower():
+                body.pop("reasoning_effort", None)
+                reply = call(url, head, body)
+            else:
+                raise Upstream(said) from None
+    else:
+        reply = from_native(call(f"{BASE}/v1beta/models/{name}:generateContent",
+                                 {"x-goog-api-key": API_KEY}, to_native(body)), name)
+
+    text, reason = text_of(reply)
+    if not text:
+        raise NoText(f"empty answer from Google (finish_reason={reason})")
+    return reply
+
+
+def describe(e):
+    if isinstance(e, (Upstream, NoText)):
+        return str(e)
+    if isinstance(e, urllib.error.HTTPError):
+        raw = e.read()[:900].decode("utf-8", "replace")
+        try:
+            body = json.loads(raw)
+            if isinstance(body, list):
+                body = body[0] if body else {}
+            text = (body.get("error") or {}).get("message") or raw
+        except ValueError:
+            text = raw
+        return f"HTTP {e.code}: {' '.join(text.split())}"
+    return f"{type(e).__name__}: {e}"
+
+
+def list_models():
+    """Model ids this key may use, best candidates first. Never raises."""
+    try:
+        data = call(f"{BASE}/v1beta/models", {"x-goog-api-key": API_KEY})
+    except Exception:  # noqa: BLE001
+        return []
+    names = []
+    for m in data.get("models") or []:
+        name = (m.get("name") or "").split("/")[-1]
+        methods = m.get("supportedGenerationMethods")
+        if not name or UNUSABLE.search(name):
+            continue
+        if methods and "generateContent" not in methods:
+            continue
+        names.append(name)
+    ranked = [n for n in PREFERRED if n in names]
+    return ranked + [n for n in names if n not in ranked]
+
+
+def candidates():
+    picks = [model] + [n for n in list_models() if n != model]
+    return picks[:6]
+
+
+def ask(payload):
+    """Try the remembered combination first, then work outwards.
+
+    Returns (reply, notes). Notes carry every refusal, verbatim from Google.
+    """
+    global way, model
+    ways = [way] + [w for w in WAYS if w != way] if way else list(WAYS)
+    names = candidates()
+    notes = []
+    for how in ways:
+        for name in names:
+            try:
+                reply = attempt(how, name, payload)
+            except Exception as e:  # noqa: BLE001 - reported, never guessed
+                notes.append((how, name, describe(e)))
+                continue
+            if (how, name) != (way, model):
+                way, model = how, name
+                sys.stderr.write(f"way={how} model={name}\n")
+            return reply, notes
+    return None, notes
+
+
+class Handler(BaseHTTPRequestHandler):
+    protocol_version = "HTTP/1.1"
+
+    def log_message(self, fmt, *args):
+        sys.stderr.write("%s %s\n" % (self.address_string(), fmt % args))
+
+    def reply(self, status, payload):
+        raw = json.dumps(payload).encode()
+        self.send_response(status)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(raw)))
+        self.end_headers()
+        self.wfile.write(raw)
+
+    def do_GET(self):
+        if self.path.rstrip("/") == "/health":
+            self.reply(200, {"status": "ok", "model": model, "way": way})
+        else:
+            self.reply(404, {"error": "only /v1/chat/completions"})
+
+    def do_POST(self):
+        if self.path.rstrip("/") != "/v1/chat/completions":
+            self.reply(404, {"error": "only /v1/chat/completions"})
+            return
+        length = int(self.headers.get("Content-Length") or 0)
+        if length <= 0 or length > MAX_BODY:
+            self.reply(400, {"error": "request body has an impossible size"})
+            return
+        try:
+            payload = json.loads(self.rfile.read(length))
+        except (ValueError, UnicodeDecodeError):
+            self.reply(400, {"error": "not JSON"})
+            return
+
+        answer, notes = ask(payload)
+        if answer is None:
+            for how, name, why in notes:
+                sys.stderr.write(f"refused [{how} {name}]: {why}\n")
+            self.reply(502, {"error": "gemini refused - see journalctl -u yoru-model"})
+            return
+        self.reply(200, answer)
+
+
+def diagnose():
+    if not API_KEY:
+        print("GEMINI_API_KEY is empty")
+        return 1
+    print(f"\n  Key    : {API_KEY[:4]}... ({len(API_KEY)} characters)")
+    print(f"  Model  : {model}")
+
+    names = candidates()
+    print(f"  Trying : {', '.join(names) or '(model list unreadable)'}\n")
+
+    # Not 20: on a thinking model that budget disappears into reasoning and
+    # the reply comes back with nothing in it.
+    probe = {"messages": [{"role": "user", "content": "Balas satu kata: siap"}],
+             "max_tokens": 512, "temperature": 0}
+    for how in WAYS:
+        for name in names:
+            try:
+                reply = attempt(how, name, probe)
+            except Exception as e:  # noqa: BLE001
+                print(f"  no  {how:7} {name:26} {describe(e)[:400]}")
+                continue
+            text, _ = text_of(reply)
+            print(f"  ok  {how:7} {name:26} {text[:60]!r}")
+            print(f"\n  Use: GEMINI_WAY={how} GEMINI_MODEL={name}\n")
+            return 0
+
+    print("\n  Nothing worked. The messages above are Google's words, not ours.\n")
+    return 1
+
+
+def main():
+    if "--diagnose" in sys.argv:
+        return diagnose()
+    if not API_KEY:
+        sys.stderr.write("GEMINI_API_KEY is empty\n")
+        return 1
+    ThreadingHTTPServer((HOST, PORT), Handler).serve_forever()
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
