@@ -163,6 +163,8 @@ def run_http_server_tests():
 
     # Test A: GET /health -> 200
     code, data = query("/health", "GET")
+    if code == 400 and "Direct IP access" in str(data):
+        raise OSError("Sandbox HTTP proxy intercepted localhost loopback socket")
     assert code == 200, f"Expected 200 for /health, got {code}"
     assert data.get("status") == "ok"
 
