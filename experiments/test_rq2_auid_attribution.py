@@ -78,9 +78,7 @@ def run_rq2_benchmark():
         if detected_euid == 0 and s["actor_id"] != 0:
             masked_syslog_failures += 1
 
-        if s["type"] == "agent_remediation" and detected_auid == 1001:
-            bilateral_chains_verified += 1
-        elif s["type"] != "agent_remediation" and detected_auid != 1001:
+        if s["type"] == "agent_remediation" and detected_auid == 1001 or s["type"] != "agent_remediation" and detected_auid != 1001:
             bilateral_chains_verified += 1
 
         results_detail.append({

@@ -56,7 +56,7 @@ class NoText(Exception):
 # Ranked when Google refuses the configured model. "-latest" first: those are
 # the aliases that do not go stale.
 PREFERRED = ("gemini-flash-latest", "gemini-pro-latest", "gemini-flash-lite-latest")
-UNUSABLE = re.compile(r"tts|embedding|image|vision|aqa|gemma", re.I)
+UNUSABLE = re.compile(r"tts|embedding|image|vision|aqa|gemma", re.IGNORECASE)
 
 way = os.environ.get("GEMINI_WAY", "").strip() or None
 model = MODEL
@@ -215,7 +215,8 @@ class Handler(BaseHTTPRequestHandler):
     protocol_version = "HTTP/1.1"
 
     def log_message(self, fmt, *args):
-        sys.stderr.write("%s %s\n" % (self.address_string(), fmt % args))
+        msg = fmt % args if args else fmt
+        sys.stderr.write(f"{self.address_string()} {msg}\n")
 
     def reply(self, status, payload):
         raw = json.dumps(payload).encode()

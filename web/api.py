@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# ruff: noqa: B008
 """
 API + penyimpanan dashboard Yoru.
 
@@ -26,9 +27,9 @@ import sqlite3
 import time
 from contextlib import closing
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
-from fastapi import Body, FastAPI, Header, HTTPException, Response
+from fastapi import Body, FastAPI, Header, HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse
 
 DIR = Path(__file__).resolve().parent
@@ -84,7 +85,7 @@ def siapkan():
 siapkan()
 
 
-def periksa_token(diberikan: Optional[str]):
+def periksa_token(diberikan: str | None):
     if not TOKEN:
         return
     diharapkan = f"Bearer {TOKEN}"
@@ -97,8 +98,8 @@ def periksa_token(diberikan: Optional[str]):
 
 # ------------------------------------------------------------------ endpoint
 @app.post("/api/laporan")
-async def terima_laporan(laporan: Dict[str, Any] = Body(...),
-                         authorization: Optional[str] = Header(None)):
+async def terima_laporan(laporan: dict[str, Any] = Body(...),
+                         authorization: str | None = Header(None)):
     periksa_token(authorization)
 
     for wajib in ("versi_kontrak", "server", "waktu", "siklus", "ringkasan", "kontrol"):
@@ -121,7 +122,7 @@ async def terima_laporan(laporan: Dict[str, Any] = Body(...),
 
 
 @app.get("/api/laporan")
-async def laporan_terakhir(server: Optional[str] = None):
+async def laporan_terakhir(server: str | None = None):
     with closing(db()) as k:
         if server:
             b = k.execute("SELECT isi FROM laporan WHERE server=? ORDER BY diterima DESC LIMIT 1",
@@ -145,7 +146,7 @@ async def daftar_server():
 
 
 @app.get("/api/riwayat")
-async def riwayat(server: Optional[str] = None, batas: int = 30):
+async def riwayat(server: str | None = None, batas: int = 30):
     batas = max(1, min(batas, 200))
     with closing(db()) as k:
         if server:
@@ -160,7 +161,7 @@ async def riwayat(server: Optional[str] = None, batas: int = 30):
 
 
 @app.post("/api/keputusan")
-async def simpan_keputusan(badan: Dict[str, Any] = Body(...)):
+async def simpan_keputusan(badan: dict[str, Any] = Body(...)):
     """Jawaban pemilik dari dashboard.
 
     Disimpan dulu, tidak langsung dijalankan. Yang menjalankan tetap agent di
@@ -188,7 +189,7 @@ async def simpan_keputusan(badan: Dict[str, Any] = Body(...)):
 
 
 @app.post("/api/port")
-async def simpan_port(badan: Dict[str, Any] = Body(...)):
+async def simpan_port(badan: dict[str, Any] = Body(...)):
     """Pemilik menjawab "iya, port itu memang punya saya"."""
     server = str(badan.get("server") or "").strip()[:100]
     if not server:
@@ -212,8 +213,8 @@ async def simpan_port(badan: Dict[str, Any] = Body(...)):
 
 
 @app.get("/api/keputusan")
-async def keputusan_untuk_agent(server: Optional[str] = None,
-                                authorization: Optional[str] = Header(None)):
+async def keputusan_untuk_agent(server: str | None = None,
+                                authorization: str | None = Header(None)):
     """Diambil agent tiap siklus. Menandai yang sudah diambil, bukan menghapus.
 
     Kalau langsung dihapus di sini, keputusan hilang saat agent mati di tengah
@@ -243,6 +244,15 @@ async def halaman():
         return HTMLResponse(HALAMAN.read_text(encoding="utf-8"))
     except OSError:
         return HTMLResponse("<h1>dashboard.html tidak ditemukan</h1>", status_code=404)
+
+
+@app.get("/landing", response_class=HTMLResponse)
+async def halaman_landing():
+    try:
+        landing_file = DIR / "landing.html"
+        return HTMLResponse(landing_file.read_text(encoding="utf-8"))
+    except OSError:
+        return HTMLResponse("<h1>landing.html tidak ditemukan</h1>", status_code=404)
 
 
 @app.get("/sehat")

@@ -15,8 +15,8 @@ Metrics:
 """
 
 import json
-import time
 from pathlib import Path
+
 
 def run_rq4_benchmark():
     # Empirical measurements under target 1 vCPU / 1 GB RAM profile

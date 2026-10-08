@@ -1,0 +1,576 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sentinel Gate — Bagian dari Ekosistem Black Door</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0b0f17;
+  --surface: #101726;
+  --surface-container: #162032;
+  --surface-container-high: #1e2c44;
+  --primary: #38bdf8;
+  --primary-container: #0369a1;
+  --on-primary: #e0f2fe;
+  --secondary: #818cf8;
+  --tertiary: #c084fc;
+  --outline: rgba(148, 163, 184, 0.16);
+  --outline-variant: rgba(148, 163, 184, 0.28);
+  --star: #fbbf24;
+  --star-glow: rgba(251, 191, 36, 0.4);
+  --redup: #94a3b8;
+  --radius-xl: 28px;
+  --radius-l: 20px;
+  --radius-pill: 9999px;
+  --elevation-3: 0 10px 28px rgba(0, 0, 0, 0.45), 0 4px 10px rgba(0, 0, 0, 0.3);
+  --elevation-glow: 0 0 35px rgba(56, 189, 248, 0.22), 0 0 70px rgba(129, 140, 248, 0.14);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: #f1f5f9;
+  font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  background-image: 
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(56, 189, 248, 0.16), transparent),
+    radial-gradient(ellipse 60% 40% at 90% 60%, rgba(192, 132, 252, 0.09), transparent),
+    radial-gradient(circle at 10% 40%, rgba(52, 211, 153, 0.05), transparent);
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 40px 24px 100px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 48px;
+}
+
+.logo-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.logo-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #0284c7, #4f46e5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  box-shadow: 0 4px 16px rgba(2, 132, 199, 0.35);
+}
+
+.logo-group h1 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.logo-group span {
+  font-size: 12px;
+  color: var(--redup);
+}
+
+.btn-nav {
+  padding: 9px 20px;
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  background: var(--surface-container-high);
+  color: #fff;
+  border: 1px solid var(--outline);
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-nav:hover {
+  border-color: var(--primary);
+  background: var(--primary-container);
+}
+
+/* HERO CARD 3D */
+.hero-card {
+  background: linear-gradient(145deg, rgba(22, 32, 50, 0.85), rgba(16, 23, 38, 0.95));
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-xl);
+  padding: 56px 44px;
+  box-shadow: var(--elevation-3), var(--elevation-glow);
+  margin-bottom: 36px;
+  perspective: 1200px;
+}
+
+.hero-layout {
+  display: grid;
+  grid-template-columns: 1.25fr 0.85fr;
+  gap: 40px;
+  align-items: center;
+}
+
+@media (max-width: 860px) {
+  .hero-layout { grid-template-columns: 1fr; }
+  .hero-card { padding: 36px 24px; }
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 22px;
+}
+
+.title-display {
+  font-family: 'Outfit', sans-serif;
+  font-size: 38px;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: #fff;
+  margin-bottom: 20px;
+}
+
+.title-display span.glow {
+  background: linear-gradient(135deg, #38bdf8 0%, #a78bfa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.lead-text {
+  font-size: 16px;
+  color: #cbd5e1;
+  line-height: 1.7;
+  margin-bottom: 28px;
+}
+
+/* 3D PORTAL SCENE */
+.gate-viewport {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 340px;
+  perspective: 1000px;
+}
+
+.gate-3d {
+  width: 240px;
+  height: 280px;
+  position: relative;
+  transform-style: preserve-3d;
+  animation: float3D 6s ease-in-out infinite;
+  transition: transform 0.3s ease-out;
+}
+
+@keyframes float3D {
+  0%, 100% { transform: translateY(0) rotateX(6deg) rotateY(-8deg); }
+  50% { transform: translateY(-16px) rotateX(-4deg) rotateY(10deg); }
+}
+
+.portal-ring {
+  position: absolute;
+  inset: -16px;
+  border-radius: 50%;
+  border: 2px dashed rgba(56, 189, 248, 0.4);
+  animation: rotatePortal 24s linear infinite;
+  transform: translateZ(-20px);
+}
+
+@keyframes rotatePortal {
+  from { transform: translateZ(-20px) rotate(0deg); }
+  to { transform: translateZ(-20px) rotate(360deg); }
+}
+
+.gate-frame {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(160deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.98));
+  border: 2px solid rgba(56, 189, 248, 0.45);
+  border-radius: 44px 44px 24px 24px;
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.6),
+    0 0 30px rgba(56, 189, 248, 0.35),
+    inset 0 0 35px rgba(56, 189, 248, 0.15);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transform-style: preserve-3d;
+}
+
+.gate-core {
+  width: 175px;
+  height: 195px;
+  border-radius: 24px 24px 12px 12px;
+  background: linear-gradient(180deg, rgba(14, 165, 233, 0.18), rgba(2, 6, 23, 0.85));
+  border: 1px solid rgba(129, 140, 248, 0.35);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transform: translateZ(30px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.55);
+}
+
+.star-beacon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #38bdf8 0%, rgba(2, 132, 199, 0.4) 60%, transparent 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transform: translateZ(50px);
+}
+
+.beacon-pulse {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 2px solid #38bdf8;
+  animation: beaconPulse 2.4s ease-out infinite;
+}
+
+@keyframes beaconPulse {
+  0% { transform: scale(0.6); opacity: 1; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+.star-icon {
+  font-size: 30px;
+  color: var(--star);
+  text-shadow: 0 0 18px var(--star-glow), 0 0 35px rgba(251, 191, 36, 0.7);
+  animation: starTwinkle 3s ease-in-out infinite alternate;
+}
+
+@keyframes starTwinkle {
+  0% { transform: scale(0.92) rotate(-5deg); filter: brightness(1); }
+  100% { transform: scale(1.08) rotate(5deg); filter: brightness(1.35); }
+}
+
+.status-badge {
+  margin-top: 14px;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  background: rgba(52, 211, 153, 0.15);
+  border: 1px solid rgba(52, 211, 153, 0.4);
+  color: #6ee7b7;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transform: translateZ(35px);
+}
+
+/* NARRATIVE STORY CARD */
+.story-card {
+  background: var(--surface-container);
+  border: 1px solid var(--outline);
+  border-radius: var(--radius-xl);
+  padding: 40px 36px;
+  margin-bottom: 36px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  position: relative;
+  overflow: hidden;
+}
+
+.story-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, var(--primary), var(--tertiary));
+}
+
+.story-heading {
+  font-family: 'Outfit', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.story-p {
+  font-size: 15px;
+  line-height: 1.8;
+  color: #cbd5e1;
+  margin-bottom: 18px;
+}
+.story-p:last-of-type { margin-bottom: 0; }
+
+/* PRINCIPLES CARDS */
+.sec-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+  margin: 40px 0 24px;
+}
+
+.principles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 36px;
+}
+
+.card-item {
+  background: var(--surface-container);
+  border: 1px solid var(--outline);
+  border-radius: var(--radius-l);
+  padding: 30px 24px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.card-item:hover {
+  transform: translateY(-5px);
+  background: var(--surface-container-high);
+  border-color: rgba(56, 189, 248, 0.4);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+}
+
+.card-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  margin-bottom: 20px;
+}
+
+.icon-blue { background: rgba(56, 189, 248, 0.12); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.25); }
+.icon-purple { background: rgba(192, 132, 252, 0.12); color: #c084fc; border: 1px solid rgba(192, 132, 252, 0.25); }
+.icon-emerald { background: rgba(52, 211, 153, 0.12); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.25); }
+
+.card-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 12px;
+}
+
+.card-desc {
+  font-size: 14px;
+  color: var(--redup);
+  line-height: 1.65;
+}
+
+/* GOLDEN QUOTE BANNER */
+.quote-box {
+  background: radial-gradient(circle at 10% 50%, rgba(251, 191, 36, 0.08), transparent),
+              linear-gradient(135deg, rgba(22, 32, 50, 0.95), rgba(16, 23, 38, 0.95));
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  border-radius: var(--radius-xl);
+  padding: 36px 40px;
+  margin: 40px 0;
+  text-align: center;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), 0 0 30px rgba(251, 191, 36, 0.1);
+}
+
+.quote-p {
+  font-family: 'Outfit', sans-serif;
+  font-size: 21px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: #fef08a;
+  margin-bottom: 14px;
+}
+
+.quote-sub {
+  font-size: 13px;
+  color: var(--redup);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+footer {
+  margin-top: 56px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--redup);
+  border-top: 1px solid var(--outline);
+  padding-top: 28px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <a href="/" class="logo-group">
+      <div class="logo-box">🛡️</div>
+      <div>
+        <h1>Sentinel Gate</h1>
+        <span>Bagian dari ekosistem Black Door</span>
+      </div>
+    </a>
+    <a href="/" class="btn-nav">
+      Buka Dasbor Monitoring Server →
+    </a>
+  </header>
+
+  <main>
+    <div class="hero-card" id="heroCard">
+      <div class="hero-layout">
+        <div>
+          <div class="chip">
+            <span>🛡️ Sentinel Gate</span>
+            <span>·</span>
+            <span>Ekosistem Black Door</span>
+          </div>
+
+          <h2 class="title-display">
+            Server Anda tidak tidur.<br>
+            <span class="glow">Tapi Anda harus bisa.</span>
+          </h2>
+
+          <p class="lead-text">
+            Itulah alasan <strong>Sentinel Gate</strong> dirancang bukan sebagai tembok yang menolak semua orang, tapi sebagai gerbang yang mengenali — dengan tenang, dengan pasti — siapa yang berhak masuk, dan menutup rapat untuk yang tidak.
+          </p>
+
+          <a href="/" class="btn-nav" style="padding: 12px 24px; font-size: 14px; background: #0369a1; border-color: #38bdf8;">
+            Lihat Keadaan Server Sekarang →
+          </a>
+        </div>
+
+        <div class="gate-viewport">
+          <div class="gate-3d" id="gateScene">
+            <div class="portal-ring"></div>
+            <div class="gate-frame">
+              <div class="gate-core">
+                <div class="star-beacon">
+                  <div class="beacon-pulse"></div>
+                  <span class="star-icon">⭐</span>
+                </div>
+                <div class="status-badge">
+                  BERJAGA 02:00
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="story-card">
+      <h3 class="story-heading">
+        <span>🌙</span> Untuk setiap malam yang Anda lewati tanpa cemas
+      </h3>
+      <p class="story-p">
+        Saya pernah merancang untuk jutaan orang yang mempercayakan data pribadinya pada satu sentuhan jari. Kepercayaan itu rapuh — dibangun bertahun-tahun, bisa runtuh dalam semalam. Jadi ketika saya merancang Sentinel Gate, saya membayangkan satu malam tertentu: <strong>pukul 2 pagi, Anda sudah lelap, dan sesuatu yang tidak dikenal mengetuk pintu server Anda.</strong>
+      </p>
+      <p class="story-p">
+        Gerbang ini tidak panik. Ia tidak membangunkan Anda untuk hal yang sudah ia tangani. Ia hanya mencatat, menolak dengan sopan, dan membiarkan Anda bangun dengan tenang — karena bintang kecil di dasbor Anda tetap bersinar sepanjang malam, menjaga, tanpa pernah lengah.
+      </p>
+    </div>
+
+    <h3 class="sec-title">Tiga prinsip yang tidak bisa ditawar</h3>
+    <div class="principles-grid">
+      <div class="card-item">
+        <div class="card-icon icon-blue">🕊️</div>
+        <h4 class="card-title">Jelas, bukan menakutkan</h4>
+        <p class="card-desc">
+          Keamanan yang baik terasa sunyi. Peserta didik dan mentor melihat status, bukan jargon.
+        </p>
+      </div>
+
+      <div class="card-item">
+        <div class="card-icon icon-purple">⚡</div>
+        <h4 class="card-title">Berjaga tanpa lelah</h4>
+        <p class="card-desc">
+          Teardown otomatis, isolasi jaringan per sesi — gerbang bekerja walau mentor sedang istirahat.
+        </p>
+      </div>
+
+      <div class="card-item">
+        <div class="card-icon icon-emerald">🔐</div>
+        <h4 class="card-title">Hanya yang berhak</h4>
+        <p class="card-desc">
+          Setiap akses diverifikasi, dicatat, dan diaudit — tanpa pengecualian, tanpa drama.
+        </p>
+      </div>
+    </div>
+
+    <div class="quote-box">
+      <p class="quote-p">
+        “Rancangan terbaik bukan yang terlihat canggih. Tapi yang membuat Anda bisa tidur, sementara ia tetap terjaga.” ⭐
+      </p>
+      <div class="quote-sub">
+        Sentinel Gate — Bagian dari ekosistem Black Door
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p><strong>Sentinel Gate</strong> — Bagian dari ekosistem Black Door</p>
+    <p style="margin-top: 6px;">Keamanan yang baik terasa sunyi.</p>
+  </footer>
+
+</div>
+
+<script>
+// 3D Card Hover Interaction
+const heroCard = document.getElementById('heroCard');
+const gateScene = document.getElementById('gateScene');
+
+if (heroCard && gateScene) {
+  heroCard.addEventListener('mousemove', (e) => {
+    const rect = heroCard.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    const rotY = (x / (rect.width / 2)) * 14;
+    const rotX = -(y / (rect.height / 2)) * 14;
+    gateScene.style.animation = 'none';
+    gateScene.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg) translateY(-8px)`;
+  });
+
+  heroCard.addEventListener('mouseleave', () => {
+    gateScene.style.animation = 'float3D 6s ease-in-out infinite';
+  });
+}
+</script>
+</body>
+</html>

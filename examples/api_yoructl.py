@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 Jembatan FastAPI -> yoructl.
 
@@ -26,7 +27,7 @@ import json
 import re
 import secrets
 import time
-from typing import Any, Dict, List, Literal, Optional
+from typing import Any, Literal
 
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
@@ -54,10 +55,10 @@ POLA_KID = re.compile(r"^K(?:0[1-9]|10)$")
 
 class Permintaan(BaseModel):
     aksi: Literal["periksa", "terapkan", "kembalikan", "verifikasi"]
-    jawaban: Optional[str] = Field(
+    jawaban: str | None = Field(
         default=None, description="Jawaban pemilik atas konfirmasi: 'ya' atau 'tidak'."
     )
-    tiket: Optional[str] = Field(
+    tiket: str | None = Field(
         default=None, description="Tiket konfirmasi dari respons sebelumnya."
     )
 
@@ -67,10 +68,10 @@ class Jawaban(BaseModel):
     id: str
     aksi: str
     butuh_konfirmasi: bool
-    tiket: Optional[str] = None
-    pesan_konfirmasi: Optional[str] = None
-    hasil: Optional[Dict[str, Any]] = None
-    kode_keluar: Optional[int] = None
+    tiket: str | None = None
+    pesan_konfirmasi: str | None = None
+    hasil: dict[str, Any] | None = None
+    kode_keluar: int | None = None
 
 
 # ---------------------------------------------------------------- konfirmasi
@@ -85,7 +86,7 @@ class Jawaban(BaseModel):
 #
 # Dengan tiket yang lahir di server: tanpa langkah bertanya, tidak ada tiket;
 # tanpa tiket, tidak ada eksekusi.
-_TIKET: Dict[str, Dict[str, Any]] = {}
+_TIKET: dict[str, dict[str, Any]] = {}
 UMUR_TIKET = 300  # detik
 
 
@@ -109,7 +110,7 @@ def _bersihkan_tiket() -> None:
 
 
 # ----------------------------------------------------------------- eksekusi
-async def panggil_yoructl(kid: str, aksi: str) -> tuple[int, Dict[str, Any]]:
+async def panggil_yoructl(kid: str, aksi: str) -> tuple[int, dict[str, Any]]:
     """Satu program, dua argumen. Tidak ada string yang dirakit dari input."""
     if not POLA_KID.match(kid) or aksi not in AKSI_SAH:
         return 2, {"status": "ERROR", "pesan": "kontrol atau tindakan tidak dikenal"}
@@ -136,7 +137,7 @@ async def panggil_yoructl(kid: str, aksi: str) -> tuple[int, Dict[str, Any]]:
     }
 
 
-def riwayat(kid: str, batas: int = 20) -> List[Dict[str, Any]]:
+def riwayat(kid: str, batas: int = 20) -> list[dict[str, Any]]:
     """Baris terakhir saja, bukan seluruh sejarah.
 
     Log tumbuh terus. Membaca seluruh berkas tiap panggilan berarti respons

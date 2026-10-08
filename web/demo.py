@@ -117,8 +117,8 @@ def main():
 
     try:
         webbrowser.open(alamat)
-    except Exception:  # noqa: BLE001 - browser tidak wajib, ini cuma kemudahan
-        pass
+    except (OSError, RuntimeError) as e:
+        print(f"  (Catatan: browser tidak dapat dibuka otomatis: {e})")
 
     uvicorn.run("api:app", host=host, port=port, log_level="warning")
     return 0

@@ -1,8 +1,10 @@
 {
-  "timestamp": 1791473115.726282,
+  "timestamp": 1791473557.0426009,
   "total_controls": 10,
   "baseline_compliance_score": "2/10 (20.0%)",
   "post_remediation_compliance_score": "10/10 (100.0%)",
+  "rollback_trials": 10,
+  "successful_rollbacks": 10,
   "rollback_success_rate_pct": 100.0,
   "atomic_state_integrity": "Byte-for-byte exact hash match from /var/backups/yoru",
   "zero_service_breakage_verified": true,

@@ -1,10 +1,10 @@
-import streamlit as st
-import sqlite3
+#!/usr/bin/env python3
 import json
-import pandas as pd
-from pathlib import Path
+import sqlite3
 import time
-import requests
+from pathlib import Path
+
+import streamlit as st
 
 # Layout config
 st.set_page_config(
@@ -63,7 +63,7 @@ def get_db_connection():
         conn = sqlite3.connect(DB_PATH)
         conn.row_factory = sqlite3.Row
         return conn
-    except Exception as e:
+    except sqlite3.Error as e:
         st.error(f"Gagal koneksi database: {e}")
         return None
 
@@ -75,7 +75,7 @@ def fetch_latest_report():
         row = cur.fetchone()
         if row:
             return json.loads(row["isi"])
-    except Exception as e:
+    except (sqlite3.Error, json.JSONDecodeError) as e:
         st.error(f"Error reading report: {e}")
     finally:
         conn.close()
@@ -96,7 +96,7 @@ def send_decision(server, kontrol, nilai):
             conn.commit()
             conn.close()
             st.toast(f"Keputusan untuk {kontrol} disimpan: {nilai}!", icon="✅")
-    except Exception as e:
+    except sqlite3.Error as e:
         st.error(f"Gagal menyimpan: {e}")
 
 def init_mock_db():
@@ -144,7 +144,7 @@ def init_mock_db():
                 )
         conn.commit()
         conn.close()
-    except Exception as e:
+    except (sqlite3.Error, OSError, json.JSONDecodeError) as e:
         print("Mock DB Init Error:", e)
 
 init_mock_db()
@@ -192,7 +192,65 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # Tabs
-tab_action, tab_controls, tab_chat = st.tabs(["⚠️ Action Center", "📋 Semua Kontrol", "💬 Chat dengan YORU Assistant"])
+tab_sentinel, tab_action, tab_controls, tab_chat = st.tabs([
+    "🛡️ Sentinel Gate (Story & Visi)", 
+    "⚠️ Action Center", 
+    "📋 Semua Kontrol (K01-K10)", 
+    "💬 Chat dengan YORU Assistant"
+])
+
+with tab_sentinel:
+    st.markdown("""
+    <div style="background: linear-gradient(145deg, #162032, #101726); border: 1px solid rgba(148, 163, 184, 0.25); border-radius: 28px; padding: 36px 32px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); margin-bottom: 24px;">
+        <span style="display:inline-block; padding: 4px 12px; border-radius: 9999px; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); color: #38bdf8; font-size: 12px; font-weight: 700; margin-bottom: 16px;">
+            🛡️ Sentinel Gate · Ekosistem Black Door
+        </span>
+        <h2 style="font-size: 28px; font-weight: 800; color: #ffffff; margin-bottom: 14px; line-height: 1.3;">
+            Server Anda tidak tidur. <span style="background: linear-gradient(135deg, #38bdf8, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Tapi Anda harus bisa.</span>
+        </h2>
+        <p style="font-size: 16px; color: #cbd5e1; line-height: 1.7; margin-bottom: 24px;">
+            Itulah alasan <strong>Sentinel Gate</strong> dirancang bukan sebagai tembok yang menolak semua orang, tapi sebagai gerbang yang mengenali — dengan tenang, dengan pasti — siapa yang berhak masuk, dan menutup rapat untuk yang tidak.
+        </p>
+        
+        <div style="background: rgba(15, 23, 42, 0.7); border-left: 4px solid #38bdf8; border-radius: 0 16px 16px 0; padding: 22px 24px; margin-bottom: 24px;">
+            <h4 style="font-size: 18px; font-weight: 700; color: #ffffff; margin-bottom: 10px;">🌙 Untuk setiap malam yang Anda lewati tanpa cemas</h4>
+            <p style="font-size: 14.5px; color: #94a3b8; line-height: 1.75; margin-bottom: 12px;">
+                Saya pernah merancang untuk jutaan orang yang mempercayakan data pribadinya pada satu sentuhan jari. Kepercayaan itu rapuh — dibangun bertahun-tahun, bisa runtuh dalam semalam. Jadi ketika saya merancang Sentinel Gate, saya membayangkan satu malam tertentu: <strong>pukul 2 pagi, Anda sudah lelap, dan sesuatu yang tidak dikenal mengetuk pintu server Anda.</strong>
+            </p>
+            <p style="font-size: 14.5px; color: #94a3b8; line-height: 1.75; margin: 0;">
+                Gerbang ini tidak panik. Ia tidak membangunkan Anda untuk hal yang sudah ia tangani. Ia hanya mencatat, menolak dengan sopan, dan membiarkan Anda bangun dengan tenang — karena bintang kecil di dasbor Anda tetap bersinar sepanjang malam, menjaga, tanpa pernah lengah.
+            </p>
+        </div>
+        
+        <h4 style="font-size: 18px; font-weight: 700; color: #ffffff; margin-bottom: 16px;">⚖️ Tiga prinsip yang tidak bisa ditawar</h4>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 24px;">
+            <div style="background: #1e2c44; border: 1px solid rgba(148, 163, 184, 0.16); border-radius: 16px; padding: 20px;">
+                <div style="font-size: 24px; margin-bottom: 8px;">🕊️</div>
+                <strong style="color: #fff; font-size: 15px; display: block; margin-bottom: 6px;">Jelas, bukan menakutkan</strong>
+                <span style="color: #94a3b8; font-size: 13.5px; line-height: 1.6;">Keamanan yang baik terasa sunyi. Peserta didik dan mentor melihat status, bukan jargon.</span>
+            </div>
+            <div style="background: #1e2c44; border: 1px solid rgba(148, 163, 184, 0.16); border-radius: 16px; padding: 20px;">
+                <div style="font-size: 24px; margin-bottom: 8px;">⚡</div>
+                <strong style="color: #fff; font-size: 15px; display: block; margin-bottom: 6px;">Berjaga tanpa lelah</strong>
+                <span style="color: #94a3b8; font-size: 13.5px; line-height: 1.6;">Teardown otomatis, isolasi jaringan per sesi — gerbang bekerja walau mentor sedang istirahat.</span>
+            </div>
+            <div style="background: #1e2c44; border: 1px solid rgba(148, 163, 184, 0.16); border-radius: 16px; padding: 20px;">
+                <div style="font-size: 24px; margin-bottom: 8px;">🔐</div>
+                <strong style="color: #fff; font-size: 15px; display: block; margin-bottom: 6px;">Hanya yang berhak</strong>
+                <span style="color: #94a3b8; font-size: 13.5px; line-height: 1.6;">Setiap akses diverifikasi, dicatat, dan diaudit — tanpa pengecualian, tanpa drama.</span>
+            </div>
+        </div>
+        
+        <div style="text-align: center; background: radial-gradient(circle, rgba(251, 191, 36, 0.1), transparent); border: 1px solid rgba(251, 191, 36, 0.3); border-radius: 20px; padding: 22px; margin-top: 18px;">
+            <p style="font-size: 17px; font-weight: 600; color: #fef08a; margin-bottom: 6px;">
+                “Rancangan terbaik bukan yang terlihat canggih. Tapi yang membuat Anda bisa tidur, sementara ia tetap terjaga.” ⭐
+            </p>
+            <span style="font-size: 12px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.08em;">
+                Sentinel Gate — Bagian dari ekosistem Black Door
+            </span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
 with tab_action:
     st.header("Tindakan Diperlukan")

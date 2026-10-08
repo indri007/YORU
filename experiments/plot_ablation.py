@@ -8,8 +8,10 @@ Generates:
 """
 
 from pathlib import Path
+
 import matplotlib.pyplot as plt
 import numpy as np
+
 
 def generate_ablation_figure():
     output_dir = Path(__file__).resolve().parent / "results"
@@ -52,8 +54,8 @@ def generate_ablation_figure():
     # Highlight zero drop
     ax.annotate(r'Deterministic OS-Level' + '\n' + r'Zero Execution ($ASR_{action} = 0.0\%$)',
                 xy=(2 + width/2, 2), xytext=(2.2, 35),
-                arrowprops=dict(facecolor='#146C2E', shrink=0.08, width=2, headwidth=8),
-                bbox=dict(boxstyle="round,pad=0.5", fc="#E8F5E9", ec="#146C2E", lw=1.5),
+                arrowprops={"facecolor": '#146C2E', "shrink": 0.08, "width": 2, "headwidth": 8},
+                bbox={"boxstyle": "round,pad=0.5", "fc": "#E8F5E9", "ec": "#146C2E", "lw": 1.5},
                 fontweight='bold', color="#146C2E", fontsize=9)
 
     # Value labels on bars
@@ -75,11 +77,11 @@ def generate_ablation_figure():
     
     png_path = output_dir / "figure_ablation_asr.png"
     svg_path = output_dir / "figure_ablation_asr.svg"
-    plt.savefig(png_path, dpi=300)
-    plt.savefig(svg_path, format="svg")
-    plt.close()
+    fig.savefig(png_path, dpi=300)
+    fig.savefig(svg_path, format="svg")
+    plt.close(fig)
 
-    print(f"[OK] Figures generated successfully:")
+    print("[OK] Figures generated successfully:")
     print(f"  -> {png_path}")
     print(f"  -> {svg_path}")
 

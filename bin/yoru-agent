@@ -145,7 +145,7 @@ def panggil_yoructl(kid, aksi, batas=180):
         perintah = [YORUCTL, kid, aksi]
 
     try:
-        p = subprocess.run(perintah, capture_output=True, text=True, timeout=batas)
+        p = subprocess.run(perintah, capture_output=True, text=True, timeout=batas, check=False)
     except subprocess.TimeoutExpired:
         return {"status": "ERROR", "berhasil": False, "nilai": None,
                 "pesan": f"yoructl {kid} {aksi} lewat batas {batas} detik"}
@@ -167,7 +167,7 @@ def panggil_yoructl(kid, aksi, batas=180):
 def keluaran(perintah, batas=10):
     """Baca keluaran satu perintah. Daftar argumen, bukan string shell."""
     try:
-        p = subprocess.run(perintah, capture_output=True, text=True, timeout=batas)
+        p = subprocess.run(perintah, capture_output=True, text=True, timeout=batas, check=False)
         return p.stdout.strip()
     except (OSError, subprocess.TimeoutExpired):
         return ""
@@ -228,7 +228,7 @@ class Penimbang:
     ada, ketiganya jatuh ke jawaban baku yang tetap benar - cuma lebih kaku.
     """
 
-    URUTAN = ["K03", "K09", "K10", "K08", "K07", "K04", "K06", "K05", "K01", "K02"]
+    URUTAN = ("K03", "K09", "K10", "K08", "K07", "K04", "K06", "K05", "K01", "K02")
 
     def __init__(self, konf):
         self.konf = konf
@@ -282,7 +282,7 @@ def jejak_audit(kid, katalog):
     m = re.search(r"\bAUID=\"([^\"]+)\"", blok)
     if m:
         siapa = m.group(1)
-    m = re.search(r"^type=\S+\s+msg=audit\(([^)]*)\)", blok, re.M)
+    m = re.search(r"^type=\S+\s+msg=audit\(([^)]*)\)", blok, re.MULTILINE)
     if m:
         kapan = m.group(1).split(":")[0].strip()
     m = re.search(r"\bcomm=\"?([^\"\s]+)\"?", blok)
@@ -523,7 +523,7 @@ def terapkan_satu(kid):
         "berhasil": bool(diverifikasi),
         "nilai_sesudah": v.get("nilai"),
         "diverifikasi": diverifikasi,
-        "snapshot_id": f"yoru-{kid}-{datetime.now().strftime('%Y%m%dT%H%M%S')}",
+        "snapshot_id": f"yoru-{kid}-{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S')}",
         "dirollback": False,
         "pesan_error": None if diverifikasi else "verifikasi tidak LULUS",
         "durasi_detik": round(time.time() - mulai, 1),

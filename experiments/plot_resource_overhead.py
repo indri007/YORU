@@ -6,8 +6,10 @@ Compares YORU Harness vs Traditional HIDS (Wazuh Agent) and Kernel Runtime (Falc
 """
 
 from pathlib import Path
+
 import matplotlib.pyplot as plt
 import numpy as np
+
 
 def generate_overhead_figure():
     output_dir = Path(__file__).resolve().parent / "results"
@@ -70,7 +72,7 @@ def generate_overhead_figure():
     plt.savefig(svg_path, format="svg")
     plt.close()
 
-    print(f"[OK] Resource overhead figures generated:")
+    print("[OK] Resource overhead figures generated:")
     print(f"  -> {png_path}")
     print(f"  -> {svg_path}")
 

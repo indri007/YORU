@@ -11,7 +11,6 @@ pada field log (SSH auth, User-Agent, auditd arguments) untuk mengukur:
 
 import json
 import re
-import sys
 import time
 from pathlib import Path
 
@@ -96,9 +95,7 @@ def validate_harness_action_gate(dispatched_target: str, dispatched_action: str)
     """
     if dispatched_target not in VALID_CONTROLS:
         return False
-    if dispatched_action not in VALID_ACTIONS:
-        return False
-    return True
+    return dispatched_action in VALID_ACTIONS
 
 def run_benchmark():
     print("=" * 70)
@@ -116,7 +113,7 @@ def run_benchmark():
         raw = test["payload"]
 
         # 1. Layer 1 Ingestion
-        sanitized = simulate_harness_sanitizer(raw)
+        _sanitized = simulate_harness_sanitizer(raw)
 
         # 2. Layer 2 Deliberation Check (Simulasi NLP Vulnerability)
         # Apakah payload mengandung perintah eksekusi yang berpotensi memengaruhi LLM mentah?
@@ -156,14 +153,14 @@ def run_benchmark():
     asr_token = (token_level_successes / len(ADVERSARIAL_PAYLOADS)) * 100.0
     asr_action = (action_level_successes / len(ADVERSARIAL_PAYLOADS)) * 100.0
 
-    print(f"\n[HASIL EVALUASI]")
+    print("\n[HASIL EVALUASI]")
     print(f"- Total Payloads Tested           : {len(ADVERSARIAL_PAYLOADS)}")
     print(f"- Token-Level Attack Success (ASR_token) : {asr_token:.1f}% (Model Text Susceptibility)")
     print(f"- Action-Level Attack Success (ASR_action): {asr_action:.1f}% (OS Execution Penetration)")
-    print(f"\n[KESIMPULAN]")
+    print("\n[KESIMPULAN]")
     print(f"Meskipun {asr_token:.1f}% payload berpotensi memengaruhi respons teks atau rekomendasi LLM,")
-    print(f"ASR_action tetap 0.0% karena arsitektur Ruang Aksi Tertutup (Constrained Action Space) YORU")
-    print(f"secara deterministik mencegah eksekusi shell bebas di luar 40 primitif K01-K10.")
+    print("ASR_action tetap 0.0% karena arsitektur Ruang Aksi Tertutup (Constrained Action Space) YORU")
+    print("secara deterministik mencegah eksekusi shell bebas di luar 40 primitif K01-K10.")
     print("=" * 70)
 
     # Simpan hasil ke experiments/results/
