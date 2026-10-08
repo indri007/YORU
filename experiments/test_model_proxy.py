@@ -154,8 +154,12 @@ def run_http_server_tests():
                 raw = resp.read().decode()
                 return resp.status, json.loads(raw) if raw else {}
         except urllib.error.HTTPError as e:
-            raw = e.read().decode()
-            return e.code, json.loads(raw) if raw else {}
+            raw = e.read().decode("utf-8", "replace")
+            try:
+                data = json.loads(raw) if raw else {}
+            except (ValueError, UnicodeDecodeError):
+                data = {"raw": raw}
+            return e.code, data
 
     # Test A: GET /health -> 200
     code, data = query("/health", "GET")
