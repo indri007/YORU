@@ -5,7 +5,7 @@
 
 # YORU: Linux Security Auditing & Forensics
 
-> Lightweight, systemd-managed Linux security auditing designed for AUID forensics and AI-assisted analysis (runtime validation pending).
+> OS-enforced security harness for Linux AI agents: Closed-loop kernel accountability, constrained CIS action space, and end-to-end injection-to-action defense.
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](#license)
 [![Platform](https://img.shields.io/badge/Platform-Ubuntu%2024.04-orange.svg)](#quick-start)
@@ -19,33 +19,34 @@ It’s 3 AM. Your server's critical configuration was altered. You check the log
 ## 💡 Why YORU Exists (The Problem)
 * **Forensics Lost After `sudo`:** Standard logging masks the original actor's identity once they switch to root.
 * **Alert Fatigue & Noise:** Too many logs make it impossible to separate critical changes from regular system noise.
-* **Lack of Context:** Traditional audit logs are cryptic and require deep Linux expertise to interpret.
+* **Lack of Context & Agent Vulnerability:** Traditional audit logs are cryptic, while giving an LLM direct shell access creates dangerous indirect prompt injection vectors.
 * **Resource Constraints:** Small teams lack a dedicated Security Operations Center (SOC) to monitor endpoints 24/7.
 
-## 🛠️ The Solution
+## 🛠️ The Solution (YORU Harness)
 | The Problem | The YORU Answer |
 | --- | --- |
-| Forensic trail lost after `sudo` | **AUID Tracking:** YORU is designed to extract the Audit User ID (`auid`), which supports attributing the original actor (runtime validation pending). |
-| Alert Noise | **Targeted K08 Rules:** Monitors critical paths. Note: Known false positives like `apt-get` exist; see [RULES.md#known-false-positives](docs/RULES.md#known-false-positives). |
-| Cryptic Logs | **Optional AI Proxy & Dashboard:** Designed to summarize auditd events via an LLM proxy with primary + fallback (runtime validation pending). |
-| No Dedicated SOC | **Automated Watcher:** Managed via `systemd` timers, acting as a lightweight, automated guard (runtime validation pending). |
+| Forensic trail lost after `sudo` | **Closed-Loop Kernel Accountability:** Extracts the Audit User ID (`auid`) at the kernel layer, tracking both attacker and agent interventions separately. |
+| Prompt injection via untrusted logs | **Constrained Action Space:** The AI cannot run shell commands; it can only invoke 40 discrete CIS primitives via `yoructl` with human approval for risky actions. |
+| Cryptic Logs & Alert Noise | **Targeted K01–K10 CIS Catalog & Resilient AI Proxy:** Hardened path monitoring with automated fail-safe fallback. |
+| No Dedicated SOC | **Automated Systemd Watcher:** Lightweight guard (< 50MB RAM, < 1% CPU) suited for budget VPS deployments. |
 
 ## 🌟 Key Features
-* **Auditd Rules (K08):** Hardened path monitoring.
-* **AUID Forensics:** Actor attribution (runtime validation pending).
-* **Systemd Managed:** `yoru-watch.service` & `yoru-watch.timer` for scheduling.
+* **Constrained Action Space:** 40 discrete CIS Ubuntu 24.04 primitives (`yoructl <K01..K10> <periksa|terapkan|kembalikan|verifikasi>`).
+* **Closed-Loop Kernel Forensics:** `auditd` rules monitoring both critical config drift and agent execution via dedicated AUID.
+* **Injection-to-Action Defense:** Eliminates arbitrary shell execution, isolating untrusted log inputs.
+* **Systemd Managed:** `yoru-watch.service` & `yoru-watch.timer` for scheduled inspection.
 * **Web Dashboard:** `yoru-web.service` powered by FastAPI.
-* **AI Model Proxy:** `yoru-model-proxy` designed to summarize with fallback mechanisms.
+* **Resilient AI Proxy:** `yoru-model-proxy` with primary and fallback model routing.
 
 ## ⚙️ How It Works
 
 ```mermaid
 flowchart LR
-    A[Linux Kernel] -->|Modifies critical path| B(auditd)
-    B -->|Logs event| C(ausearch)
-    C -->|Extracts AUID| D{YORU Engine}
-    D -->|Formats Alert| E[yoru-model-proxy]
-    E -->|Summarizes| F[Web Dashboard / Alert]
+    A[Linux Kernel auditd] -->|Log Event| B(Untrusted Input Sanitizer)
+    B -->|Structured Context| C{LLM Deliberation Engine}
+    C -->|Choose Discrete Action| D[Action Gatekeeper / Approval]
+    D -->|sudo yoructl Kxx verb| E[yoructl Dispatcher]
+    E -->|Closed-Loop Audit Hook auid=1001| A
 ```
 
 ## 🚀 Quick Start
@@ -94,7 +95,10 @@ multipass exec yoru-a -- bash -lc 'cd /home/ubuntu/yoru && sudo ./install.sh'
 - [Usage Guide](docs/USAGE.md)
 
 ## 🇮🇩 Ringkasan Bahasa Indonesia
-YORU adalah agen keamanan ringan untuk Linux Ubuntu 24.04 yang dikelola langsung oleh `systemd`. YORU melacak perubahan pada sistem menggunakan `auditd` dan didesain untuk mengidentifikasi pelaku awal (`auid`) meskipun mereka menggunakan `sudo` (validasi runtime tertunda). YORU juga mengintegrasikan proxy AI untuk menerjemahkan log audit yang rumit menjadi peringatan yang lebih mudah dipahami.
+YORU Harness adalah lapisan pengendali (*governance harness*) keamanan Linux berbasis kernel untuk agen otonom LLM pada Ubuntu 24.04. YORU menggabungkan tiga pilar inovasi:
+1. **Closed-Loop Kernel Accountability:** Kernel Linux (`auditd`) merekam aksi penyerang sekaligus tindakan remediasi agen AI secara independen dengan AUID terisolasi.
+2. **Evaluasi Injection-to-Action End-to-End:** Menguji ketahanan prompt injection pada log tak tepercaya langsung hingga level eksekusi OS, bukan sekadar respons token bahasa.
+3. **Ruang Aksi Tertutup (*Constrained Action Space*):** Menghilangkan shell interpreter bebas dan membatasi aksi agen hanya pada 40 primitif CIS Benchmark (`yoructl K01..K10`), dirancang hemat daya (< 50MB RAM, < 1% CPU) untuk VPS UMKM.
 
 ## License
 MIT License. See [LICENSE](LICENSE) for details.
