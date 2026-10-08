@@ -43,9 +43,9 @@ NAMA_SERVER=""
 #
 # TIDAK ADA di sini, dan itu disengaja.
 #
-# Yang memanggil model AI itu Hermes, bukan Yoru. Yoru cuma menyediakan
+# Yang memanggil model AI itu yoru-agent via yoru-model-proxy, bukan kernel Yoru. Yoru cuma menyediakan
 # katalog, dispatcher, dan laporan - dia tidak pernah bicara ke model sama
-# sekali. Jadi kunci API dan nama model tinggal di konfigurasi Hermes, satu
+# sekali. Jadi kunci API dan nama model tinggal di konfigurasi yoru-model-proxy, satu
 # tempat saja.
 #
 # Kalau ditaruh di sini juga, ada dua tempat yang menyimpan rahasia yang

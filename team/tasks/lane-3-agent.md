@@ -1,4 +1,4 @@
-# Lane 3 — Agent Hermes
+# Lane 3 — Agent yoru-agent
 
 Tugas kamu bikin Yoru bisa berpikir dan bertindak. Ini jalur paling kritis,
 jadi kalau macet, **bilang cepat**, jangan dipendam sampai Sabtu sore.
@@ -99,7 +99,7 @@ Eval ini yang membuktikan agent kita bisa dinilai, bukan cuma kelihatan pintar.
 ## Batas waktu
 
 **Sabtu 5 September sore.** Kalau sampai saat itu agent belum bisa memanggil
-Hermes sama sekali, Lane 1 mengambil alih wiring dan kamu pindah ke eval set.
+yoru-agent sama sekali, Lane 1 mengambil alih wiring dan kamu pindah ke eval set.
 Ini bukan hukuman — ini rencana cadangan yang disepakati di awal supaya
 proyeknya tidak ikut macet.
 

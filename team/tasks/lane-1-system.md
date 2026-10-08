@@ -48,16 +48,16 @@ password.
 
 ### 2. Installer
 
-Satu perintah, dijalankan di server pemilik. Sudah termasuk Hermes — jangan
-mensyaratkan pemilik memasang Hermes duluan, karena target kita justru orang
-yang tidak tahu Hermes itu apa.
+Satu perintah, dijalankan di server pemilik. Sudah termasuk yoru-agent — jangan
+mensyaratkan pemilik memasang yoru-agent duluan, karena target kita justru orang
+yang tidak tahu yoru-agent itu apa.
 
 Isi paketnya:
 
 ```
 /opt/yoru/bin/yoructl    dispatcher root
 /usr/share/yoru/catalog/*.yaml    katalog, milik root, tidak bisa ditulis yoru
-/opt/yoru/agent/                  Hermes dan prompt
+/opt/yoru/agent/                  yoru-agent dan prompt
 /etc/yoru/config.yaml             milik pemilik: token telegram, jadwal
 ```
 

@@ -2,7 +2,7 @@
 Jembatan FastAPI -> yoructl.
 
 Ini pengganti run_taskfile_action() di api/main.py punya Rahardian. Bentuk
-request dan responsnya sengaja dibikin sama persis, jadi prompt Hermes yang
+request dan responsnya sengaja dibikin sama persis, jadi prompt yoru-agent yang
 sudah ditulis tidak perlu diubah - yang ganti cuma lapisan eksekusinya.
 
 Yang didapat dengan menukar itu:

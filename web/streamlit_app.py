@@ -8,7 +8,7 @@ import requests
 
 # Layout config
 st.set_page_config(
-    page_title="Hermes by Yoru",
+    page_title="YORU Dashboard",
     page_icon="🛡️",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -162,7 +162,7 @@ score = summary.get("skor", 0)
 # Sidebar
 with st.sidebar:
     st.image("https://img.icons8.com/color/96/000000/artificial-intelligence.png", width=60)
-    st.title("Hermes")
+    st.title("YORU Assistant")
     st.caption("AI Agent Penjaga Server")
     st.divider()
     st.write(f"**Server:** {server_name}")
@@ -192,7 +192,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # Tabs
-tab_action, tab_controls, tab_chat = st.tabs(["⚠️ Action Center", "📋 Semua Kontrol", "💬 Chat dengan Hermes"])
+tab_action, tab_controls, tab_chat = st.tabs(["⚠️ Action Center", "📋 Semua Kontrol", "💬 Chat dengan YORU Assistant"])
 
 with tab_action:
     st.header("Tindakan Diperlukan")
@@ -258,20 +258,20 @@ with tab_controls:
         """, unsafe_allow_html=True)
 
 with tab_chat:
-    st.header("Chat dengan Hermes")
-    st.info("Hermes adalah AI assistant yang memonitor server Anda. Tanyakan apa saja tentang keamanan server ini.")
+    st.header("Chat dengan YORU Assistant")
+    st.info("YORU Assistant adalah AI agent yang memonitor server Anda. Tanyakan apa saja tentang keamanan server ini.")
     
     # Simple Mock Chat for Hackathon Demo
     if "messages" not in st.session_state:
         st.session_state.messages = [
-            {"role": "assistant", "content": f"Halo Tuan. Saya Hermes. Server {server_name} saat ini memiliki skor keamanan {score}/100. Ada yang bisa saya bantu?"}
+            {"role": "assistant", "content": f"Halo Tuan. Saya YORU Assistant. Server {server_name} saat ini memiliki skor keamanan {score}/100. Ada yang bisa saya bantu?"}
         ]
 
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
-    if prompt := st.chat_input("Tanya Hermes tentang K06 atau port 3306..."):
+    if prompt := st.chat_input("Tanya YORU Assistant tentang K06 atau port 3306..."):
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
             st.markdown(prompt)

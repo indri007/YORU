@@ -635,7 +635,7 @@ k05() { local p daftar ada oke belum lain; case "$1" in
     command -v ufw >/dev/null 2>&1 || selesai ERROR false "" "ufw tidak terpasang - tidak bisa diperiksa"
 
     # Daftar port yang belum dijawab pemilik ikut dikirim di "pesan". Ini
-    # bahan mentah buat Hermes menyusun pertanyaan ke pemilik: "port 8888
+    # bahan mentah buat yoru-agent menyusun pertanyaan ke pemilik: "port 8888
     # terbuka dipakai python3, itu panel kamu?" - dan jawabannya nanti yang
     # bikin terapkan bisa jalan.
     belum="$(port_belum_dijawab "$(port_ssh)" "$(port_disetujui)")"

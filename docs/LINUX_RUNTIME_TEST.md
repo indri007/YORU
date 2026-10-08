@@ -72,10 +72,10 @@ Dokumen ini berisi langkah-langkah pengujian yang **HARUS** dijalankan secara la
 
 12. **restore test**
     ```bash
-    # Uji restorasi Yoru via yoructl atau Hermes untuk kontrol yang dideteksi drift
+    # Uji restorasi Yoru via yoructl atau yoru-agent untuk kontrol yang dideteksi drift
     ```
 
-13. **Hermes notification test**
+13. **YORU notification test**
     ```bash
     # Verifikasi notifikasi terkirim via Telegram / webhook dari hasil drift detection.
     ```

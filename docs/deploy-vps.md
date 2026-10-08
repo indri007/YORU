@@ -118,7 +118,7 @@ Installernya nanya dua hal: token bot Telegram dan URL dashboard. Boleh
 dikosongin dulu, tinggal Enter — nanti tinggal edit `/etc/yoru/yoru.conf`.
 
 Di akhir dia bakal ngasih peringatan kuning kalau `/opt/yoru/bin/yoru-agent`
-belum ada. Itu **wajar** — itu bagiannya Hermes (Lane 3), belum kepasang.
+belum ada. Itu **wajar** — itu bagiannya yoru-agent (Lane 3), belum kepasang.
 Dispatcher, katalog, sama timernya sendiri udah siap.
 
 ---

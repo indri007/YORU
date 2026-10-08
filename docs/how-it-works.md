@@ -123,18 +123,18 @@ Ada lima, dan tugasnya beda-beda:
 **Bot Telegram / dashboard web.** Tempat pemilik dikabarin dan tempat dia
 mencet setuju atau nggak.
 
-**Hermes.** Otaknya. Ini yang mikir: kontrol mana dulu, port ini wajar apa
+**yoru-agent.** Otaknya. Ini yang mikir: kontrol mana dulu, port ini wajar apa
 nggak, perlu minta izin apa nggak, dan gimana cara ngejelasinnya ke orang
-awam. Hermes yang manggil model AI.
+awam. yoru-agent yang manggil model AI.
 
 **Katalog.** Sepuluh berkas YAML berisi **fakta**: perintah persisnya apa,
-berkasnya di mana, cara ngebalikinnya gimana, apa yang bisa rusak. Hermes
+berkasnya di mana, cara ngebalikinnya gimana, apa yang bisa rusak. yoru-agent
 baca ini, dan **nggak boleh ngarang perintah di luar isinya.** Kalau nggak
 ada di katalog, jawabannya "nggak tahu", bukan nebak.
 
 **yoructl.** Mesin 40 tombol tadi. Satu-satunya jalur ke hak root.
 
-Bedain baik-baik: **Hermes yang mikir, katalog yang nyimpen fakta, yoructl
+Bedain baik-baik: **yoru-agent yang mikir, katalog yang nyimpen fakta, yoructl
 yang bertindak.** Tiga hal berbeda, sengaja dipisah.
 
 ---
@@ -145,7 +145,7 @@ yang bertindak.** Tiga hal berbeda, sengaja dipisah.
 
 **1.** Pemilik pasang Yoru. Dua baris perintah, selesai.
 
-**2.** Hermes minta `yoructl` **periksa** sepuluh kontrol. Ini cuma baca,
+**2.** yoru-agent minta `yoructl` **periksa** sepuluh kontrol. Ini cuma baca,
 nggak ngubah apa pun. Tiap perintah balikin satu baris JSON:
 
 ```json
@@ -159,7 +159,7 @@ Jadi `GAGAL` + `berhasil: true` artinya *"gw berhasil ngecek, dan kontrolnya
 memang lagi mati"*. Kalau perintahnya sendiri yang bermasalah, yang keluar
 `DITOLAK` atau `ERROR` dengan `berhasil: false`.
 
-**3.** Hermes ngerangkum jadi satu laporan, bentuknya udah dikunci di
+**3.** yoru-agent ngerangkum jadi satu laporan, bentuknya udah dikunci di
 `contract/report.md`. Isinya skor, sepuluh kontrol dengan penjelasan bahasa
 manusia, dan daftar mana yang butuh persetujuan.
 
@@ -181,7 +181,7 @@ kalimat kayak gini:
 nunggu pemilik mencet setuju — **satu per satu, bukan sekali setuju untuk
 semua.**
 
-**7.** Buat yang disetujui, Hermes manggil `yoructl <kontrol> terapkan`.
+**7.** Buat yang disetujui, yoru-agent manggil `yoructl <kontrol> terapkan`.
 Sebelum ngubah apa pun, `yoructl` **motret dulu keadaan lama** ke
 `/var/backups/yoru/`, biar ada bahan buat mulihin nanti.
 
@@ -235,7 +235,7 @@ depan: `waktu` dan `pemanggil` (siapa yang manggil sudo). Buat halaman riwayat
 di dashboard, dua kolom itu yang dipakai.
 
 **Laporan** — `/var/lib/yoru/laporan-terakhir.json`. Ini hasil rangkuman
-Hermes, bentuknya sesuai `contract/report.md`. Ini yang dibaca dashboard buat
+yoru-agent, bentuknya sesuai `contract/report.md`. Ini yang dibaca dashboard buat
 nampilin skor, daftar kontrol, dan tombol setuju.
 
 Yang ditampilin di halaman utama dashboard itu **laporan**. Catatan tindakan
@@ -262,15 +262,15 @@ Jangan pernah dibalik arahnya demi kepraktisan.
 Gambaran yang ditulis di grup udah **hampir semuanya benar**. Dua yang perlu
 diluruskan:
 
-### "Memberi akses ke Hermes untuk eksekusi bash, membaca file konfigurasi, write file"
+### "Memberi akses ke yoru-agent untuk eksekusi bash, membaca file konfigurasi, write file"
 
 Ini yang **paling** perlu diluruskan, dan bukan karena salah nangkep — emang
 begitu cara kebanyakan alat lain bekerja.
 
-Hermes **nggak** dikasih akses bash. **Nggak** dikasih akses nulis file.
-Hermes cuma bisa manggil satu program dengan dua argumen.
+yoru-agent **nggak** dikasih akses bash. **Nggak** dikasih akses nulis file.
+yoru-agent cuma bisa manggil satu program dengan dua argumen.
 
-Kalau Hermes dikasih bash, seluruh alasan Yoru boleh dipercaya nyentuh server
+Kalau yoru-agent dikasih bash, seluruh alasan Yoru boleh dipercaya nyentuh server
 orang itu bubar — karena satu baris log yang dirancang jahat langsung jadi
 perintah root. Dengan desain sekarang, skenario terburuknya cuma: agentnya
 ketipu terus mencet salah satu dari 40 tombol yang udah ditulis manusia.
@@ -282,7 +282,7 @@ sudo -u yoru-agent sudo -n /opt/yoru/bin/yoructl K01 periksa   # boleh
 sudo -u yoru-agent sudo -n id                                   # ditolak
 ```
 
-### "Setiap proses yang dijalankan Hermes harus menunggu persetujuan user"
+### "Setiap proses yang dijalankan yoru-agent harus menunggu persetujuan user"
 
 Hampir. Yang nunggu persetujuan cuma yang **BERISIKO** — K01, K02, K04, K05,
 K06. Yang **AMAN** (K03, K07, K08, K09, K10) dikerjain Yoru sendiri.
@@ -291,7 +291,7 @@ Bedanya disengaja. Kalau semuanya butuh persetujuan, pemilik bakal dihujani
 sepuluh pertanyaan di hari pertama, terus mencet setuju semua tanpa baca.
 Persetujuan yang diminta buat segalanya itu sama aja nggak minta persetujuan.
 
-Sisanya — script hardening/audit/rollback, daftar file log, Hermes yang
+Sisanya — script hardening/audit/rollback, daftar file log, yoru-agent yang
 ngejelasin pakai LLM, output masuk log, log diakses lewat API buat dashboard —
 **semuanya persis kayak yang ditulis.**
 
@@ -341,7 +341,7 @@ Makanya `terapkan` **berhenti dan nanya**, bukan nebak:
 
 ```
 periksa   → "port terbuka belum dijawab pemilik: 8888(python3)"
-Hermes    → "Port 8888 kebuka dipakai python3. Itu panel kamu?"
+yoru-agent    → "Port 8888 kebuka dipakai python3. Itu panel kamu?"
 pemilik   → [ Iya, itu panel gw ]
 terapkan  → baru jalan
 ```
@@ -382,7 +382,7 @@ Nggak usah nunggu server siap. Ada dua contoh laporan lengkap di repo:
 `examples/report-watch.json` (server sehat, ada satu perubahan mencurigakan).
 Bentuknya sama persis kayak yang nanti keluar.
 
-**Lane 3 — Hermes.**
+**Lane 3 — yoru-agent.**
 
 - baca konfigurasi dari `/etc/yoru/yoru.conf` (formatnya di
   `examples/yoru.conf.example`, ada contoh parsernya di komentar)
@@ -396,7 +396,7 @@ Bentuknya sama persis kayak yang nanti keluar.
 
 ## 10. Kalau cuma inget satu hal
 
-> Hermes yang mikir. Katalog yang nyimpen fakta. `yoructl` yang bertindak,
+> yoru-agent yang mikir. Katalog yang nyimpen fakta. `yoructl` yang bertindak,
 > dan cuma bisa 40 hal.
 >
 > Yoru nggak pernah nganggap kontrol berhasil cuma karena perintahnya jalan.

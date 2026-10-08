@@ -15,7 +15,7 @@ Jangan langsung dikerjakan.
 |---|---|---|
 | Katalog OS | 10 kontrol, K01–K10 — **sudah selesai** | 1 |
 | Dispatcher | `/opt/yoru/bin/yoructl` + sudoers | 1 |
-| Installer | satu perintah, sudah termasuk Hermes | 1 |
+| Installer | satu perintah, sudah termasuk yoru-agent | 1 |
 | Agent | Siklus Perbaikan dan Siklus Penjagaan | 3 |
 | Eval | minimal 5 kasus + kunci jawaban | 3 |
 | Dashboard | baca laporan JSON, **nempel di 127.0.0.1** | 2 |
@@ -93,7 +93,7 @@ Tulis di sini. Jangan dikerjakan sebelum lomba selesai.
 | Kapan | Apa |
 |---|---|
 | Sabtu 5 Sep sore | Tiap lane punya sesuatu yang **jalan**, sejelek apa pun |
-| Sabtu 5 Sep sore | Kalau Lane 3 belum bisa memanggil Hermes sama sekali, Lane 1 mengambil alih wiring dan Lane 3 pindah ke eval set |
+| Sabtu 5 Sep sore | Kalau Lane 3 belum bisa memanggil yoru-agent sama sekali, Lane 1 mengambil alih wiring dan Lane 3 pindah ke eval set |
 | Minggu 6 Sep | Deploy, digabung |
 
 Batas hari Sabtu itu disepakati sekarang, waktu semua masih santai — bukan

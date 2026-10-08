@@ -82,7 +82,7 @@ flowchart TD
     end
 
     subgraph Layer2 [Layer 2: LLM Deliberation Engine]
-        C --> D[Hermes / yoru-agent Controller]
+        C --> D[yoru-agent Controller]
         D <-->|API Request / Constrained JSON Schema| E[yoru-model-proxy]
         E <--> F[(Primary / Fallback LLM)]
     end

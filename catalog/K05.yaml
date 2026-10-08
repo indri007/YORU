@@ -117,7 +117,7 @@ port_layanan_dinamis:
     jawaban benar adalah bertanya.
   alur_lengkap: >
     periksa melaporkan port yang belum dijawab di field "pesan" ->
-    Hermes bertanya ke pemilik ("port 8888 terbuka dipakai python3, itu panel
+    yoru-agent bertanya ke pemilik ("port 8888 terbuka dipakai python3, itu panel
     kamu?") -> jawaban dicatat -> terapkan baru mau jalan.
     Inilah bagian yang tidak bisa dikerjakan skrip biasa.
   dari_mana_daftar_izinnya:

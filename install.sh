@@ -310,8 +310,8 @@ tulis_konfigurasi() {
     return 0
   fi
 
-  # Kunci API model TIDAK ditanyakan di sini. Yang memanggil model itu Hermes,
-  # dan kuncinya sudah ada di konfigurasi Hermes. Menanyakannya lagi berarti
+  # Kunci API model TIDAK ditanyakan di sini. Yang memanggil model itu yoru-agent,
+  # dan kuncinya sudah ada di konfigurasi yoru-model-proxy. Menanyakannya lagi berarti
   # menyimpan rahasia yang sama di dua tempat.
   printf '\n    Dua pertanyaan, dua-duanya boleh dikosongkan dan diisi belakangan\n'
   printf '    dengan menyunting %s\n\n' "$KONF"
@@ -509,7 +509,7 @@ ${TEBAL}Selesai.${H}
 SELESAI
 
 if [ ! -x "$DIR_BIN/yoru-agent" ]; then
-  printf '  %sBelum selesai betul.%s Agent Hermes belum terpasang di %s/yoru-agent.\n' "$KUNING" "$H" "$DIR_BIN"
+  printf '  %sBelum selesai betul.%s Agent YORU belum terpasang di %s/yoru-agent.\n' "$KUNING" "$H" "$DIR_BIN"
   printf '  Dispatcher, katalog, dan timer sudah siap, tapi belum ada yang memakainya:\n'
   printf '  siklus penjagaan akan berhenti tiap hari sampai agentnya ada.\n\n'
 fi
