@@ -1,10 +1,64 @@
+# Python & Environments
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+web/venv/
+.venv/
+
+# Environment Variables & Secrets (CRITICAL PROTECTION)
 .env
-*.log
-var/
+.env*
+*.env
+*.env.local
+*.env.*.local
+*.key
+*.pem
+*.cert
+*.crt
+*.pfx
+*.p12
+*.token
+kaggle.json
+*.secret
+secrets.toml
+.streamlit/secrets.toml
+
+# Databases & Runtime State
+*.db
+*.sqlite
+*.sqlite3
 web/yoru.db
 web/yoru.db-*
-__pycache__/
+var/
+*.log
+tindakan.log
+
+# Large Datasets & Experiments Cache
+experiments/datasets/
+*.csv.gz
+*.pcap
+*.pcapng
+
+# OS & Editor Artifacts
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Project specific exclusions
 Claude outputs/
 manuscript/
