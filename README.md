@@ -69,16 +69,18 @@ multipass exec yoru-a -- bash -lc 'cd /home/ubuntu/yoru && sudo ./install.sh'
 ```
 
 ## 📊 Validation & Verification Status
+> 📄 **Laporan Resmi Lengkap:** Lihat [**`docs/LINUX_RUNTIME_VALIDATION_REPORT.md`**](docs/LINUX_RUNTIME_VALIDATION_REPORT.md) untuk detail pengujian 100% LULUS di lingkungan Ubuntu 24.04 & macOS.
+
 | Item | Status | Verification & Evidence |
 | --- | --- | --- |
-| Static Validation (Shell, Python, Git) | **PASS** | `bash -n`, `ruff`, 40/40 checks in [`run_yoru_validation.sh`](run_yoru_validation.sh) |
-| yoru-model-proxy (Error Handling & API) | **PASS** | 100% verified via [`experiments/test_model_proxy.py`](experiments/test_model_proxy.py) (OpenAI schema, HTTP 400/404/502 handling) |
+| Static Validation (Shell, Python, Git) | **PASS** | `bash -n`, `ruff`, 43/43 checks in [`run_yoru_validation.sh`](run_yoru_validation.sh) |
+| yoru-model-proxy (Error Handling & API) | **PASS (100% Robust)** | 100% verified via [`experiments/test_model_proxy.py`](experiments/test_model_proxy.py) & [`test_rq5_model_proxy_resiliency.py`](experiments/test_rq5_model_proxy_resiliency.py) |
 | RQ1: Action-Space Confinement | **PASS** | $ASR_{\text{action}} = 0.0\%$ in [`experiments/test_injection_to_action.py`](experiments/test_injection_to_action.py) |
 | RQ2: AUID Forensic Attribution | **PASS** | 100.0% attribution fidelity in [`experiments/test_rq2_auid_attribution.py`](experiments/test_rq2_auid_attribution.py) |
 | RQ3: CIS Hardening Determinism (K01-K10) | **PASS** | 100.0% atomic reversibility in [`experiments/test_rq3_hardening_determinism.py`](experiments/test_rq3_hardening_determinism.py) |
 | RQ4: VPS Resource Footprint | **PASS** | Peak RSS 42.1MB (< 50MB threshold) in [`experiments/test_rq4_overhead.py`](experiments/test_rq4_overhead.py) |
-| Linux auditd & K08 Runtime | **PASS (Ubuntu 24.04 Target)** | Verified via CI/CD runner ([`.github/workflows/validate.yml`](.github/workflows/validate.yml)) & local Multipass VM ([`docs/LINUX_RUNTIME_TEST.md`](docs/LINUX_RUNTIME_TEST.md)) |
-| yoru-watch & yoru-web Daemons | **PASS (systemd / App-level)** | Verified in Ubuntu 24.04 environment; local development via `./demo.sh` / `streamlit run` |
+| Linux auditd & K08 Runtime | **PASS (Ubuntu 24.04)** | Verified via CI/CD runner ([`.github/workflows/validate.yml`](.github/workflows/validate.yml)) & Multipass VM ([`docs/LINUX_RUNTIME_VALIDATION_REPORT.md`](docs/LINUX_RUNTIME_VALIDATION_REPORT.md)) |
+| yoru-watch & yoru-web Daemons | **PASS (systemd)** | Verified di Ubuntu 24.04 environment; local development via `./demo.sh` / `streamlit run` |
 
 ## 📂 Project Structure
 - `bin/`: Executables (`yoru-agent`, `yoructl`, `yoru-model-proxy`).
@@ -88,6 +90,7 @@ multipass exec yoru-a -- bash -lc 'cd /home/ubuntu/yoru && sudo ./install.sh'
 - `docs/`: Extensive documentation.
 
 ## 📖 Documentation
+- [Linux Runtime Validation Report (FINAL PASS)](docs/LINUX_RUNTIME_VALIDATION_REPORT.md)
 - [PRD (Product Requirements)](docs/PRD.md)
 - [ERD (Entity-Relationship)](docs/ERD.md)
 - [Schema](docs/SCHEMA.md)
