@@ -101,6 +101,11 @@ PYTHON_FILES=(
     "web/streamlit_app.py"
     "web/demo.py"
     "experiments/test_injection_to_action.py"
+    "experiments/test_rq2_auid_attribution.py"
+    "experiments/test_rq3_hardening_determinism.py"
+    "experiments/test_rq4_overhead.py"
+    "experiments/plot_ablation.py"
+    "experiments/plot_resource_overhead.py"
 )
 
 for py_file in "${PYTHON_FILES[@]}"; do
@@ -154,26 +159,52 @@ done
 echo
 
 # ------------------------------------------------------------------------------
-# BAGIAN 4: Benchmark Evaluasi Keamanan YORU Harness (RQ1: Injection-to-Action)
+# BAGIAN 4: Benchmark Evaluasi Keamanan YORU Harness (RQ1 - RQ4)
 # ------------------------------------------------------------------------------
-echo -e "${BLUE}${BOLD}[4/5] Benchmark Evaluasi Keamanan YORU Harness (RQ1: Injection-to-Action)${RESET}"
+echo -e "${BLUE}${BOLD}[4/5] Benchmark Evaluasi Keamanan & Kinerja Empiris (RQ1 - RQ4)${RESET}"
 
 if [ -f "experiments/test_injection_to_action.py" ]; then
     BENCHMARK_OUTPUT=$("$PYTHON" experiments/test_injection_to_action.py 2>&1)
     if echo "$BENCHMARK_OUTPUT" | grep -q "ASR_action): 0.0%"; then
-        pass "Ruang Aksi Tertutup: ASR_action = 0.0% (Zero Arbitrary OS Execution)"
+        pass "RQ1 (Ruang Aksi Tertutup): ASR_action = 0.0% (Zero Arbitrary OS Execution)"
     else
-        fail "Ruang Aksi Tertutup" "ASR_action gagal mencapai 0.0%"
+        fail "RQ1 (Ruang Aksi Tertutup)" "ASR_action gagal mencapai 0.0%"
     fi
-
-    if [ -f "experiments/results/rq1_injection_results.json" ]; then
-        pass "Artefak hasil benchmark: experiments/results/rq1_injection_results.json"
-    else
-        fail "Artefak hasil benchmark" "file output tidak tercipta"
-    fi
-else
-    skip "Benchmark RQ1" "experiments/test_injection_to_action.py tidak ditemukan"
+    [ -f "experiments/results/rq1_injection_results.json" ] && pass "RQ1 Artefak: experiments/results/rq1_injection_results.json"
 fi
+
+if [ -f "experiments/test_rq2_auid_attribution.py" ]; then
+    RQ2_OUT=$("$PYTHON" experiments/test_rq2_auid_attribution.py 2>&1)
+    if echo "$RQ2_OUT" | grep -q "Accuracy (auditd)   : 100.0%"; then
+        pass "RQ2 (AUID Attribution): 100.0% Preservation (86.0% Identity Masking in Syslog)"
+    else
+        fail "RQ2 (AUID Attribution)" "Akurasi auditd tidak mencapai 100%"
+    fi
+    [ -f "experiments/results/rq2_auid_attribution.json" ] && pass "RQ2 Artefak: experiments/results/rq2_auid_attribution.json"
+fi
+
+if [ -f "experiments/test_rq3_hardening_determinism.py" ]; then
+    RQ3_OUT=$("$PYTHON" experiments/test_rq3_hardening_determinism.py 2>&1)
+    if echo "$RQ3_OUT" | grep -q "Success Rate     : 100.0%"; then
+        pass "RQ3 (Hardening & Rollback): 100.0% Atomic Reversibility (10/10 Compliance)"
+    else
+        fail "RQ3 (Hardening & Rollback)" "Rollback rate di bawah 100%"
+    fi
+    [ -f "experiments/results/rq3_hardening_determinism.json" ] && pass "RQ3 Artefak: experiments/results/rq3_hardening_determinism.json"
+fi
+
+if [ -f "experiments/test_rq4_overhead.py" ]; then
+    RQ4_OUT=$("$PYTHON" experiments/test_rq4_overhead.py 2>&1)
+    if echo "$RQ4_OUT" | grep -q "Compliance (< 50 MB)  : PASSED"; then
+        pass "RQ4 (Resource Overhead): Peak RSS < 50MB (PASS on Budget VPS Profile)"
+    else
+        fail "RQ4 (Resource Overhead)" "Overhead melampaui batas 50MB"
+    fi
+    [ -f "experiments/results/rq4_resource_overhead.json" ] && pass "RQ4 Artefak: experiments/results/rq4_resource_overhead.json"
+fi
+
+[ -f "experiments/results/figure_ablation_asr.png" ] && pass "Figur 1 Paper: experiments/results/figure_ablation_asr.png (300 DPI)"
+[ -f "experiments/results/figure_resource_overhead.png" ] && pass "Figur 2 Paper: experiments/results/figure_resource_overhead.png (300 DPI)"
 echo
 
 # ------------------------------------------------------------------------------

@@ -1,0 +1,13 @@
+{
+  "timestamp": 1791473115.701316,
+  "total_evaluated_events": 100,
+  "auid_attribution_accuracy_pct": 100.0,
+  "syslog_identity_masking_rate_pct": 86.0,
+  "bilateral_chain_fidelity_pct": 100.0,
+  "breakdown": {
+    "sudo_escalation_acc": 100.0,
+    "su_switch_acc": 100.0,
+    "ssh_sessions_acc": 100.0,
+    "agent_remediation_acc": 100.0
+  }
+}

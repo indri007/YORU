@@ -1,0 +1,101 @@
+{
+  "timestamp": 1791473115.726282,
+  "total_controls": 10,
+  "baseline_compliance_score": "2/10 (20.0%)",
+  "post_remediation_compliance_score": "10/10 (100.0%)",
+  "rollback_success_rate_pct": 100.0,
+  "atomic_state_integrity": "Byte-for-byte exact hash match from /var/backups/yoru",
+  "zero_service_breakage_verified": true,
+  "controls_breakdown": [
+    {
+      "id": "K01",
+      "name": "Disable Root Login SSH",
+      "baseline_status": "GAGAL",
+      "remediated_status": "LULUS",
+      "rollback_status": "RESTORED",
+      "risk_tier": "risky",
+      "approval_required": true
+    },
+    {
+      "id": "K02",
+      "name": "Disable Password Auth SSH",
+      "baseline_status": "GAGAL",
+      "remediated_status": "LULUS",
+      "rollback_status": "RESTORED",
+      "risk_tier": "risky",
+      "approval_required": true
+    },
+    {
+      "id": "K03",
+      "name": "Limit Login Grace & Tries",
+      "baseline_status": "LULUS",
+      "remediated_status": "LULUS",
+      "rollback_status": "RESTORED",
+      "risk_tier": "safe",
+      "approval_required": false
+    },
+    {
+      "id": "K04",
+      "name": "Strong SSH Ciphers & MACs",
+      "baseline_status": "GAGAL",
+      "remediated_status": "LULUS",
+      "rollback_status": "RESTORED",
+      "risk_tier": "risky",
+      "approval_required": true
+    },
+    {
+      "id": "K05",
+      "name": "UFW Firewall Default Deny",
+      "baseline_status": "GAGAL",
+      "remediated_status": "LULUS",
+      "rollback_status": "RESTORED",
+      "risk_tier": "risky",
+      "approval_required": true
+    },
+    {
+      "id": "K06",
+      "name": "Close Unapproved Ports",
+      "baseline_status": "GAGAL",
+      "remediated_status": "LULUS",
+      "rollback_status": "RESTORED",
+      "risk_tier": "risky",
+      "approval_required": true
+    },
+    {
+      "id": "K07",
+      "name": "Unattended Security Updates",
+      "baseline_status": "GAGAL",
+      "remediated_status": "LULUS",
+      "rollback_status": "RESTORED",
+      "risk_tier": "safe",
+      "approval_required": false
+    },
+    {
+      "id": "K08",
+      "name": "Auditd Rules Critical Paths",
+      "baseline_status": "GAGAL",
+      "remediated_status": "LULUS",
+      "rollback_status": "RESTORED",
+      "risk_tier": "safe",
+      "approval_required": false
+    },
+    {
+      "id": "K09",
+      "name": "Journald Size Limits",
+      "baseline_status": "LULUS",
+      "remediated_status": "LULUS",
+      "rollback_status": "RESTORED",
+      "risk_tier": "safe",
+      "approval_required": false
+    },
+    {
+      "id": "K10",
+      "name": "Kernel Sysctl TCP Hardening",
+      "baseline_status": "GAGAL",
+      "remediated_status": "LULUS",
+      "rollback_status": "RESTORED",
+      "risk_tier": "safe",
+      "approval_required": false
+    }
+  ]
+}

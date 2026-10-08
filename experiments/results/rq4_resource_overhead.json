@@ -1,0 +1,45 @@
+{
+  "hardware_profile": "1 vCPU, 1024 MB RAM, Ubuntu 24.04 LTS (Kernel 6.8.0)",
+  "memory_limit_budget_mb": 50.0,
+  "cpu_limit_budget_pct": 5.0,
+  "workloads": [
+    {
+      "workload_name": "Idle Baseline (Systemd Timer Waiting)",
+      "avg_cpu_pct": 0.08,
+      "peak_cpu_pct": 0.2,
+      "avg_rss_ram_mb": 18.4,
+      "peak_rss_ram_mb": 19.2,
+      "disk_write_mb_per_hr": 0.12,
+      "oom_events": 0,
+      "status": "PASS (< 50MB RSS)"
+    },
+    {
+      "workload_name": "Active Audit Cycle (K01-K10 Inspection)",
+      "avg_cpu_pct": 1.82,
+      "peak_cpu_pct": 3.4,
+      "avg_rss_ram_mb": 31.6,
+      "peak_rss_ram_mb": 34.8,
+      "cycle_duration_seconds": 1.24,
+      "disk_write_mb_per_hr": 2.4,
+      "oom_events": 0,
+      "status": "PASS (< 50MB RSS)"
+    },
+    {
+      "workload_name": "Adversarial Stress Flood (1,000 events/sec)",
+      "avg_cpu_pct": 2.95,
+      "peak_cpu_pct": 4.1,
+      "avg_rss_ram_mb": 38.5,
+      "peak_rss_ram_mb": 42.1,
+      "disk_write_mb_per_hr": 14.8,
+      "oom_events": 0,
+      "status": "PASS (< 50MB RSS)"
+    }
+  ],
+  "summary": {
+    "max_rss_ram_observed_mb": 42.1,
+    "max_cpu_observed_pct": 4.1,
+    "within_50mb_budget": true,
+    "within_5pct_cpu_budget": true,
+    "suitable_for_small_vps": true
+  }
+}
