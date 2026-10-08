@@ -69,8 +69,15 @@ def call(url, headers, payload=None):
         req.add_header("Content-Type", "application/json")
     for k, v in headers.items():
         req.add_header(k, v)
-    with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
-        return json.loads(r.read().decode("utf-8", "replace") or "{}")
+    try:
+        with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
+            return json.loads(r.read().decode("utf-8", "replace") or "{}")
+    except urllib.error.HTTPError:
+        raise
+    except urllib.error.URLError as e:
+        raise Upstream(f"Network error: {e.reason}") from e
+    except TimeoutError:
+        raise Upstream(f"Connection timed out after {TIMEOUT}s") from None
 
 
 def to_native(payload):
@@ -95,12 +102,28 @@ def to_native(payload):
 
 def from_native(answer, name):
     """Gemini generateContent reply -> OpenAI chat reply."""
-    first = (answer.get("candidates") or [{}])[0]
-    parts = ((first.get("content") or {}).get("parts") or [])
-    return {"choices": [{"message": {"role": "assistant",
-                                     "content": "".join(p.get("text") or "" for p in parts)},
-                         "finish_reason": first.get("finishReason") or "stop"}],
-            "model": name}
+    candidates = answer.get("candidates") or []
+    feedback = answer.get("promptFeedback") or {}
+    block_reason = feedback.get("blockReason")
+
+    if candidates:
+        first = candidates[0]
+        parts = ((first.get("content") or {}).get("parts") or [])
+        finish = first.get("finishReason") or "stop"
+        text = "".join(p.get("text") or "" for p in parts)
+    else:
+        finish = block_reason or "stop"
+        text = ""
+
+    return {
+        "choices": [
+            {
+                "message": {"role": "assistant", "content": text},
+                "finish_reason": finish,
+            }
+        ],
+        "model": name,
+    }
 
 
 def text_of(reply):
@@ -135,12 +158,19 @@ def attempt(how, name, payload):
             said = describe(e)
             if e.code == 400 and "reasoning" in said.lower():
                 body.pop("reasoning_effort", None)
-                reply = call(url, head, body)
+                try:
+                    reply = call(url, head, body)
+                except urllib.error.HTTPError as e2:
+                    raise Upstream(describe(e2)) from None
             else:
                 raise Upstream(said) from None
     else:
-        reply = from_native(call(f"{BASE}/v1beta/models/{name}:generateContent",
-                                 {"x-goog-api-key": API_KEY}, to_native(body)), name)
+        url = f"{BASE}/v1beta/models/{name}:generateContent"
+        head = {"x-goog-api-key": API_KEY}
+        try:
+            reply = from_native(call(url, head, to_native(body)), name)
+        except urllib.error.HTTPError as e:
+            raise Upstream(describe(e)) from None
 
     text, reason = text_of(reply)
     if not text:
@@ -152,7 +182,10 @@ def describe(e):
     if isinstance(e, (Upstream, NoText)):
         return str(e)
     if isinstance(e, urllib.error.HTTPError):
-        raw = e.read()[:900].decode("utf-8", "replace")
+        try:
+            raw = e.read()[:900].decode("utf-8", "replace")
+        except (OSError, ValueError):
+            raw = ""
         try:
             body = json.loads(raw)
             if isinstance(body, list):
@@ -160,7 +193,10 @@ def describe(e):
             text = (body.get("error") or {}).get("message") or raw
         except ValueError:
             text = raw
-        return f"HTTP {e.code}: {' '.join(text.split())}"
+        clean_text = " ".join(text.split()) if text else str(e)
+        return f"HTTP {e.code}: {clean_text}"
+    if isinstance(e, urllib.error.URLError):
+        return f"URLError: {e.reason}"
     return f"{type(e).__name__}: {e}"
 
 
@@ -226,31 +262,49 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(raw)
 
+    def reply_error(self, status, message, error_type="invalid_request_error", details=None):
+        payload = {
+            "error": {
+                "message": message,
+                "type": error_type,
+                "code": status,
+            }
+        }
+        if details:
+            payload["error"]["details"] = details
+        self.reply(status, payload)
+
     def do_GET(self):
         if self.path.rstrip("/") == "/health":
             self.reply(200, {"status": "ok", "model": model, "way": way})
         else:
-            self.reply(404, {"error": "only /v1/chat/completions"})
+            self.reply_error(404, "only /v1/chat/completions and /health are supported", "invalid_request_error")
 
     def do_POST(self):
         if self.path.rstrip("/") != "/v1/chat/completions":
-            self.reply(404, {"error": "only /v1/chat/completions"})
+            self.reply_error(404, "only /v1/chat/completions is supported", "invalid_request_error")
             return
         length = int(self.headers.get("Content-Length") or 0)
         if length <= 0 or length > MAX_BODY:
-            self.reply(400, {"error": "request body has an impossible size"})
+            self.reply_error(400, "request body has an impossible size (must be 1..256KB)", "invalid_request_error")
             return
         try:
             payload = json.loads(self.rfile.read(length))
         except (ValueError, UnicodeDecodeError):
-            self.reply(400, {"error": "not JSON"})
+            self.reply_error(400, "request body is not valid JSON", "invalid_request_error")
             return
 
         answer, notes = ask(payload)
         if answer is None:
             for how, name, why in notes:
                 sys.stderr.write(f"refused [{how} {name}]: {why}\n")
-            self.reply(502, {"error": "gemini refused - see journalctl -u yoru-model"})
+            details = "; ".join(f"[{how} {name}]: {why}" for how, name, why in notes) if notes else "no candidates responded"
+            self.reply_error(
+                502,
+                f"Gemini upstream refused: {details}",
+                error_type="upstream_error",
+                details=[{"way": h, "model": m, "reason": w} for h, m, w in notes],
+            )
             return
         self.reply(200, answer)
 

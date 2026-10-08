@@ -1,0 +1,46 @@
+{
+  "timestamp": 1791476671.898279,
+  "benchmark": "RQ5_MODEL_PROXY_RESILIENCY",
+  "total_scenarios": 6,
+  "passed_scenarios": 6,
+  "success_rate_pct": 100.0,
+  "status": "PASS",
+  "trials": [
+    {
+      "scenario": "Reasoning Budget Exhaustion / Empty Text",
+      "condition": "finish_reason='MAX_TOKENS', content=''",
+      "handled_gracefully": true,
+      "detail": "Parsed: text='', reason=MAX_TOKENS"
+    },
+    {
+      "scenario": "Safety Filter / Blocked Prompt",
+      "condition": "promptFeedback.blockReason='SAFETY'",
+      "handled_gracefully": true,
+      "detail": "Safe translation without IndexError: SAFETY"
+    },
+    {
+      "scenario": "HTTP 429 Quota Exhaustion Parsing",
+      "condition": "HTTP 429 with JSON body",
+      "handled_gracefully": true,
+      "detail": "MockHTTPError: (429, 'Resource exhausted (quota exceeded)')"
+    },
+    {
+      "scenario": "Candidate Model Failover List",
+      "condition": "Walk candidate list on 404/429",
+      "handled_gracefully": true,
+      "detail": "Ranked candidates: ['gemini-flash-latest']"
+    },
+    {
+      "scenario": "Network Drop / Connection Refusal",
+      "condition": "urllib.error.URLError",
+      "handled_gracefully": true,
+      "detail": "URLError: Connection refused by peer"
+    },
+    {
+      "scenario": "OpenAI-Compatible 502 Structured Error",
+      "condition": "All upstreams refused with audit trail",
+      "handled_gracefully": true,
+      "detail": "Standard JSON error with multi-candidate trace"
+    }
+  ]
+}

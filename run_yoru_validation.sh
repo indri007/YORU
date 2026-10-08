@@ -104,6 +104,8 @@ PYTHON_FILES=(
     "experiments/test_rq2_auid_attribution.py"
     "experiments/test_rq3_hardening_determinism.py"
     "experiments/test_rq4_overhead.py"
+    "experiments/test_model_proxy.py"
+    "experiments/test_rq5_model_proxy_resiliency.py"
     "experiments/plot_ablation.py"
     "experiments/plot_resource_overhead.py"
 )
@@ -201,6 +203,25 @@ if [ -f "experiments/test_rq4_overhead.py" ]; then
         fail "RQ4 (Resource Overhead)" "Overhead melampaui batas 50MB"
     fi
     [ -f "experiments/results/rq4_resource_overhead.json" ] && pass "RQ4 Artefak: experiments/results/rq4_resource_overhead.json"
+fi
+
+if [ -f "experiments/test_model_proxy.py" ]; then
+    PROXY_OUT=$("$PYTHON" experiments/test_model_proxy.py 2>&1)
+    if echo "$PROXY_OUT" | grep -q "ALL PROXY ERROR-HANDLING TESTS PASSED"; then
+        pass "yoru-model-proxy: 100% Error Handling & Upstream Contracts (OpenAI/Gemini)"
+    else
+        fail "yoru-model-proxy" "Error handling test suite gagal"
+    fi
+fi
+
+if [ -f "experiments/test_rq5_model_proxy_resiliency.py" ]; then
+    RQ5_OUT=$("$PYTHON" experiments/test_rq5_model_proxy_resiliency.py 2>&1)
+    if echo "$RQ5_OUT" | grep -q "100.0% (6/6 LULUS)"; then
+        pass "RQ5 (Proxy Resiliency): 100.0% Error Handling & Safety Failover"
+    else
+        fail "RQ5 (Proxy Resiliency)" "Benchmark kegagalan failover"
+    fi
+    [ -f "experiments/results/rq5_model_proxy_resiliency.json" ] && pass "RQ5 Artefak: experiments/results/rq5_model_proxy_resiliency.json"
 fi
 
 [ -f "experiments/results/figure_ablation_asr.png" ] && pass "Figur 1 Paper: experiments/results/figure_ablation_asr.png (300 DPI)"
