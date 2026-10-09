@@ -680,6 +680,12 @@ with tab_graphs:
             st.metric("Total Nodes / Vertices", len(graph_data["nodes"]))
             st.metric("Total Edges / Relationships", len(graph_data["edges"]))
 
+        if selected_id == 15:
+            html_file = ASSETS_DIR / "graph15-closed-loop.html"
+            if html_file.exists():
+                st.markdown("#### 🔄 Master Closed-Loop Architecture Diagram")
+                st.components.v1.html(html_file.read_text(encoding="utf-8"), height=640, scrolling=False)
+
         # Render Interactive Plotly Network Graph
         st.plotly_chart(create_network_plot(graph_data), use_container_width=True)
 

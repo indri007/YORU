@@ -100,6 +100,14 @@ flowchart LR
     E -->|Closed-Loop Audit Hook auid=1001| A
 ```
 
+<p align="center">
+  <img alt="YORU Closed-Loop Architecture Graph #15" src="assets/graph15-closed-loop.png" width="95%">
+  <br>
+  <em>Graph #15: Master Closed-Loop Security Topology (Log &rarr; LLM &rarr; Gate &rarr; Action &rarr; Audit)</em>
+  <br>
+  <a href="assets/graph15-closed-loop.svg">Vector SVG</a> &bull; <a href="assets/graph15-closed-loop.html">Interactive HTML</a>
+</p>
+
 ## 🚀 Quick Start
 ### Prerequisites
 - Ubuntu 24.04
