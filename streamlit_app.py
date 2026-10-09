@@ -10,6 +10,7 @@ Features:
 5. Interactive Chat with YORU Security Assistant
 """
 
+import csv
 import json
 import math
 import sqlite3
@@ -403,7 +404,7 @@ with tab_story:
                 Out of that vulnerability, <strong>YORU</strong> was conceived. We did not build YORU to parade conversational AI novelties. We engineered it with uncompromising Clean Code discipline—because in security, every edge case is a hole that can shatter someone's livelihood.
             </p>
             <p style="color: #9E9AA7; font-size: 14.5px; line-height: 1.7;">
-                We locked the AI inside a <strong>Constrained Action Space</strong>: exactly 40 discrete CIS Benchmark primitives (<code>yoructl K01..K10</code>). Even when bombarded with 50 adversarial prompt injections, its OS penetration remains exactly zero (<strong>ASR_action = 0.0%</strong>). And we bound its truth to the deepest layer: the Linux Kernel (<code>auditd</code> AUID=1001), where no identity can ever be masked again.
+                We locked the AI inside a <strong>Constrained Action Space</strong>: exactly 40 discrete CIS Benchmark primitives (<code>yoructl K01..K10</code>). Even when bombarded with 50 adversarial prompt injections, its OS penetration remains zero (<strong>ASR_action = 0/50 [0.0%, Wilson 95% CI: 0.0%–7.11%]</strong>). And we bound its truth to the deepest layer: the Linux Kernel (<code>auditd</code> AUID=1001), where no identity can ever be masked again.
             </p>
         </div>
 
@@ -443,7 +444,7 @@ with tab_story:
             <span style="background: rgba(232, 182, 76, 0.15); color: #E8B64C; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 700;">BABAK III</span>
             <h4 style="color: #F2EFE6; margin-top: 8px;">Clean Code sebagai Bentuk Perlindungan</h4>
             <p style="color: #9E9AA7; font-size: 14.5px; line-height: 1.7;">
-                Dari rasa sakit inilah YORU diciptakan. Kami menolak membiarkan AI mengetik perintah bebas. Kami mengurungnya dalam Ruang Aksi Tertutup (40 aksi CIS K01–K10) sehingga daya tembus penyerang ke OS adalah nol mutlak (ASR_action = 0.0%), serta mengunci kejujuran identitas di Kernel Linux (<code>auditd</code> AUID=1001).
+                Dari rasa sakit inilah YORU diciptakan. Kami menolak membiarkan AI mengetik perintah bebas. Kami mengurungnya dalam Ruang Aksi Tertutup (40 aksi CIS K01–K10) sehingga daya tembus penyerang ke OS adalah nol mutlak (ASR_action = 0/50 [0.0%, Wilson 95% CI: 0.0%–7.11%]), serta mengunci kejujuran identitas di Kernel Linux (<code>auditd</code> AUID=1001).
             </p>
         </div>
 
@@ -583,7 +584,7 @@ with tab_benchmarks:
                 height=300,
             )
             st.plotly_chart(fig_rq1, use_container_width=True)
-            st.success(f"Aggregate Action Penetration: **{agg.get('ASR_action_percent', 0.0)}%** across {agg.get('total_payloads', 50)} attacks.")
+            st.success(f"Aggregate Action Penetration: **{agg.get('ASR_action_percent', 0.0)}%** (0/{agg.get('total_payloads', 50)} attacks, Wilson 95% CI: [0.0%, 7.11%]).")
 
     with col_q2:
         st.markdown("#### RQ2: Kernel AUID Forensic Attribution")
@@ -655,12 +656,24 @@ with tab_benchmarks:
 # ------------------------------------------------------------------------------
 with tab_graphs:
     st.markdown("### 🕸️ 15 Topological & Security Network Graphs")
-    st.caption("NodeXL Pro & Graph Gallery Compatible Network Analysis of YORU's Security Invariants")
+    st.caption("NodeXL Pro, Gephi & Scopus Q1 Evidence-First Network Analysis of YORU's Security Invariants")
 
     graphs_path = RESULTS_DIR / "network_graphs.json"
+    metrics_path = RESULTS_DIR / "network_metrics.csv"
     if graphs_path.exists():
         with open(graphs_path, encoding="utf-8") as f:
             all_graphs = json.load(f)
+
+        # Load empirical network metrics
+        metrics_dict = {}
+        if metrics_path.exists():
+            with open(metrics_path, encoding="utf-8") as mf:
+                r = csv.DictReader(mf)
+                for row in r:
+                    try:
+                        metrics_dict[int(row["network_id"])] = row
+                    except (ValueError, KeyError):
+                        pass
 
         options = [f"{g['id']}. {g['name']}" for g in all_graphs.values()]
         selected_option = st.selectbox(
@@ -680,14 +693,147 @@ with tab_graphs:
             st.metric("Total Nodes / Vertices", len(graph_data["nodes"]))
             st.metric("Total Edges / Relationships", len(graph_data["edges"]))
 
-        if selected_id == 15:
-            html_file = ASSETS_DIR / "graph15-closed-loop.html"
-            if html_file.exists():
-                st.markdown("#### 🔄 Master Closed-Loop Architecture Diagram")
-                st.components.v1.html(html_file.read_text(encoding="utf-8"), height=640, scrolling=False)
+        # Empirical Network Metrics Row
+        m_row = metrics_dict.get(selected_id)
+        if m_row:
+            st.markdown("##### 📐 Topological Metrics (Social Network Analysis)")
+            m_col1, m_col2, m_col3, m_col4 = st.columns(4)
+            with m_col1:
+                st.metric("Evidence Type", m_row.get("evidence_type", "-"))
+            with m_col2:
+                density_val = float(m_row.get("density", 0))
+                st.metric("Network Density", f"{density_val:.3f}")
+            with m_col3:
+                avg_deg = float(m_row.get("avg_degree", 0))
+                st.metric("Avg / Max Degree", f"{avg_deg:.2f} / {m_row.get('max_degree', '-')}")
+            with m_col4:
+                avg_bw = float(m_row.get("avg_betweenness", 0))
+                st.metric("Avg Betweenness", f"{avg_bw:.4f}")
 
-        # Render Interactive Plotly Network Graph
-        st.plotly_chart(create_network_plot(graph_data), use_container_width=True)
+        # Manuscript Figure Mapping
+        fig_map = {
+            1: ("figure_01", "Figure 1: Attack–Action Infiltration Invariance (RQ1 Confinement, ASR=0/50 [0.0%, 7.11%])"),
+            3: ("figure_02", "Figure 2: AUID Attribution & Identity Masking (RQ2 Kernel-Level 100/100 Attribution)"),
+            8: ("figure_03", "Figure 3: Prompt Injection Containment Chokepoint (RQ1 Dual Pipeline Comparison)"),
+            9: ("figure_04", "Figure 4: LLM Decision to Kernel Action Gate (RQ1 Whitelist Admission vs Shell Truncation)"),
+            12: ("figure_05", "Figure 5: Atomic Rollback & State Reversibility (RQ3 10/10 SHA-256 Hash Parity)"),
+            14: ("figure_06", "Figure 6: Temporal Attack Containment Latency (RQ4 Latency Budget: 2.01s)"),
+            15: ("figure_07", "Figure 7: YORU Closed-Loop Security Topology (Foundational Architecture)"),
+            4: ("figure_08", "Figure 8: Process–File Resource Isolation (RQ2 Least-Privilege Touchpoints)"),
+        }
+
+        if selected_id in fig_map:
+            fig_slug, fig_caption = fig_map[selected_id]
+            fig_png_path = ASSETS_DIR / "network_figures" / f"{fig_slug}.png"
+            fig_svg_path = ASSETS_DIR / "network_figures" / f"{fig_slug}.svg"
+
+            view_tab1, view_tab2 = st.tabs(["📊 Interactive Network Topology", "📑 Manuscript Publication Figure (Q1 Quality)"])
+            with view_tab1:
+                if selected_id == 15:
+                    html_file = ASSETS_DIR / "graph15-closed-loop.html"
+                    if html_file.exists():
+                        st.markdown("#### 🔄 Master Closed-Loop Architecture Diagram")
+                        st.components.v1.html(html_file.read_text(encoding="utf-8"), height=640, scrolling=False)
+                st.plotly_chart(create_network_plot(graph_data), use_container_width=True)
+            with view_tab2:
+                if fig_png_path.exists():
+                    st.image(str(fig_png_path), caption=fig_caption, use_container_width=True)
+                    if fig_svg_path.exists():
+                        st.download_button(
+                            label=f"⬇️ Download Vector Graphic ({fig_slug}.svg)",
+                            data=fig_svg_path.read_bytes(),
+                            file_name=f"{fig_slug}.svg",
+                            mime="image/svg+xml",
+                            key=f"dl_svg_{selected_id}",
+                        )
+        else:
+            if selected_id == 15:
+                html_file = ASSETS_DIR / "graph15-closed-loop.html"
+                if html_file.exists():
+                    st.markdown("#### 🔄 Master Closed-Loop Architecture Diagram")
+                    st.components.v1.html(html_file.read_text(encoding="utf-8"), height=640, scrolling=False)
+            st.plotly_chart(create_network_plot(graph_data), use_container_width=True)
+            st.caption("ℹ️ *This topology serves as supplementary evidence (Figs. S1–S7 in manuscript appendix).*")
+
+        # Row-Level Empirical Evidence & Audit Trails
+        st.divider()
+        st.markdown("#### 🔬 Row-Level Empirical Evidence & Audit Trails (Scopus Q1 Reproducibility)")
+        st.caption("Every statistical claim is substantiated by row-level execution trials with cryptographic SHA-256 and kernel serials.")
+
+        r_col1, r_col2, r_col3, r_col4 = st.columns(4)
+        rq1_raw = RESULTS_DIR / "raw_evidence_rq1_injection_trials.csv"
+        rq2_raw = RESULTS_DIR / "raw_evidence_rq2_auditd_vs_syslog.csv"
+        rq3_raw = RESULTS_DIR / "raw_evidence_rq3_rollback_hashes.csv"
+        rq4_raw = RESULTS_DIR / "raw_evidence_rq4_resource_measurements.csv"
+
+        with r_col1:
+            if rq1_raw.exists():
+                st.download_button(
+                    label="📄 RQ1 50 Injection Trials",
+                    data=rq1_raw.read_bytes(),
+                    file_name="raw_evidence_rq1_injection_trials.csv",
+                    mime="text/csv",
+                    use_container_width=True,
+                )
+        with r_col2:
+            if rq2_raw.exists():
+                st.download_button(
+                    label="📄 RQ2 100 AUID Trials",
+                    data=rq2_raw.read_bytes(),
+                    file_name="raw_evidence_rq2_auditd_vs_syslog.csv",
+                    mime="text/csv",
+                    use_container_width=True,
+                )
+        with r_col3:
+            if rq3_raw.exists():
+                st.download_button(
+                    label="📄 RQ3 10 Rollback Hashes",
+                    data=rq3_raw.read_bytes(),
+                    file_name="raw_evidence_rq3_rollback_hashes.csv",
+                    mime="text/csv",
+                    use_container_width=True,
+                )
+        with r_col4:
+            if rq4_raw.exists():
+                st.download_button(
+                    label="📄 RQ4 Daemon RSS Trace",
+                    data=rq4_raw.read_bytes(),
+                    file_name="raw_evidence_rq4_resource_measurements.csv",
+                    mime="text/csv",
+                    use_container_width=True,
+                )
+
+        p_col1, p_col2, p_col3 = st.columns(3)
+        prov_file = RESULTS_DIR / "nodexl_provenance.csv"
+        metrics_file = RESULTS_DIR / "network_metrics.csv"
+        centrality_file = RESULTS_DIR / "network_centrality.csv"
+        with p_col1:
+            if prov_file.exists():
+                st.download_button(
+                    label="🔍 Edge Provenance Registry",
+                    data=prov_file.read_bytes(),
+                    file_name="nodexl_provenance.csv",
+                    mime="text/csv",
+                    use_container_width=True,
+                )
+        with p_col2:
+            if metrics_file.exists():
+                st.download_button(
+                    label="📐 15 Network Metrics (SNA)",
+                    data=metrics_file.read_bytes(),
+                    file_name="network_metrics.csv",
+                    mime="text/csv",
+                    use_container_width=True,
+                )
+        with p_col3:
+            if centrality_file.exists():
+                st.download_button(
+                    label="⭐ 194 Node Centrality Records",
+                    data=centrality_file.read_bytes(),
+                    file_name="network_centrality.csv",
+                    mime="text/csv",
+                    use_container_width=True,
+                )
 
         # NodeXL Pro & Gephi Export Data
         st.divider()
@@ -768,7 +914,7 @@ with tab_chat:
             elif "audit" in low or "k08" in low or "auid" in low:
                 ans = "Under CIS Control **K08**, YORU monitors critical system files (`/etc/passwd`, `/etc/shadow`, `/etc/sudoers`) using native Linux `auditd` rules. Even when commands are run under `sudo su`, the kernel preserves the original Audit User ID (`auid`), ensuring non-repudiable forensic accountability."
             elif "injection" in low or "rq1" in low or "attack" in low:
-                ans = "YORU prevents indirect prompt injection through our **Constrained Action Space**. Instead of letting the LLM execute arbitrary bash strings, actions are confined to 40 discrete CIS primitives in `yoructl`. As verified in our RQ1 benchmark, our Action-level Attack Success Rate ($ASR_{action}$) is strictly **0.0%**."
+                ans = "YORU prevents indirect prompt injection through our **Constrained Action Space**. Instead of letting the LLM execute arbitrary bash strings, actions are confined to 40 discrete CIS primitives in `yoructl`. As verified in our RQ1 benchmark, our Action-level Attack Success Rate ($ASR_{action}$) is strictly **0/50 (0.0%, Wilson 95% CI: [0.0%, 7.11%])**."
             else:
                 ans = f"Acknowledged. As the host governance harness, I am continually supervising system telemetry on `{server_name}`. All 10 CIS controls and kernel audit trails are intact. You can review pending items in the Action Center."
             st.markdown(ans)

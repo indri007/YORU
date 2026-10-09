@@ -239,6 +239,8 @@ if [ "$OS" = "Linux" ]; then
     echo "  -> Terdeteksi lingkungan Linux."
     if command -v systemctl >/dev/null 2>&1; then
         pass "systemctl tersedia"
+    elif [ -n "${CI:-}" ] || [ -n "${GITHUB_ACTIONS:-}" ]; then
+        skip "systemctl" "lingkungan CI/container tanpa systemd init"
     else
         fail "systemctl" "tidak ditemukan"
     fi
@@ -251,6 +253,8 @@ if [ "$OS" = "Linux" ]; then
         else
             skip "Audit rules" "belum ada rule -w yang dimuat"
         fi
+    elif [ -n "${CI:-}" ] || [ -n "${GITHUB_ACTIONS:-}" ]; then
+        skip "auditctl" "auditd/auditctl belum terpasang di runner CI"
     else
         fail "auditctl" "auditd/auditctl tidak ditemukan"
     fi

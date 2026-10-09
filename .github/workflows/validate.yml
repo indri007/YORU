@@ -15,12 +15,19 @@ jobs:
         with:
           python-version: "3.12"
           cache: "pip"
-          cache-dependency-path: "web/requirements.txt"
+          cache-dependency-path: |
+            requirements.txt
+            web/requirements.txt
 
-      - name: Install Dependencies
+      - name: Install System Packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y auditd auditd-plugins
+
+      - name: Install Python Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install matplotlib numpy
+          if [ -f "requirements.txt" ]; then pip install -r requirements.txt; fi
           if [ -f "web/requirements.txt" ]; then pip install -r web/requirements.txt; fi
 
       - name: Run Core Validation Suite
@@ -39,6 +46,11 @@ jobs:
         run: |
           python experiments/plot_ablation.py
           python experiments/plot_resource_overhead.py
+
+      - name: Run Scopus Q1 Scientific Audit Gate
+        run: |
+          chmod +x experiments/run_scientific_audit.sh
+          bash experiments/run_scientific_audit.sh
 
       - name: Archive Research Benchmark Artifacts
         uses: actions/upload-artifact@v4

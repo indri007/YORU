@@ -51,7 +51,7 @@ done
 
 echo ""
 echo "[4/12] Empirical edge integrity"
-if /usr/bin/python3 experiments/audit_gate.py 4; then
+if python3 experiments/audit_gate.py 4; then
   :
 else
   FAIL=1
@@ -59,7 +59,7 @@ fi
 
 echo ""
 echo "[5/12] Network coverage"
-if /usr/bin/python3 experiments/audit_gate.py 5; then
+if python3 experiments/audit_gate.py 5; then
   :
 else
   FAIL=1
@@ -67,7 +67,7 @@ fi
 
 echo ""
 echo "[6/12] Metrics sanity"
-if /usr/bin/python3 experiments/audit_gate.py 6; then
+if python3 experiments/audit_gate.py 6; then
   :
 else
   FAIL=1
@@ -75,7 +75,7 @@ fi
 
 echo ""
 echo "[7/12] Centrality sanity"
-if /usr/bin/python3 experiments/audit_gate.py 7; then
+if python3 experiments/audit_gate.py 7; then
   :
 else
   FAIL=1
