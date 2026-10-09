@@ -108,6 +108,30 @@ flowchart LR
   <a href="assets/graph15-closed-loop.svg">Vector SVG</a> &bull; <a href="assets/graph15-closed-loop.html">Interactive HTML</a>
 </p>
 
+## 🕸️ 15 Security Topology & NodeXL Analysis Networks
+
+To empirically analyze the security guarantees, attack propagation, and kernel-level causality of YORU, the framework models its invariants across **15 distinct topological network graphs** compatible with **NodeXL Pro**, Gephi, and the interactive Streamlit dashboard:
+
+| # | Graph / Analisis | Node | Edge | Apa yang bisa ditemukan |
+|---|---|---|---|---|
+| **1** | **Attack–Action Network** | Attack vector, action | attack → action | Apakah prompt injection dapat mencapai aksi OS ($ASR_{\text{action}} = 0.0\%$) |
+| **2** | **Audit Event Network** | AUID, process, event | actor → event | Siapa melakukan perubahan sistem |
+| **3** | **AUID Attribution Graph** | AUID/user/process | AUID → process | Akurasi atribusi YORU vs attacker (100% Preservation) |
+| **4** | **Process–File Network** | Process, file | process → file | File sensitif apa yang disentuh proses |
+| **5** | **Process–Syscall Network** | Process, syscall | process → syscall | Pola syscall berisiko |
+| **6** | **User–Action Network** | User/AUID, YORU action | user → action | Distribusi tindakan berdasarkan identitas |
+| **7** | **Attack Vector Similarity** | Injection vector | similarity edge | Cluster serangan yang memiliki pola sama |
+| **8** | **Injection Propagation Graph** | Log → LLM → decision → action | stage → stage | Seberapa jauh injection merambat |
+| **9** | **LLM Decision–Action Graph** | LLM decision, catalog action | decision → action | Apakah keputusan LLM selalu terbatasi katalog |
+| **10** | **CIS Control Dependency Graph** | K01–K10 | dependency | Kontrol CIS mana yang saling bergantung |
+| **11** | **Security Drift Network** | Config, event, control | drift → control | Konfigurasi mana yang paling sering berubah |
+| **12** | **Rollback Network** | Change, backup, restore | change → backup → restore | Keberhasilan recovery (100% Atomic Reversibility) |
+| **13** | **Privilege Boundary Graph** | user → yoructl → root action | transition | Titik perpindahan privilege |
+| **14** | **Temporal Attack Graph** | event + timestamp | event_t → event_t+1 | Urutan serangan sebelum mitigasi |
+| **15** | **YORU Closed-Loop Graph** | Log → LLM → Gate → Action → Audit | directed edges | **Graph utama arsitektur keamanan YORU** |
+
+> 📥 **NodeXL Pro & Gephi Datasets:** Ekspor dataset relasi tersedia di [`nodexl_edges.csv`](experiments/results/nodexl_edges.csv) dan [`nodexl_vertices.csv`](experiments/results/nodexl_vertices.csv), siap diimpor ke NodeXL Graph Gallery untuk analisis SNA tingkat lanjut.
+
 ## 🚀 Quick Start
 ### Prerequisites
 - Ubuntu 24.04
