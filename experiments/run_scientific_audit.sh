@@ -11,6 +11,16 @@ echo "============================================================"
 echo "        YORU FINAL SCIENTIFIC + SECURITY AUDIT"
 echo "============================================================"
 
+if [ -n "${PYTHON_BIN:-}" ]; then
+  :
+elif python3 -c 'import sys; sys.exit(0)' >/dev/null 2>&1; then
+  PYTHON_BIN="python3"
+elif [ -x "/usr/bin/python3" ]; then
+  PYTHON_BIN="/usr/bin/python3"
+else
+  PYTHON_BIN="python3"
+fi
+
 echo ""
 echo "[1/12] Repository status"
 export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_SYSTEM=/dev/null
@@ -51,7 +61,7 @@ done
 
 echo ""
 echo "[4/12] Empirical edge integrity"
-if python3 experiments/audit_gate.py 4; then
+if "$PYTHON_BIN" experiments/audit_gate.py 4; then
   :
 else
   FAIL=1
@@ -59,7 +69,7 @@ fi
 
 echo ""
 echo "[5/12] Network coverage"
-if python3 experiments/audit_gate.py 5; then
+if "$PYTHON_BIN" experiments/audit_gate.py 5; then
   :
 else
   FAIL=1
@@ -67,7 +77,7 @@ fi
 
 echo ""
 echo "[6/12] Metrics sanity"
-if python3 experiments/audit_gate.py 6; then
+if "$PYTHON_BIN" experiments/audit_gate.py 6; then
   :
 else
   FAIL=1
@@ -75,7 +85,7 @@ fi
 
 echo ""
 echo "[7/12] Centrality sanity"
-if python3 experiments/audit_gate.py 7; then
+if "$PYTHON_BIN" experiments/audit_gate.py 7; then
   :
 else
   FAIL=1
