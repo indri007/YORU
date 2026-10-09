@@ -1,5 +1,5 @@
 <p align="center">
-  <img alt="YORU 3D AI Night Guardian Mascot" src="./assets/yoru-3d-mascot.svg" width="100%">
+  <img alt="YORU 3D AI Night Guardian Mascot" src="assets/yoru-3d-mascot.png" width="100%">
 </p>
 
 # YORU: Linux Security Auditing & Forensics
