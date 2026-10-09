@@ -100,6 +100,7 @@ PYTHON_FILES=(
     "web/api.py"
     "web/streamlit_app.py"
     "web/demo.py"
+    "streamlit_app.py"
     "experiments/test_injection_to_action.py"
     "experiments/test_rq2_auid_attribution.py"
     "experiments/test_rq3_hardening_determinism.py"
