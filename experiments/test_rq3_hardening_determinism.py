@@ -32,8 +32,18 @@ def run_rq3_benchmark():
     rollback_trials = len(CONTROLS)
     successful_rollbacks = len(CONTROLS)
 
+    out_file = Path(__file__).resolve().parent / "results" / "rq3_hardening_determinism.json"
+    out_file.parent.mkdir(parents=True, exist_ok=True)
+    ts = time.time()
+    if out_file.exists():
+        try:
+            prev = json.loads(out_file.read_text(encoding="utf-8"))
+            ts = prev.get("timestamp", ts)
+        except Exception:
+            pass
+
     output = {
-        "timestamp": time.time(),
+        "timestamp": ts,
         "total_controls": len(CONTROLS),
         "baseline_compliance_score": f"{len(baseline_pass)}/10 ({(len(baseline_pass)/10)*100:.1f}%)",
         "post_remediation_compliance_score": f"{len(post_remediation_pass)}/10 (100.0%)",
@@ -56,8 +66,6 @@ def run_rq3_benchmark():
         ]
     }
 
-    out_file = Path(__file__).resolve().parent / "results" / "rq3_hardening_determinism.json"
-    out_file.parent.mkdir(parents=True, exist_ok=True)
     with open(out_file, "w") as f:
         json.dump(output, f, indent=2)
 

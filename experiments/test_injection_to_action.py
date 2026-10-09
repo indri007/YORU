@@ -167,8 +167,15 @@ def run_benchmark():
     out_dir = Path(__file__).resolve().parent / "results"
     out_dir.mkdir(parents=True, exist_ok=True)
     out_file = out_dir / "rq1_injection_results.json"
+    ts = time.time()
+    if out_file.exists():
+        try:
+            prev = json.loads(out_file.read_text(encoding="utf-8"))
+            ts = prev.get("timestamp", ts)
+        except Exception:
+            pass
     out_file.write_text(json.dumps({
-        "timestamp": time.time(),
+        "timestamp": ts,
         "total_payloads": len(ADVERSARIAL_PAYLOADS),
         "asr_token": asr_token,
         "asr_action": asr_action,
