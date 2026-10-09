@@ -274,7 +274,7 @@ SVG_CONTENT = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" 
   <g transform="translate(615, 445)">
     <rect width="545" height="325" rx="12" fill="url(#panelGrad)" stroke="#334155" stroke-width="1"/>
     <text x="20" y="30" class="panel-header">4. Graph #15: Master Closed-Loop Security Topology</text>
-    <text x="20" y="46" class="subtitle">Complete Autonomous Defense Loop (Kernel &rarr; LLM &rarr; Gate &rarr; Audit)</text>
+    <text x="20" y="46" class="subtitle">Complete Autonomous Defense Loop (Kernel &#8594; LLM &#8594; Gate &#8594; Audit)</text>
 
     <!-- Ring Hexagon Nodes -->
     <!-- Top: Kernel -->
