@@ -1,0 +1,6 @@
+Network,Algorithm,Modularity Q,Communities,Interpretation
+Attack Vector Similarity,Louvain,0.742,5,5 distinct payload modalities evaluated over 50 attack trials
+Attack–Action Network,NOT APPLICABLE,N/A,1,Linear containment funnel (DAG)
+Audit Event Network,NOT APPLICABLE,N/A,1,Bilateral provenance chains
+AUID Attribution Network,NOT APPLICABLE,N/A,1,Dual sink comparison (Syslog vs Auditd)
+Process–File Network,NOT APPLICABLE,N/A,1,Centralized dispatcher hub with bounded drop-ins

@@ -1,0 +1,8 @@
+Vertex 1,Vertex 2,Relationship,Weight,Evidence Type,Source,Source Locator,Color,Width,Style,Visibility
+Proc_YORU_Agent,Sys_openat,deterministic_io,1.0,EMPIRICAL_AUDIT,bin/yoru-agent,open() and atomic replace calls,#10B981,1.8,Solid,Visible
+Proc_YORU_Agent,Sys_flock,atomic_synchronization,1.0,EMPIRICAL_AUDIT,bin/yoructl,flock lockfile protection,#10B981,1.8,Solid,Visible
+Proc_YORU_Agent,Sys_execve_bounded,invokes_catalog_only,1.0,EMPIRICAL_AUDIT,systemd/yoru-watch.service,ExecStart=/opt/yoru/bin/yoructl,#10B981,1.8,Solid,Visible
+Proc_Unconstrained_AI,Sys_openat,reads_any_file,1.0,EMPIRICAL_AUDIT,experiments/test_injection_to_action.py,"ADV-03, ADV-10 unconstrained models",#EF4444,1.4,Dash,Visible
+Proc_Unconstrained_AI,Sys_execve_raw,arbitrary_binary_spawn,1.0,EMPIRICAL_AUDIT,experiments/test_injection_to_action.py,ADV-01 curl | bash,#EF4444,2.0,Dash,Visible
+Proc_Unconstrained_AI,Sys_ptrace,memory_injection_risk,1.0,EMPIRICAL_AUDIT,experiments/test_injection_to_action.py,ADV-06 memory inspection attempt,#EF4444,2.0,Dash,Visible
+Proc_Unconstrained_AI,Sys_socket_raw,c2_reverse_shell,1.0,EMPIRICAL_AUDIT,experiments/test_injection_to_action.py,ADV-10 python reverse shell,#EF4444,2.0,Dash,Visible

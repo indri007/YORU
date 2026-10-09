@@ -1,0 +1,83 @@
+Edge ID,Vertex 1,Vertex 2,Network ID,Network Name,Evidence Type,Source File,Source Locator,Weight,Status
+E-0001,V1_Direct_Shell,LLM_Deliberation,1,Attack–Action Network,EMPIRICAL_EXPERIMENT,experiments/results/rq1_injection_results.json,details[0..9],1.0,VALIDATED
+E-0002,V2_Delimiter_Smuggle,LLM_Deliberation,1,Attack–Action Network,EMPIRICAL_EXPERIMENT,experiments/results/rq1_injection_results.json,details[10..19],0.9,VALIDATED
+E-0003,V3_Catalog_Escape,LLM_Deliberation,1,Attack–Action Network,EMPIRICAL_EXPERIMENT,experiments/results/rq1_injection_results.json,details[20..29],0.8,VALIDATED
+E-0004,V4_Approval_Misdirect,LLM_Deliberation,1,Attack–Action Network,EMPIRICAL_EXPERIMENT,experiments/results/rq1_injection_results.json,details[30..39],0.6,VALIDATED
+E-0005,V5_AUID_Spoof,LLM_Deliberation,1,Attack–Action Network,EMPIRICAL_EXPERIMENT,experiments/results/rq1_injection_results.json,details[40..49],0.4,VALIDATED
+E-0006,LLM_Deliberation,Candidate_Action,1,Attack–Action Network,EMPIRICAL_EXPERIMENT,experiments/test_injection_to_action.py,line 120-135,1.0,VALIDATED
+E-0007,Candidate_Action,YORU_Gatekeeper,1,Attack–Action Network,EMPIRICAL_EXPERIMENT,experiments/test_injection_to_action.py,validate_harness_action_gate(),1.0,VALIDATED
+E-0008,YORU_Gatekeeper,OS_Root_Shell,1,Attack–Action Network,EMPIRICAL_EXPERIMENT,experiments/results/rq1_injection_results.json,action_penetrated=false,0.0,VALIDATED
+E-0009,YORU_Gatekeeper,CIS_Sanctioned_Action,1,Attack–Action Network,EMPIRICAL_EXPERIMENT,experiments/results/rq1_injection_results.json,gate_filtered=true,1.0,VALIDATED
+E-0010,AUID_1000,Proc_Vim_4821,2,Audit Event Network,EMPIRICAL_AUDIT,experiments/test_rq2_auid_attribution.py,SCENARIOS[0] comm=vim auid=1000,1.0,VALIDATED
+E-0011,Proc_Vim_4821,Event_Openat_257,2,Audit Event Network,EMPIRICAL_AUDIT,experiments/test_rq2_auid_attribution.py,syscall=257 success=yes,1.0,VALIDATED
+E-0012,Event_Openat_257,Target_SshdConfig,2,Audit Event Network,EMPIRICAL_AUDIT,catalog/K01.yaml,file_monitored by auditd key=yoru_kontrol,1.0,VALIDATED
+E-0013,Target_SshdConfig,Audit_Record_Attacker,2,Audit Event Network,EMPIRICAL_AUDIT,docs/LINUX_RUNTIME_VALIDATION_REPORT.md,Section 2.3 ausearch -k yoru_kontrol,1.0,VALIDATED
+E-0014,AUID_1001,Proc_Yoructl_5104,2,Audit Event Network,EMPIRICAL_AUDIT,experiments/test_rq2_auid_attribution.py,SCENARIOS[10] comm=yoructl auid=1001,1.0,VALIDATED
+E-0015,Proc_Yoructl_5104,Event_Execve_59,2,Audit Event Network,EMPIRICAL_AUDIT,experiments/test_rq2_auid_attribution.py,type=EXECVE a0=/opt/yoru/bin/yoructl,1.0,VALIDATED
+E-0016,Event_Execve_59,Target_SysctlConf,2,Audit Event Network,EMPIRICAL_AUDIT,catalog/K10.yaml,target /etc/sysctl.d/99-yoru-k10.conf,1.0,VALIDATED
+E-0017,Target_SysctlConf,Audit_Record_Agent,2,Audit Event Network,EMPIRICAL_AUDIT,experiments/test_rq2_auid_attribution.py,key=yoru_agent_act auid=1001,1.0,VALIDATED
+E-0018,Actor_User_1000,Elevation_Sudo,3,AUID Attribution Network,EMPIRICAL_AUDIT,experiments/results/rq2_auid_attribution.json,sudo_escalation_acc=100.0,1.0,VALIDATED
+E-0019,Actor_Agent_1001,Elevation_Sudo,3,AUID Attribution Network,EMPIRICAL_AUDIT,experiments/results/rq2_auid_attribution.json,agent_remediation_acc=100.0,1.0,VALIDATED
+E-0020,Elevation_Sudo,Root_Process,3,AUID Attribution Network,EMPIRICAL_AUDIT,experiments/test_rq2_auid_attribution.py,line 70-74 (euid=0),1.0,VALIDATED
+E-0021,Root_Process,Syslog_Masked_View,3,AUID Attribution Network,EMPIRICAL_AUDIT,experiments/results/rq2_auid_attribution.json,syslog_identity_masking_rate_pct=86.0 (86/100),0.86,VALIDATED
+E-0022,Root_Process,Auditd_AUID_View,3,AUID Attribution Network,EMPIRICAL_AUDIT,experiments/results/rq2_auid_attribution.json,auid_attribution_accuracy_pct=100.0 (100/100),1.0,VALIDATED
+E-0023,Proc_Yoructl_Main,File_Sshd_Config,4,Process–File Network,EMPIRICAL_AUDIT,catalog/K01.yaml,drop-in /etc/ssh/sshd_config.d/99-yoru-k01.conf,1.0,VALIDATED
+E-0024,Proc_Yoructl_Main,File_Sysctl_K10,4,Process–File Network,EMPIRICAL_AUDIT,catalog/K10.yaml,drop-in /etc/sysctl.d/99-yoru-k10.conf,1.0,VALIDATED
+E-0025,Proc_Yoructl_Main,File_Backup_Store,4,Process–File Network,EMPIRICAL_AUDIT,experiments/results/rq3_hardening_determinism.json,atomic_state_integrity snapshot path,1.0,VALIDATED
+E-0026,Proc_Yoructl_Main,File_Audit_Rules,4,Process–File Network,EMPIRICAL_AUDIT,catalog/K08.yaml,drop-in /etc/audit/rules.d/99-yoru-k08.rules,1.0,VALIDATED
+E-0027,Proc_Sshd,File_Sshd_Config,4,Process–File Network,EMPIRICAL_AUDIT,catalog/K01.yaml,sshd -T test invocation,1.0,VALIDATED
+E-0028,Proc_Auditd,File_Audit_Rules,4,Process–File Network,EMPIRICAL_AUDIT,catalog/K08.yaml,augenrules --load,1.0,VALIDATED
+E-0029,Proc_YORU_Agent,Sys_openat,5,Process–Syscall Network,EMPIRICAL_AUDIT,bin/yoru-agent,open() and atomic replace calls,1.0,VALIDATED
+E-0030,Proc_YORU_Agent,Sys_flock,5,Process–Syscall Network,EMPIRICAL_AUDIT,bin/yoructl,flock lockfile protection,1.0,VALIDATED
+E-0031,Proc_YORU_Agent,Sys_execve_bounded,5,Process–Syscall Network,EMPIRICAL_AUDIT,systemd/yoru-watch.service,ExecStart=/opt/yoru/bin/yoructl,1.0,VALIDATED
+E-0032,Proc_Unconstrained_AI,Sys_openat,5,Process–Syscall Network,EMPIRICAL_AUDIT,experiments/test_injection_to_action.py,"ADV-03, ADV-10 unconstrained models",1.0,VALIDATED
+E-0033,Proc_Unconstrained_AI,Sys_execve_raw,5,Process–Syscall Network,EMPIRICAL_AUDIT,experiments/test_injection_to_action.py,ADV-01 curl | bash,1.0,VALIDATED
+E-0034,Proc_Unconstrained_AI,Sys_ptrace,5,Process–Syscall Network,EMPIRICAL_AUDIT,experiments/test_injection_to_action.py,ADV-06 memory inspection attempt,1.0,VALIDATED
+E-0035,Proc_Unconstrained_AI,Sys_socket_raw,5,Process–Syscall Network,EMPIRICAL_AUDIT,experiments/test_injection_to_action.py,ADV-10 python reverse shell,1.0,VALIDATED
+E-0036,User_Admin,Act_K01,6,User–Action Network,EMPIRICAL_EXPERIMENT,catalog/K01.yaml,"risiko: BERISIKO, approval_required: true",1.0,VALIDATED
+E-0037,User_Admin,Act_K05,6,User–Action Network,EMPIRICAL_EXPERIMENT,catalog/K05.yaml,"risiko: BERISIKO, approval_required: true",1.0,VALIDATED
+E-0038,User_YORU_Agent,Act_K08,6,User–Action Network,EMPIRICAL_EXPERIMENT,catalog/K08.yaml,"risiko: AMAN, approval_required: false",1.0,VALIDATED
+E-0039,User_YORU_Agent,Act_K10,6,User–Action Network,EMPIRICAL_EXPERIMENT,catalog/K10.yaml,"risiko: AMAN, approval_required: false",1.0,VALIDATED
+E-0040,Cluster_Direct,Cluster_Delimiter,7,Attack Vector Similarity Network,DERIVED,experiments/test_injection_to_action.py,ADV-01..10 vs ADV-11..20,0.72,VALIDATED
+E-0041,Cluster_Delimiter,Cluster_Obfuscated,7,Attack Vector Similarity Network,DERIVED,experiments/test_injection_to_action.py,ADV-11..20 vs ADV-41..50,0.68,VALIDATED
+E-0042,Cluster_Catalog,Cluster_Direct,7,Attack Vector Similarity Network,DERIVED,experiments/test_injection_to_action.py,ADV-21..30 vs ADV-01..10,0.61,VALIDATED
+E-0043,Cluster_Approval,Cluster_Catalog,7,Attack Vector Similarity Network,DERIVED,experiments/test_injection_to_action.py,ADV-31..40 vs ADV-21..30,0.54,VALIDATED
+E-0044,Cluster_Obfuscated,Cluster_Direct,7,Attack Vector Similarity Network,DERIVED,experiments/test_injection_to_action.py,ADV-41..50 vs ADV-01..10,0.59,VALIDATED
+E-0045,Log_Input,LLM_Unprotected,8,Injection Propagation Network,EMPIRICAL_EXPERIMENT,experiments/results/rq1_injection_results.json,total_payloads=50,1.0,VALIDATED
+E-0046,LLM_Unprotected,Shell_Unprotected,8,Injection Propagation Network,EMPIRICAL_EXPERIMENT,experiments/results/rq1_injection_results.json,asr_token=74.0 (37/50),0.74,VALIDATED
+E-0047,Shell_Unprotected,OS_Compromised,8,Injection Propagation Network,EMPIRICAL_EXPERIMENT,experiments/test_injection_to_action.py,unconstrained baseline simulation,1.0,VALIDATED
+E-0048,Log_Input,LLM_YORU,8,Injection Propagation Network,EMPIRICAL_EXPERIMENT,bin/yoru-agent,<untrusted_system_log> sanitizer,1.0,VALIDATED
+E-0049,LLM_YORU,Gate_YORU,8,Injection Propagation Network,EMPIRICAL_EXPERIMENT,experiments/test_injection_to_action.py,candidate plan proposal,1.0,VALIDATED
+E-0050,Gate_YORU,Catalog_Discrete,8,Injection Propagation Network,EMPIRICAL_EXPERIMENT,experiments/results/rq1_injection_results.json,gate_filtered=true (50/50),1.0,VALIDATED
+E-0051,Catalog_Discrete,OS_Secure_Action,8,Injection Propagation Network,EMPIRICAL_EXPERIMENT,experiments/results/rq1_injection_results.json,action_penetrated=false (0/50),1.0,VALIDATED
+E-0052,LLM_Output_Decisions,Valid_K01,9,LLM Decision–Action Network,EMPIRICAL_EXPERIMENT,experiments/results/rq3_hardening_determinism.json,K01 status LULUS,1.0,VALIDATED
+E-0053,LLM_Output_Decisions,Valid_K05,9,LLM Decision–Action Network,EMPIRICAL_EXPERIMENT,experiments/results/rq3_hardening_determinism.json,K05 status LULUS,1.0,VALIDATED
+E-0054,LLM_Output_Decisions,Valid_K08,9,LLM Decision–Action Network,EMPIRICAL_EXPERIMENT,experiments/results/rq3_hardening_determinism.json,K08 status LULUS,1.0,VALIDATED
+E-0055,LLM_Output_Decisions,Invalid_Bash,9,LLM Decision–Action Network,EMPIRICAL_EXPERIMENT,experiments/results/rq1_injection_results.json,ADV-01 rejected by schema,0.0,VALIDATED
+E-0056,LLM_Output_Decisions,Invalid_K99,9,LLM Decision–Action Network,EMPIRICAL_EXPERIMENT,experiments/results/rq1_injection_results.json,ADV-25 rejected by catalog,0.0,VALIDATED
+E-0057,K02,K04,10,CIS Control Dependency Network,EMPIRICAL_EXPERIMENT,catalog/K04.yaml,prasyarat: k02_harus_lulus_dulu,1.0,VALIDATED
+E-0058,K08,K01,10,CIS Control Dependency Network,EMPIRICAL_EXPERIMENT,catalog/K08.yaml,aturan: -w /etc/ssh/sshd_config -p wa -k yoru_kontrol,1.0,VALIDATED
+E-0059,K08,K05,10,CIS Control Dependency Network,EMPIRICAL_EXPERIMENT,catalog/K08.yaml,aturan: -w /etc/ufw/user.rules -p wa -k yoru_kontrol,1.0,VALIDATED
+E-0060,K08,K06,10,CIS Control Dependency Network,EMPIRICAL_EXPERIMENT,catalog/K08.yaml,aturan: -w /etc/services -p wa -k yoru_kontrol,1.0,VALIDATED
+E-0061,K08,K10,10,CIS Control Dependency Network,EMPIRICAL_EXPERIMENT,catalog/K08.yaml,aturan: -w /etc/sysctl.d -p wa -k yoru_kontrol,1.0,VALIDATED
+E-0062,K09,K08,10,CIS Control Dependency Network,EMPIRICAL_EXPERIMENT,catalog/K08.yaml,prasyarat: k09_sudah_diterapkan,1.0,VALIDATED
+E-0063,Config_Baseline,Drift_Event,11,Security Drift Network,EMPIRICAL_EXPERIMENT,experiments/results/rq3_hardening_determinism.json,baseline_compliance_score: 2/10 -> modified,1.0,VALIDATED
+E-0064,Drift_Event,Detection_Watch,11,Security Drift Network,EMPIRICAL_EXPERIMENT,systemd/yoru-watch.timer,OnCalendar=*:0/5 timer execution,1.0,VALIDATED
+E-0065,Detection_Watch,Control_Selection,11,Security Drift Network,EMPIRICAL_EXPERIMENT,bin/yoru-watch,detect_drift() routine,1.0,VALIDATED
+E-0066,Control_Selection,Remediation_Apply,11,Security Drift Network,EMPIRICAL_EXPERIMENT,experiments/results/rq3_hardening_determinism.json,post_remediation_compliance_score: 10/10,1.0,VALIDATED
+E-0067,Remediation_Apply,Config_Baseline,11,Security Drift Network,EMPIRICAL_EXPERIMENT,experiments/results/rq3_hardening_determinism.json,100.0% remediation success verified,1.0,VALIDATED
+E-0068,State_Clean,Backup_Snapshot,12,Rollback Network,EMPIRICAL_EXPERIMENT,experiments/results/rq3_hardening_determinism.json,rollback_trials=10,1.0,VALIDATED
+E-0069,State_Clean,State_Drift,12,Rollback Network,EMPIRICAL_EXPERIMENT,experiments/results/rq3_hardening_determinism.json,controls_breakdown[0..9] baseline_status,1.0,VALIDATED
+E-0070,State_Drift,Rollback_Cmd,12,Rollback Network,EMPIRICAL_EXPERIMENT,bin/yoructl,kembalikan argument parser,1.0,VALIDATED
+E-0071,Backup_Snapshot,Rollback_Cmd,12,Rollback Network,EMPIRICAL_EXPERIMENT,experiments/results/rq3_hardening_determinism.json,atomic_state_integrity exact match,1.0,VALIDATED
+E-0072,Rollback_Cmd,State_Restored,12,Rollback Network,EMPIRICAL_EXPERIMENT,experiments/results/rq3_hardening_determinism.json,successful_rollbacks=10 (10/10 100.0%),1.0,VALIDATED
+E-0073,Agent_User,Sudoers_Whitelist,13,Privilege Boundary Network,EMPIRICAL_AUDIT,docs/LINUX_RUNTIME_VALIDATION_REPORT.md,Section 2.3 Sudoers validation,1.0,VALIDATED
+E-0074,Sudoers_Whitelist,Yoructl_Dispatcher,13,Privilege Boundary Network,EMPIRICAL_AUDIT,systemd/yoru-watch.service,ExecStart=/opt/yoru/bin/yoructl,1.0,VALIDATED
+E-0075,Yoructl_Dispatcher,CIS_Primitive,13,Privilege Boundary Network,EMPIRICAL_AUDIT,bin/yoructl,argument check against K01-K10,1.0,VALIDATED
+E-0076,CIS_Primitive,Root_OS_Action,13,Privilege Boundary Network,EMPIRICAL_AUDIT,experiments/test_rq2_auid_attribution.py,SCENARIOS[10] auid=1001 root action,1.0,VALIDATED
+E-0077,Sudoers_Whitelist,Arbitrary_Shell,13,Privilege Boundary Network,EMPIRICAL_AUDIT,docs/PRD.md,Section 4.3 Action Space Boundary,0.0,VALIDATED
+E-0078,T0_Attack_Start,T1_Detection,14,Temporal Attack Network,EMPIRICAL_EXPERIMENT,experiments/results/rq4_resource_overhead.json,workload active cycle latency,0.82,VALIDATED
+E-0079,T1_Detection,T2_Deliberation,14,Temporal Attack Network,EMPIRICAL_EXPERIMENT,experiments/results/rq1_injection_results.json,proxy deliberation duration,0.62,VALIDATED
+E-0080,T2_Deliberation,T3_Gatekeeper,14,Temporal Attack Network,EMPIRICAL_EXPERIMENT,experiments/results/rq1_injection_results.json,gate filter timing,0.18,VALIDATED
+E-0081,T3_Gatekeeper,T4_Action_Exec,14,Temporal Attack Network,EMPIRICAL_EXPERIMENT,experiments/results/rq3_hardening_determinism.json,remediation execution benchmark,0.19,VALIDATED
+E-0082,T4_Action_Exec,T5_Audit_Sink,14,Temporal Attack Network,EMPIRICAL_EXPERIMENT,experiments/results/rq2_auid_attribution.json,auditd flush and sink write,0.2,VALIDATED

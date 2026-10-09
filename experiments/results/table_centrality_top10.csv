@@ -1,0 +1,11 @@
+Node,Network,Metric,Score,Security Role,Empirical Basis
+Cluster_Direct,Attack Vector Similarity Network,Betweenness Centrality,0.6667,Bottleneck / Gatekeeper,DERIVED (experiments/test_injection_to_action.py)
+Cluster_Catalog,Attack Vector Similarity Network,Betweenness Centrality,0.5,Bottleneck / Gatekeeper,DERIVED (experiments/test_injection_to_action.py)
+Config_Baseline,Security Drift Network,Betweenness Centrality,0.5,Bottleneck / Gatekeeper,EMPIRICAL_EXPERIMENT (experiments/results/rq3_hardening_determinism.json)
+Drift_Event,Security Drift Network,Betweenness Centrality,0.5,Bottleneck / Gatekeeper,EMPIRICAL_EXPERIMENT (experiments/results/rq3_hardening_determinism.json)
+Detection_Watch,Security Drift Network,Betweenness Centrality,0.5,Bottleneck / Gatekeeper,EMPIRICAL_EXPERIMENT (experiments/results/rq3_hardening_determinism.json)
+Control_Selection,Security Drift Network,Betweenness Centrality,0.5,Bottleneck / Gatekeeper,EMPIRICAL_EXPERIMENT (experiments/results/rq3_hardening_determinism.json)
+Remediation_Apply,Security Drift Network,Betweenness Centrality,0.5,Bottleneck / Gatekeeper,EMPIRICAL_EXPERIMENT (experiments/results/rq3_hardening_determinism.json)
+Elevation_Sudo,AUID Attribution Network,Betweenness Centrality,0.3,Bottleneck / Gatekeeper,EMPIRICAL_AUDIT (experiments/results/rq2_auid_attribution.json)
+Root_Process,AUID Attribution Network,Betweenness Centrality,0.3,Bottleneck / Gatekeeper,EMPIRICAL_AUDIT (experiments/results/rq2_auid_attribution.json)
+T2_Deliberation,Temporal Attack Network,Betweenness Centrality,0.3,Bottleneck / Gatekeeper,EMPIRICAL_EXPERIMENT (experiments/results/rq4_resource_overhead.json)

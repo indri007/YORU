@@ -1,0 +1,16 @@
+Network ID,Network Name,Evidence Type,Source File,Records Parsed,Coverage Status
+1,Attack–Action Network,EMPIRICAL_EXPERIMENT,experiments/results/rq1_injection_results.json,9 edges,100% TRACEABLE
+2,Audit Event Network,EMPIRICAL_AUDIT,experiments/test_rq2_auid_attribution.py,8 edges,100% TRACEABLE
+3,AUID Attribution Network,EMPIRICAL_AUDIT,experiments/results/rq2_auid_attribution.json,5 edges,100% TRACEABLE
+4,Process–File Network,EMPIRICAL_AUDIT,catalog/K01.yaml,6 edges,100% TRACEABLE
+5,Process–Syscall Network,EMPIRICAL_AUDIT,bin/yoru-agent,7 edges,100% TRACEABLE
+6,User–Action Network,EMPIRICAL_EXPERIMENT,catalog/K01.yaml,4 edges,100% TRACEABLE
+7,Attack Vector Similarity Network,DERIVED,experiments/test_injection_to_action.py,5 edges,100% TRACEABLE
+8,Injection Propagation Network,EMPIRICAL_EXPERIMENT,experiments/results/rq1_injection_results.json,7 edges,100% TRACEABLE
+9,LLM Decision–Action Network,EMPIRICAL_EXPERIMENT,experiments/results/rq3_hardening_determinism.json,5 edges,100% TRACEABLE
+10,CIS Control Dependency Network,EMPIRICAL_EXPERIMENT,catalog/K04.yaml,6 edges,100% TRACEABLE
+11,Security Drift Network,EMPIRICAL_EXPERIMENT,experiments/results/rq3_hardening_determinism.json,5 edges,100% TRACEABLE
+12,Rollback Network,EMPIRICAL_EXPERIMENT,experiments/results/rq3_hardening_determinism.json,5 edges,100% TRACEABLE
+13,Privilege Boundary Network,EMPIRICAL_AUDIT,docs/LINUX_RUNTIME_VALIDATION_REPORT.md,5 edges,100% TRACEABLE
+14,Temporal Attack Network,EMPIRICAL_EXPERIMENT,experiments/results/rq4_resource_overhead.json,5 edges,100% TRACEABLE
+15,Master Closed Loop Graph (Architecture),ARCHITECTURE,docs/PRD.md,6 edges,100% TRACEABLE

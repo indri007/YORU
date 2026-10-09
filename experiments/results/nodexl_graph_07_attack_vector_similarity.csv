@@ -1,0 +1,6 @@
+Vertex 1,Vertex 2,Relationship,Weight,Evidence Type,Source,Source Locator,Color,Width,Style,Visibility
+Cluster_Direct,Cluster_Delimiter,syntactic_similarity,0.72,DERIVED,experiments/test_injection_to_action.py,ADV-01..10 vs ADV-11..20,#F59E0B,1.8,Solid,Visible
+Cluster_Delimiter,Cluster_Obfuscated,encoding_overlap,0.68,DERIVED,experiments/test_injection_to_action.py,ADV-11..20 vs ADV-41..50,#F59E0B,1.7,Solid,Visible
+Cluster_Catalog,Cluster_Direct,command_injection_target,0.61,DERIVED,experiments/test_injection_to_action.py,ADV-21..30 vs ADV-01..10,#F59E0B,1.5,Solid,Visible
+Cluster_Approval,Cluster_Catalog,social_engineering_link,0.54,DERIVED,experiments/test_injection_to_action.py,ADV-31..40 vs ADV-21..30,#F59E0B,1.3,Solid,Visible
+Cluster_Obfuscated,Cluster_Direct,payload_nesting,0.59,DERIVED,experiments/test_injection_to_action.py,ADV-41..50 vs ADV-01..10,#F59E0B,1.5,Solid,Visible

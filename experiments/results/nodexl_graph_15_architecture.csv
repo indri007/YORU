@@ -1,0 +1,7 @@
+Vertex 1,Vertex 2,Relationship,Weight,Evidence Type,Source,Source Locator,Color,Width,Style,Visibility
+M1_Kernel_Source,M2_Log_Sanitizer,emits_raw_audit_telemetry,1.0,ARCHITECTURE,docs/PRD.md,Architecture Section 4.1,#E8B64C,1.8,Solid,Visible
+M2_Log_Sanitizer,M3_LLM_Proxy,delivers_structured_context,1.0,ARCHITECTURE,docs/PRD.md,Architecture Section 4.2,#3B82F6,1.8,Solid,Visible
+M3_LLM_Proxy,M4_Action_Gate,proposes_candidate_plan,1.0,ARCHITECTURE,docs/PRD.md,Architecture Section 4.3,#F59E0B,1.8,Solid,Visible
+M4_Action_Gate,M5_Yoructl_Dispatcher,authorizes_whitelisted_primitive,1.0,ARCHITECTURE,docs/PRD.md,Architecture Section 4.3,#10B981,2.0,Solid,Visible
+M5_Yoructl_Dispatcher,M6_Auditd_Sink,records_remediation_AUID_1001,1.0,ARCHITECTURE,docs/PRD.md,Architecture Section 4.4,#8B5CF6,1.8,Solid,Visible
+M6_Auditd_Sink,M1_Kernel_Source,closes_loop_via_kernel_verification,1.0,ARCHITECTURE,docs/PRD.md,Architecture Section 4.5,#E8B64C,1.8,Solid,Visible

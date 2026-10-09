@@ -1,0 +1,6 @@
+Vertex 1,Vertex 2,Relationship,Weight,Evidence Type,Source,Source Locator,Color,Width,Style,Visibility
+Agent_User,Sudoers_Whitelist,requests_sudo_execution,1.0,EMPIRICAL_AUDIT,docs/LINUX_RUNTIME_VALIDATION_REPORT.md,Section 2.3 Sudoers validation,#3B82F6,1.8,Solid,Visible
+Sudoers_Whitelist,Yoructl_Dispatcher,ALLOWED_EXCLUSIVELY (NOPASSWD),1.0,EMPIRICAL_AUDIT,systemd/yoru-watch.service,ExecStart=/opt/yoru/bin/yoructl,#10B981,2.0,Solid,Visible
+Yoructl_Dispatcher,CIS_Primitive,verifies_discrete_argument,1.0,EMPIRICAL_AUDIT,bin/yoructl,argument check against K01-K10,#8B5CF6,1.8,Solid,Visible
+CIS_Primitive,Root_OS_Action,executes_with_auid_1001,1.0,EMPIRICAL_AUDIT,experiments/test_rq2_auid_attribution.py,SCENARIOS[10] auid=1001 root action,#10B981,2.0,Solid,Visible
+Sudoers_Whitelist,Arbitrary_Shell,HARD_DENIED (No NOPASSWD /bin/bash),0.0,EMPIRICAL_AUDIT,docs/PRD.md,Section 4.3 Action Space Boundary,#EF4444,2.2,Dash,Visible

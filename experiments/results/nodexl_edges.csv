@@ -6,7 +6,7 @@ V4_Approval_Misdirect,LLM_Deliberation,perturbs_tokens,0.6,Attack–Action Netwo
 V5_AUID_Spoof,LLM_Deliberation,perturbs_tokens,0.4,Attack–Action Network,1,Fig. 2
 LLM_Deliberation,Candidate_Action,generates_plan,1.0,Attack–Action Network,1,Fig. 2
 Candidate_Action,YORU_Gatekeeper,intercepted_and_checked,1.0,Attack–Action Network,1,Fig. 2
-YORU_Gatekeeper,OS_Root_Shell,BLOCKED (ASR_action=0.0%),0.0,Attack–Action Network,1,Fig. 2
+YORU_Gatekeeper,OS_Root_Shell,BLOCKED_UNAUTHORIZED_SHELL,0.0,Attack–Action Network,1,Fig. 2
 YORU_Gatekeeper,CIS_Sanctioned_Action,dispatched_safely,1.0,Attack–Action Network,1,Fig. 2
 AUID_1000,Proc_Vim,spawns_process_via_sudo,1.0,Audit Event Network,2,Fig. 3 (Panel A)
 Proc_Vim,Event_Openat_257,invokes_syscall,1.0,Audit Event Network,2,Fig. 3 (Panel A)
@@ -19,8 +19,8 @@ Target_SysctlConf,Audit_Record_Agent,captured_by_agent_filter,1.0,Audit Event Ne
 Actor_User_1000,Elevation_Sudo,escalates_privilege,1.0,AUID Attribution Graph,3,Fig. 3 (Panel B)
 Actor_Agent_1001,Elevation_Sudo,escalates_privilege,1.0,AUID Attribution Graph,3,Fig. 3 (Panel B)
 Elevation_Sudo,Root_Process,grants_root_context,1.0,AUID Attribution Graph,3,Fig. 3 (Panel B)
-Root_Process,Syslog_Masked_View,logs_as_root (86% attribution loss),0.86,AUID Attribution Graph,3,Fig. 3 (Panel B)
-Root_Process,Auditd_AUID_View,preserves_origin_auid (100% fidelity),1.0,AUID Attribution Graph,3,Fig. 3 (Panel B)
+Root_Process,Syslog_Masked_View,logs_as_root_masked,0.86,AUID Attribution Graph,3,Fig. 3 (Panel B)
+Root_Process,Auditd_AUID_View,preserves_origin_auid,1.0,AUID Attribution Graph,3,Fig. 3 (Panel B)
 Proc_Yoructl_Main,File_Sshd_Config,hardens_atomic (K01/K02),1.0,Process–File Network,4,Fig. 4
 Proc_Yoructl_Main,File_Sysctl_K10,writes_conf (K10),1.0,Process–File Network,4,Fig. 4
 Proc_Yoructl_Main,File_Backup_Store,creates_and_restores,1.0,Process–File Network,4,Fig. 4

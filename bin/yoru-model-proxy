@@ -6,7 +6,7 @@ the API key and forwards. Yoru itself never sees it.
 
 Two upstream shapes, because Google runs two:
 
-  openai   /v1beta/openai/chat/completions          Authorization: Bearer
+  openai   /v1beta/openai/chat/completions          auth: Bearer token header
   native   /v1beta/models/<model>:generateContent   x-goog-api-key
 
 Each endpoint accepts only its own header; sending the other one is a 400.
