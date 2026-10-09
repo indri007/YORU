@@ -1,5 +1,5 @@
 <p align="center">
-  <img alt="YORU 3D AI Night Guardian Mascot" src="assets/yoru-3d-mascot.png" width="100%">
+  <img alt="YORU 3D AI Night Guardian Mascot" src="./assets/yoru-3d-mascot.png" width="100%">
 </p>
 
 # YORU: Linux Security Auditing & Forensics
@@ -101,11 +101,11 @@ flowchart LR
 ```
 
 <p align="center">
-  <img alt="YORU Closed-Loop Architecture Graph #15" src="assets/graph15-closed-loop.png" width="95%">
+  <img alt="YORU Closed-Loop Architecture Graph #15" src="./assets/graph15-closed-loop.png" width="95%">
   <br>
   <em>Graph #15: Master Closed-Loop Security Topology (Log &rarr; LLM &rarr; Gate &rarr; Action &rarr; Audit)</em>
   <br>
-  <a href="assets/graph15-closed-loop.svg">Vector SVG</a> &bull; <a href="assets/graph15-closed-loop.html">Interactive HTML</a>
+  <a href="./assets/graph15-closed-loop.svg">Vector SVG</a> &bull; <a href="./assets/graph15-closed-loop.html">Interactive HTML</a>
 </p>
 
 ## 🕸️ 15 Security Topology & NodeXL Analysis Networks
@@ -135,17 +135,17 @@ To empirically analyze the security guarantees, attack propagation, and kernel-l
 ### 📊 Galeri Visualisasi NodeXL & Topologi Keamanan YORU
 
 <p align="center">
-  <img alt="NodeXL Security Network Analysis Graph" src="assets/nodexl-graph-visualization.png" width="100%">
+  <img alt="NodeXL Security Network Analysis Graph" src="./assets/nodexl-graph-visualization.png" width="100%">
   <br>
   <em>Visualisasi Topologi Jaringan NodeXL Pro: Pemetaan Klaster Komunitas, Centrality, dan Aliran Relasi Aktor Keamanan</em>
 </p>
 
 <p align="center">
-  <img alt="YORU Closed-Loop Architecture Graph #15" src="assets/graph15-closed-loop.png" width="100%">
+  <img alt="YORU Closed-Loop Architecture Graph #15" src="./assets/graph15-closed-loop.png" width="100%">
   <br>
   <em>Graf Utama #15: Master Closed-Loop Security Topology (Kernel &rarr; Sanitizer &rarr; LLM &rarr; Gatekeeper &rarr; Dispatcher &rarr; Audit Sink)</em>
   <br>
-  <a href="assets/graph15-closed-loop.svg">Vector SVG</a> &bull; <a href="assets/graph15-closed-loop.html">Interactive HTML</a>
+  <a href="./assets/graph15-closed-loop.svg">Vector SVG</a> &bull; <a href="./assets/graph15-closed-loop.html">Interactive HTML</a>
 </p>
 
 ## 🚀 Quick Start
