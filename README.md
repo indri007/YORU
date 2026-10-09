@@ -130,7 +130,7 @@ To empirically analyze the security guarantees, attack propagation, and kernel-l
 | **14** | **Temporal Attack Graph** | event + timestamp | event_t → event_t+1 | Urutan serangan sebelum mitigasi |
 | **15** | **YORU Closed-Loop Graph** | Log → LLM → Gate → Action → Audit | directed edges | **Graph utama arsitektur keamanan YORU** |
 
-> 📥 **NodeXL Pro & Gephi Datasets:** Ekspor dataset relasi tersedia di [`nodexl_edges.csv`](experiments/results/nodexl_edges.csv) dan [`nodexl_vertices.csv`](experiments/results/nodexl_vertices.csv), siap diimpor ke NodeXL Graph Gallery untuk analisis SNA tingkat lanjut.
+> 📥 **NodeXL Pro & Gephi Datasets:** Ekspor dataset relasi lengkap tersedia dalam format Excel siap pakai [`YORU_NodeXL_15_Graphs.xlsx`](experiments/results/YORU_NodeXL_15_Graphs.xlsx) serta CSV [`nodexl_edges.csv`](experiments/results/nodexl_edges.csv) dan [`nodexl_vertices.csv`](experiments/results/nodexl_vertices.csv), siap diimpor ke NodeXL Graph Gallery untuk analisis SNA tingkat lanjut.
 
 ### 📊 Galeri Visualisasi NodeXL & Topologi Keamanan YORU
 

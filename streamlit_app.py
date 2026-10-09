@@ -694,23 +694,33 @@ with tab_graphs:
         st.markdown("#### 📥 NodeXL Pro & Gephi Export Data")
         st.caption("Ready-to-import CSV datasets matching NodeXL Graph Gallery schema.")
 
-        col_dl1, col_dl2 = st.columns(2)
+        col_dl1, col_dl2, col_dl3 = st.columns(3)
+        xlsx_path = RESULTS_DIR / "YORU_NodeXL_15_Graphs.xlsx"
         edges_csv_path = RESULTS_DIR / "nodexl_edges.csv"
         vertices_csv_path = RESULTS_DIR / "nodexl_vertices.csv"
 
         with col_dl1:
+            if xlsx_path.exists():
+                st.download_button(
+                    label="📊 Download NodeXL Workbook (.xlsx)",
+                    data=xlsx_path.read_bytes(),
+                    file_name="YORU_NodeXL_15_Graphs.xlsx",
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    use_container_width=True,
+                )
+        with col_dl2:
             if edges_csv_path.exists():
                 st.download_button(
-                    label="⬇️ Download NodeXL Edges (CSV)",
+                    label="⬇️ Download Edges (CSV)",
                     data=edges_csv_path.read_bytes(),
                     file_name="nodexl_edges.csv",
                     mime="text/csv",
                     use_container_width=True,
                 )
-        with col_dl2:
+        with col_dl3:
             if vertices_csv_path.exists():
                 st.download_button(
-                    label="⬇️ Download NodeXL Vertices (CSV)",
+                    label="⬇️ Download Vertices (CSV)",
                     data=vertices_csv_path.read_bytes(),
                     file_name="nodexl_vertices.csv",
                     mime="text/csv",
