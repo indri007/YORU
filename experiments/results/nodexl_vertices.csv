@@ -1,0 +1,94 @@
+Vertex,Label,Category,Color,Network Graph,Network ID
+V1_Direct_Shell,Direct Shell Injection,attack_vector,#F43F5E,Attack–Action Network,1
+V2_Delimiter_Smuggle,Delimiter Smuggling,attack_vector,#F43F5E,Attack–Action Network,1
+V3_Catalog_Escape,Catalog Escape (K11/leak),attack_vector,#F43F5E,Attack–Action Network,1
+V4_Approval_Misdirect,Approval Misdirection,attack_vector,#F43F5E,Attack–Action Network,1
+V5_AUID_Spoof,Context/AUID Spoofing,attack_vector,#F43F5E,Attack–Action Network,1
+LLM_Token_Space,LLM Token Perturbation (74%),intermediate,#FBBF24,Attack–Action Network,1
+YORU_Gate,YORU Action Gatekeeper,defense_barrier,#10B981,Attack–Action Network,1
+OS_Root_Shell,Arbitrary OS Shell (/bin/bash),blocked_target,#94A3B8,Attack–Action Network,1
+CIS_K08_Audit,CIS K08 Audit Record,sanctioned_action,#3B82F6,Attack–Action Network,1
+AUID_1000,AUID:1000 (User: ubuntu),actor,#3B82F6,Audit Event Network,2
+AUID_1001,AUID:1001 (Agent: yoru-agent),actor,#10B981,Audit Event Network,2
+AUID_Unset,AUID:unset (Cron/Daemon),actor,#94A3B8,Audit Event Network,2
+Proc_Sudo,Process: sudo vim,process,#FBBF24,Audit Event Network,2
+Proc_Yoructl,Process: yoructl K08,process,#10B981,Audit Event Network,2
+Event_Passwd_Mod,Event: /etc/passwd Write,event,#F43F5E,Audit Event Network,2
+Event_Sysctl_Mod,Event: /etc/sysctl.d Conf,event,#FBBF24,Audit Event Network,2
+Kernel_Audit_Log,/var/log/audit/audit.log,sink,#E8B64C,Audit Event Network,2
+Origin_Actor_Budi,Login: budi (AUID=1002),true_identity,#3B82F6,AUID Attribution Graph,3
+Origin_Actor_Yoru,Service: yoru-agent (AUID=1001),true_identity,#10B981,AUID Attribution Graph,3
+Elevation_Sudo_Su,sudo su - root,privilege_transition,#FBBF24,AUID Attribution Graph,3
+Syslog_View,Syslog effective uid=root (Identity Masked),flawed_view,#F43F5E,AUID Attribution Graph,3
+Auditd_AUID_View,auditd auid=1002 (Identity Preserved),true_view,#10B981,AUID Attribution Graph,3
+P_yoructl,bin/yoructl,process,#10B981,Process–File Network,4
+P_sshd,/usr/sbin/sshd,process,#3B82F6,Process–File Network,4
+P_vim,/usr/bin/vim,process,#FBBF24,Process–File Network,4
+F_sshd_config,/etc/ssh/sshd_config,file,#E8B64C,Process–File Network,4
+F_passwd,/etc/passwd,file,#F43F5E,Process–File Network,4
+F_shadow,/etc/shadow,file,#F43F5E,Process–File Network,4
+F_sysctl,/etc/sysctl.d/99-yoru-k10.conf,file,#10B981,Process–File Network,4
+F_backup,/var/backups/yoru/*,file,#10B981,Process–File Network,4
+Proc_Unconstrained_AI,Unconstrained Agent (/bin/bash),process,#F43F5E,Process–Syscall Network,5
+Proc_YORU_Harness,YORU Harness (yoructl),process,#10B981,Process–Syscall Network,5
+Sys_execve,syscall: execve(arbitrary),syscall,#F43F5E,Process–Syscall Network,5
+Sys_ptrace,syscall: ptrace,syscall,#F43F5E,Process–Syscall Network,5
+Sys_openat,syscall: openat/read/write,syscall,#3B82F6,Process–Syscall Network,5
+Sys_flock,syscall: flock (concurrency),syscall,#10B981,Process–Syscall Network,5
+User_Admin,System Owner (Human),actor,#3B82F6,User–Action Network,6
+User_YORU_Agent,yoru-agent (Autonomous),actor,#10B981,User–Action Network,6
+Act_K01_PermitRoot,K01: Disable Root SSH,action,#FBBF24,User–Action Network,6
+Act_K05_UFW,K05: Enable UFW Firewall,action,#FBBF24,User–Action Network,6
+Act_K08_Auditd,K08: Enforce Auditd Rules,action,#10B981,User–Action Network,6
+Act_K10_Sysctl,K10: Network Stack Hardening,action,#10B981,User–Action Network,6
+Clust_Direct,Cluster: Direct Instruction Override,cluster,#F43F5E,Attack Vector Similarity,7
+Clust_Delimiter,Cluster: Delimiter Smuggling,cluster,#F43F5E,Attack Vector Similarity,7
+Clust_Catalog,Cluster: Catalog Expansion,cluster,#FBBF24,Attack Vector Similarity,7
+Clust_Approval,Cluster: Approval Misdirection,cluster,#FBBF24,Attack Vector Similarity,7
+Clust_AUID,Cluster: Context/AUID Spoofing,cluster,#3B82F6,Attack Vector Similarity,7
+Stage_Log_Ingest,Stage 1: Untrusted Log Ingestion,stage,#F43F5E,Injection Propagation Graph,8
+Stage_LLM_Deliberation,Stage 2: LLM Token Perturbation (74%),stage,#FBBF24,Injection Propagation Graph,8
+Stage_Action_Gate,Stage 3: YORU Action Gatekeeper,defense_barrier,#10B981,Injection Propagation Graph,8
+Stage_OS_Execution,Stage 4: Operating System Shell Execution,destination,#94A3B8,Injection Propagation Graph,8
+LLM_Output,LLM Suggested Decision,generator,#FBBF24,LLM Decision–Action Graph,9
+Valid_K01,yoructl K01 (Valid),valid_primitive,#10B981,LLM Decision–Action Graph,9
+Valid_K05,yoructl K05 (Valid),valid_primitive,#10B981,LLM Decision–Action Graph,9
+Valid_K08,yoructl K08 (Valid),valid_primitive,#10B981,LLM Decision–Action Graph,9
+Invalid_Raw_Bash,Invalid: curl | bash,dropped_action,#F43F5E,LLM Decision–Action Graph,9
+K01,K01: PermitRootLogin No,ssh_control,#3B82F6,CIS Control Dependency Graph,10
+K02,K02: PubkeyAuthentication Yes,ssh_control,#3B82F6,CIS Control Dependency Graph,10
+K03,K03: MaxAuthTries 3,ssh_control,#3B82F6,CIS Control Dependency Graph,10
+K04,K04: PasswordAuthentication No,ssh_control,#3B82F6,CIS Control Dependency Graph,10
+K05,K05: UFW Firewall Active,network_control,#FBBF24,CIS Control Dependency Graph,10
+K06,K06: Bind Localhost Only,network_control,#FBBF24,CIS Control Dependency Graph,10
+K07,K07: Automatic Security Updates,maintenance_control,#10B981,CIS Control Dependency Graph,10
+K08,K08: Linux Kernel Auditd Active,telemetry_foundation,#E8B64C,CIS Control Dependency Graph,10
+K09,K09: Journald Log Retention,telemetry_foundation,#10B981,CIS Control Dependency Graph,10
+K10,K10: Sysctl Kernel Hardening,kernel_control,#10B981,CIS Control Dependency Graph,10
+Cfg_SSH,/etc/ssh/sshd_config,config,#3B82F6,Security Drift Network,11
+Cfg_UFW,/etc/ufw/user.rules,config,#FBBF24,Security Drift Network,11
+Cfg_MySQL,/etc/mysql/my.cnf,config,#F43F5E,Security Drift Network,11
+Drift_Port_3306,Drift: 3306 -> 0.0.0.0,drift_event,#F43F5E,Security Drift Network,11
+Drift_Root_SSH,Drift: PermitRoot -> yes,drift_event,#FBBF24,Security Drift Network,11
+Ctrl_K06,Remediated by K06,control,#10B981,Security Drift Network,11
+Ctrl_K01,Remediated by K01,control,#10B981,Security Drift Network,11
+State_Clean,Secure Baseline (Hash: 0x9A4F),state,#10B981,Rollback Network,12
+State_Drifted,Drifted State (Hash: 0xDEAD),state,#F43F5E,Rollback Network,12
+Backup_Archive,/var/backups/yoru/snapshot.tar.gz,snapshot,#E8B64C,Rollback Network,12
+Cmd_Kembalikan,yoructl <Kxx> kembalikan,rollback_command,#3B82F6,Rollback Network,12
+State_Restored,Restored State (Hash: 0x9A4F),state,#10B981,Rollback Network,12
+User_YoruAgent,yoru-agent (Unprivileged UID=1001),user,#3B82F6,Privilege Boundary Graph,13
+Sudoers_Boundary,/etc/sudoers.d/yoru (Strict Whitelist),privilege_gate,#E8B64C,Privilege Boundary Graph,13
+Bin_Yoructl,/opt/yoru/bin/yoructl,dispatcher,#10B981,Privilege Boundary Graph,13
+Root_Action,Root Execution (Confined CIS Only),target,#10B981,Privilege Boundary Graph,13
+Arbitrary_Shell,"Arbitrary Shell (/bin/bash, /bin/sh)",forbidden,#F43F5E,Privilege Boundary Graph,13
+T0_Probe,T0 (03:14:00): SSH Brute & Log Injection,timestamp,#F43F5E,Temporal Attack Graph,14
+T1_Kernel_Trap,T1 (03:14:01): Kernel auditd Records Event,timestamp,#FBBF24,Temporal Attack Graph,14
+T2_Deliberate,T2 (03:14:02): Deliberation & Action Gate,timestamp,#3B82F6,Temporal Attack Graph,14
+T3_Remediate,T3 (03:14:03): Atomic Rollback & Containment,timestamp,#10B981,Temporal Attack Graph,14
+M_Kernel_Source,1. Linux Kernel (Syscall & Drift Source),core_engine,#E8B64C,YORU Closed-Loop Graph (Master Architecture),15
+M_Log_Sanitizer,2. Untrusted Log Ingestion & Delimiters,sanitizer,#3B82F6,YORU Closed-Loop Graph (Master Architecture),15
+M_LLM_Proxy,3. AI Deliberation Engine & Proxy,intelligence,#FBBF24,YORU Closed-Loop Graph (Master Architecture),15
+M_Action_Gate,4. Constrained Gatekeeper (Approval Check),governance,#10B981,YORU Closed-Loop Graph (Master Architecture),15
+M_Yoructl_Exec,5. yoructl Discrete CIS Primitives,execution,#10B981,YORU Closed-Loop Graph (Master Architecture),15
+M_Auditd_Sink,6. Closed-Loop Audit Sink (AUID=1001),accountability,#E8B64C,YORU Closed-Loop Graph (Master Architecture),15

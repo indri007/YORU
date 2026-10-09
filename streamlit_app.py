@@ -11,6 +11,7 @@ Features:
 """
 
 import json
+import math
 import sqlite3
 import time
 from pathlib import Path
@@ -18,6 +19,66 @@ from pathlib import Path
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
+
+
+def create_network_plot(graph_data):
+    nodes = graph_data["nodes"]
+    edges = graph_data["edges"]
+
+    n = max(len(nodes), 1)
+    pos = {}
+    for i, node in enumerate(nodes):
+        angle = 2 * math.pi * i / n
+        pos[node["id"]] = (math.cos(angle), math.sin(angle))
+
+    edge_x, edge_y = [], []
+    for edge in edges:
+        s = pos.get(edge["source"], (0, 0))
+        t = pos.get(edge["target"], (0, 0))
+        edge_x.extend([s[0], t[0], None])
+        edge_y.extend([s[1], t[1], None])
+
+    edge_trace = go.Scatter(
+        x=edge_x,
+        y=edge_y,
+        line={"width": 1.5, "color": "rgba(232, 182, 76, 0.45)"},
+        hoverinfo="none",
+        mode="lines",
+    )
+
+    node_x = [pos[node["id"]][0] for node in nodes]
+    node_y = [pos[node["id"]][1] for node in nodes]
+    node_text = [f"<b>{node['label']}</b><br>Category: {node['type']}" for node in nodes]
+    node_color = [node.get("color", "#E8B64C") for node in nodes]
+
+    node_trace = go.Scatter(
+        x=node_x,
+        y=node_y,
+        mode="markers+text",
+        hoverinfo="text",
+        text=[node["label"] for node in nodes],
+        textposition="top center",
+        hovertext=node_text,
+        marker={
+            "size": 22,
+            "color": node_color,
+            "line": {"width": 2, "color": "#FFFFFF"},
+        },
+        textfont={"color": "#F2EFE6", "size": 10},
+    )
+
+    fig = go.Figure(data=[edge_trace, node_trace])
+    fig.update_layout(
+        title=f"Network Topology: {graph_data['name']}",
+        showlegend=False,
+        plot_bgcolor="#141722",
+        paper_bgcolor="#0E0F14",
+        xaxis={"showgrid": False, "zeroline": False, "showticklabels": False},
+        yaxis={"showgrid": False, "zeroline": False, "showticklabels": False},
+        height=450,
+        margin={"l": 20, "r": 20, "t": 40, "b": 20},
+    )
+    return fig
 
 # Page Configuration
 st.set_page_config(
@@ -292,11 +353,12 @@ with col_hero_3d:
 # ==============================================================================
 # MAIN NAVIGATION TABS
 # ==============================================================================
-tab_story, tab_action, tab_controls, tab_benchmarks, tab_chat = st.tabs([
+tab_story, tab_action, tab_controls, tab_benchmarks, tab_graphs, tab_chat = st.tabs([
     "🌙 The 3:00 AM Story",
     "⚠️ Action Center & Drift",
     "📋 CIS K01–K10 Catalog",
     "🔬 Empirical Rigor (Elsevier Q1)",
+    "🕸️ 15 Network Graphs (NodeXL)",
     "💬 YORU Assistant Chat",
 ])
 
@@ -589,7 +651,78 @@ with tab_benchmarks:
 
 
 # ------------------------------------------------------------------------------
-# TAB 5: YORU ASSISTANT CHAT
+# TAB 5: 15 TOPOLOGICAL & SECURITY NETWORK GRAPHS (NodeXL)
+# ------------------------------------------------------------------------------
+with tab_graphs:
+    st.markdown("### 🕸️ 15 Topological & Security Network Graphs")
+    st.caption("NodeXL Pro & Graph Gallery Compatible Network Analysis of YORU's Security Invariants")
+
+    graphs_path = RESULTS_DIR / "network_graphs.json"
+    if graphs_path.exists():
+        with open(graphs_path, encoding="utf-8") as f:
+            all_graphs = json.load(f)
+
+        options = [f"{g['id']}. {g['name']}" for g in all_graphs.values()]
+        selected_option = st.selectbox(
+            "Pilih Graph / Select Network Topology:",
+            options,
+            index=14,  # Default to #15 YORU Closed-Loop Graph
+        )
+        selected_id = int(selected_option.split(".")[0])
+        selected_key = next((k for k, g in all_graphs.items() if g["id"] == selected_id), None)
+        graph_data = all_graphs[selected_key]
+
+        c_desc1, c_desc2 = st.columns([8, 4])
+        with c_desc1:
+            st.markdown(f"**Focus & Scope:** {graph_data['description']}")
+            st.info(f"💡 **Key Discovery / Temuan:** {graph_data['findings']}")
+        with c_desc2:
+            st.metric("Total Nodes / Vertices", len(graph_data["nodes"]))
+            st.metric("Total Edges / Relationships", len(graph_data["edges"]))
+
+        # Render Interactive Plotly Network Graph
+        st.plotly_chart(create_network_plot(graph_data), use_container_width=True)
+
+        # NodeXL Pro & Gephi Export Data
+        st.divider()
+        st.markdown("#### 📥 NodeXL Pro & Gephi Export Data")
+        st.caption("Ready-to-import CSV datasets matching NodeXL Graph Gallery schema.")
+
+        col_dl1, col_dl2 = st.columns(2)
+        edges_csv_path = RESULTS_DIR / "nodexl_edges.csv"
+        vertices_csv_path = RESULTS_DIR / "nodexl_vertices.csv"
+
+        with col_dl1:
+            if edges_csv_path.exists():
+                st.download_button(
+                    label="⬇️ Download NodeXL Edges (CSV)",
+                    data=edges_csv_path.read_bytes(),
+                    file_name="nodexl_edges.csv",
+                    mime="text/csv",
+                    use_container_width=True,
+                )
+        with col_dl2:
+            if vertices_csv_path.exists():
+                st.download_button(
+                    label="⬇️ Download NodeXL Vertices (CSV)",
+                    data=vertices_csv_path.read_bytes(),
+                    file_name="nodexl_vertices.csv",
+                    mime="text/csv",
+                    use_container_width=True,
+                )
+
+        with st.expander("🔍 View Raw Node & Edge Tables", expanded=False):
+            t_col1, t_col2 = st.columns(2)
+            with t_col1:
+                st.markdown("**Vertices (Nodes):**")
+                st.dataframe(graph_data["nodes"], use_container_width=True)
+            with t_col2:
+                st.markdown("**Relationships (Edges):**")
+                st.dataframe(graph_data["edges"], use_container_width=True)
+
+
+# ------------------------------------------------------------------------------
+# TAB 6: YORU ASSISTANT CHAT
 # ------------------------------------------------------------------------------
 with tab_chat:
     st.markdown("### 💬 Interactive Consultation with YORU Assistant")

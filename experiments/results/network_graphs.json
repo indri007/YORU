@@ -1,0 +1,1136 @@
+{
+  "1_attack_action": {
+    "id": 1,
+    "name": "Attack–Action Network",
+    "description": "Evaluates whether prompt injection attacks penetrate the OS action space.",
+    "findings": "Token perturbation reached 74.0%, but Action Penetration remained 0.0% (Zero OS execution).",
+    "nodes": [
+      {
+        "id": "V1_Direct_Shell",
+        "label": "Direct Shell Injection",
+        "type": "attack_vector",
+        "color": "#F43F5E"
+      },
+      {
+        "id": "V2_Delimiter_Smuggle",
+        "label": "Delimiter Smuggling",
+        "type": "attack_vector",
+        "color": "#F43F5E"
+      },
+      {
+        "id": "V3_Catalog_Escape",
+        "label": "Catalog Escape (K11/leak)",
+        "type": "attack_vector",
+        "color": "#F43F5E"
+      },
+      {
+        "id": "V4_Approval_Misdirect",
+        "label": "Approval Misdirection",
+        "type": "attack_vector",
+        "color": "#F43F5E"
+      },
+      {
+        "id": "V5_AUID_Spoof",
+        "label": "Context/AUID Spoofing",
+        "type": "attack_vector",
+        "color": "#F43F5E"
+      },
+      {
+        "id": "LLM_Token_Space",
+        "label": "LLM Token Perturbation (74%)",
+        "type": "intermediate",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "YORU_Gate",
+        "label": "YORU Action Gatekeeper",
+        "type": "defense_barrier",
+        "color": "#10B981"
+      },
+      {
+        "id": "OS_Root_Shell",
+        "label": "Arbitrary OS Shell (/bin/bash)",
+        "type": "blocked_target",
+        "color": "#94A3B8"
+      },
+      {
+        "id": "CIS_K08_Audit",
+        "label": "CIS K08 Audit Record",
+        "type": "sanctioned_action",
+        "color": "#3B82F6"
+      }
+    ],
+    "edges": [
+      {
+        "source": "V1_Direct_Shell",
+        "target": "LLM_Token_Space",
+        "relation": "perturbs_tokens",
+        "weight": 1.0
+      },
+      {
+        "source": "V2_Delimiter_Smuggle",
+        "target": "LLM_Token_Space",
+        "relation": "perturbs_tokens",
+        "weight": 0.9
+      },
+      {
+        "source": "V3_Catalog_Escape",
+        "target": "LLM_Token_Space",
+        "relation": "perturbs_tokens",
+        "weight": 0.8
+      },
+      {
+        "source": "V4_Approval_Misdirect",
+        "target": "LLM_Token_Space",
+        "relation": "perturbs_tokens",
+        "weight": 0.6
+      },
+      {
+        "source": "V5_AUID_Spoof",
+        "target": "LLM_Token_Space",
+        "relation": "perturbs_tokens",
+        "weight": 0.4
+      },
+      {
+        "source": "LLM_Token_Space",
+        "target": "YORU_Gate",
+        "relation": "intercepted_by",
+        "weight": 1.0
+      },
+      {
+        "source": "YORU_Gate",
+        "target": "OS_Root_Shell",
+        "relation": "BLOCKED (ASR=0.0%)",
+        "weight": 0.0
+      },
+      {
+        "source": "YORU_Gate",
+        "target": "CIS_K08_Audit",
+        "relation": "dispatched_safely",
+        "weight": 1.0
+      }
+    ]
+  },
+  "2_audit_event": {
+    "id": 2,
+    "name": "Audit Event Network",
+    "description": "Maps system event causality from true actor AUID to kernel log records.",
+    "findings": "Linux auditd attributes 100% of events to the originating login session, even across sudo.",
+    "nodes": [
+      {
+        "id": "AUID_1000",
+        "label": "AUID:1000 (User: ubuntu)",
+        "type": "actor",
+        "color": "#3B82F6"
+      },
+      {
+        "id": "AUID_1001",
+        "label": "AUID:1001 (Agent: yoru-agent)",
+        "type": "actor",
+        "color": "#10B981"
+      },
+      {
+        "id": "AUID_Unset",
+        "label": "AUID:unset (Cron/Daemon)",
+        "type": "actor",
+        "color": "#94A3B8"
+      },
+      {
+        "id": "Proc_Sudo",
+        "label": "Process: sudo vim",
+        "type": "process",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "Proc_Yoructl",
+        "label": "Process: yoructl K08",
+        "type": "process",
+        "color": "#10B981"
+      },
+      {
+        "id": "Event_Passwd_Mod",
+        "label": "Event: /etc/passwd Write",
+        "type": "event",
+        "color": "#F43F5E"
+      },
+      {
+        "id": "Event_Sysctl_Mod",
+        "label": "Event: /etc/sysctl.d Conf",
+        "type": "event",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "Kernel_Audit_Log",
+        "label": "/var/log/audit/audit.log",
+        "type": "sink",
+        "color": "#E8B64C"
+      }
+    ],
+    "edges": [
+      {
+        "source": "AUID_1000",
+        "target": "Proc_Sudo",
+        "relation": "spawns_with_escalation",
+        "weight": 1.0
+      },
+      {
+        "source": "Proc_Sudo",
+        "target": "Event_Passwd_Mod",
+        "relation": "triggers",
+        "weight": 1.0
+      },
+      {
+        "source": "Event_Passwd_Mod",
+        "target": "Kernel_Audit_Log",
+        "relation": "recorded_under_auid_1000",
+        "weight": 1.0
+      },
+      {
+        "source": "AUID_1001",
+        "target": "Proc_Yoructl",
+        "relation": "executes_remediation",
+        "weight": 1.0
+      },
+      {
+        "source": "Proc_Yoructl",
+        "target": "Event_Sysctl_Mod",
+        "relation": "hardens_config",
+        "weight": 1.0
+      },
+      {
+        "source": "Event_Sysctl_Mod",
+        "target": "Kernel_Audit_Log",
+        "relation": "recorded_under_auid_1001",
+        "weight": 1.0
+      }
+    ]
+  },
+  "3_auid_attribution": {
+    "id": 3,
+    "name": "AUID Attribution Graph",
+    "description": "Compares effective UID masking in syslog vs immutable AUID preservation in auditd.",
+    "findings": "Standard syslog lost origin identity in 86% of trials; auditd preserved 100% true attribution.",
+    "nodes": [
+      {
+        "id": "Origin_Actor_Budi",
+        "label": "Login: budi (AUID=1002)",
+        "type": "true_identity",
+        "color": "#3B82F6"
+      },
+      {
+        "id": "Origin_Actor_Yoru",
+        "label": "Service: yoru-agent (AUID=1001)",
+        "type": "true_identity",
+        "color": "#10B981"
+      },
+      {
+        "id": "Elevation_Sudo_Su",
+        "label": "sudo su - root",
+        "type": "privilege_transition",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "Syslog_View",
+        "label": "Syslog effective uid=root (Identity Masked)",
+        "type": "flawed_view",
+        "color": "#F43F5E"
+      },
+      {
+        "id": "Auditd_AUID_View",
+        "label": "auditd auid=1002 (Identity Preserved)",
+        "type": "true_view",
+        "color": "#10B981"
+      }
+    ],
+    "edges": [
+      {
+        "source": "Origin_Actor_Budi",
+        "target": "Elevation_Sudo_Su",
+        "relation": "escalates_privilege",
+        "weight": 1.0
+      },
+      {
+        "source": "Elevation_Sudo_Su",
+        "target": "Syslog_View",
+        "relation": "masks_identity_as_root (86% loss)",
+        "weight": 0.86
+      },
+      {
+        "source": "Elevation_Sudo_Su",
+        "target": "Auditd_AUID_View",
+        "relation": "preserves_auid_1002 (100% accuracy)",
+        "weight": 1.0
+      },
+      {
+        "source": "Origin_Actor_Yoru",
+        "target": "Auditd_AUID_View",
+        "relation": "preserves_auid_1001",
+        "weight": 1.0
+      }
+    ]
+  },
+  "4_process_file": {
+    "id": 4,
+    "name": "Process–File Network",
+    "description": "Monitors critical system files touched by agent and system processes under K08 watch.",
+    "findings": "Sensitive paths (/etc/passwd, /etc/shadow, /etc/ssh) are strictly monitored by K08 audit rules.",
+    "nodes": [
+      {
+        "id": "P_yoructl",
+        "label": "bin/yoructl",
+        "type": "process",
+        "color": "#10B981"
+      },
+      {
+        "id": "P_sshd",
+        "label": "/usr/sbin/sshd",
+        "type": "process",
+        "color": "#3B82F6"
+      },
+      {
+        "id": "P_vim",
+        "label": "/usr/bin/vim",
+        "type": "process",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "F_sshd_config",
+        "label": "/etc/ssh/sshd_config",
+        "type": "file",
+        "color": "#E8B64C"
+      },
+      {
+        "id": "F_passwd",
+        "label": "/etc/passwd",
+        "type": "file",
+        "color": "#F43F5E"
+      },
+      {
+        "id": "F_shadow",
+        "label": "/etc/shadow",
+        "type": "file",
+        "color": "#F43F5E"
+      },
+      {
+        "id": "F_sysctl",
+        "label": "/etc/sysctl.d/99-yoru-k10.conf",
+        "type": "file",
+        "color": "#10B981"
+      },
+      {
+        "id": "F_backup",
+        "label": "/var/backups/yoru/*",
+        "type": "file",
+        "color": "#10B981"
+      }
+    ],
+    "edges": [
+      {
+        "source": "P_sshd",
+        "target": "F_sshd_config",
+        "relation": "reads",
+        "weight": 1.0
+      },
+      {
+        "source": "P_yoructl",
+        "target": "F_sshd_config",
+        "relation": "hardens (K01/K02)",
+        "weight": 1.0
+      },
+      {
+        "source": "P_yoructl",
+        "target": "F_backup",
+        "relation": "writes_atomic_snapshot",
+        "weight": 1.0
+      },
+      {
+        "source": "P_yoructl",
+        "target": "F_sysctl",
+        "relation": "writes (K10)",
+        "weight": 1.0
+      },
+      {
+        "source": "P_vim",
+        "target": "F_passwd",
+        "relation": "modifies (monitored by K08)",
+        "weight": 1.0
+      },
+      {
+        "source": "P_vim",
+        "target": "F_shadow",
+        "relation": "modifies (monitored by K08)",
+        "weight": 1.0
+      }
+    ]
+  },
+  "5_process_syscall": {
+    "id": 5,
+    "name": "Process–Syscall Network",
+    "description": "Analyzes system call surfaces of yoructl vs unrestricted agent runtimes.",
+    "findings": "YORU avoids ptrace and arbitrary execve, constraining operations to deterministic read/write syscalls.",
+    "nodes": [
+      {
+        "id": "Proc_Unconstrained_AI",
+        "label": "Unconstrained Agent (/bin/bash)",
+        "type": "process",
+        "color": "#F43F5E"
+      },
+      {
+        "id": "Proc_YORU_Harness",
+        "label": "YORU Harness (yoructl)",
+        "type": "process",
+        "color": "#10B981"
+      },
+      {
+        "id": "Sys_execve",
+        "label": "syscall: execve(arbitrary)",
+        "type": "syscall",
+        "color": "#F43F5E"
+      },
+      {
+        "id": "Sys_ptrace",
+        "label": "syscall: ptrace",
+        "type": "syscall",
+        "color": "#F43F5E"
+      },
+      {
+        "id": "Sys_openat",
+        "label": "syscall: openat/read/write",
+        "type": "syscall",
+        "color": "#3B82F6"
+      },
+      {
+        "id": "Sys_flock",
+        "label": "syscall: flock (concurrency)",
+        "type": "syscall",
+        "color": "#10B981"
+      }
+    ],
+    "edges": [
+      {
+        "source": "Proc_Unconstrained_AI",
+        "target": "Sys_execve",
+        "relation": "spawns_arbitrary_binaries",
+        "weight": 1.0
+      },
+      {
+        "source": "Proc_Unconstrained_AI",
+        "target": "Sys_ptrace",
+        "relation": "potential_process_injection",
+        "weight": 0.8
+      },
+      {
+        "source": "Proc_YORU_Harness",
+        "target": "Sys_flock",
+        "relation": "concurrency_lock",
+        "weight": 1.0
+      },
+      {
+        "source": "Proc_YORU_Harness",
+        "target": "Sys_openat",
+        "relation": "deterministic_file_io",
+        "weight": 1.0
+      }
+    ]
+  },
+  "6_user_action": {
+    "id": 6,
+    "name": "User–Action Network",
+    "description": "Maps administrative action distribution across human operators and autonomous YORU agent.",
+    "findings": "High-risk actions require human approval; low-risk passive audits are executed autonomously.",
+    "nodes": [
+      {
+        "id": "User_Admin",
+        "label": "System Owner (Human)",
+        "type": "actor",
+        "color": "#3B82F6"
+      },
+      {
+        "id": "User_YORU_Agent",
+        "label": "yoru-agent (Autonomous)",
+        "type": "actor",
+        "color": "#10B981"
+      },
+      {
+        "id": "Act_K01_PermitRoot",
+        "label": "K01: Disable Root SSH",
+        "type": "action",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "Act_K05_UFW",
+        "label": "K05: Enable UFW Firewall",
+        "type": "action",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "Act_K08_Auditd",
+        "label": "K08: Enforce Auditd Rules",
+        "type": "action",
+        "color": "#10B981"
+      },
+      {
+        "id": "Act_K10_Sysctl",
+        "label": "K10: Network Stack Hardening",
+        "type": "action",
+        "color": "#10B981"
+      }
+    ],
+    "edges": [
+      {
+        "source": "User_Admin",
+        "target": "Act_K01_PermitRoot",
+        "relation": "approves_and_authorizes",
+        "weight": 1.0
+      },
+      {
+        "source": "User_Admin",
+        "target": "Act_K05_UFW",
+        "relation": "approves_and_authorizes",
+        "weight": 1.0
+      },
+      {
+        "source": "User_YORU_Agent",
+        "target": "Act_K08_Auditd",
+        "relation": "audits_and_verifies",
+        "weight": 1.0
+      },
+      {
+        "source": "User_YORU_Agent",
+        "target": "Act_K10_Sysctl",
+        "relation": "audits_and_verifies",
+        "weight": 1.0
+      }
+    ]
+  },
+  "7_attack_similarity": {
+    "id": 7,
+    "name": "Attack Vector Similarity",
+    "description": "Clusters 50 adversarial prompt injection payloads based on semantic attack characteristics.",
+    "findings": "Payloads naturally cluster into 5 attack modalities, all neutralized by the closed action space.",
+    "nodes": [
+      {
+        "id": "Clust_Direct",
+        "label": "Cluster: Direct Instruction Override",
+        "type": "cluster",
+        "color": "#F43F5E"
+      },
+      {
+        "id": "Clust_Delimiter",
+        "label": "Cluster: Delimiter Smuggling",
+        "type": "cluster",
+        "color": "#F43F5E"
+      },
+      {
+        "id": "Clust_Catalog",
+        "label": "Cluster: Catalog Expansion",
+        "type": "cluster",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "Clust_Approval",
+        "label": "Cluster: Approval Misdirection",
+        "type": "cluster",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "Clust_AUID",
+        "label": "Cluster: Context/AUID Spoofing",
+        "type": "cluster",
+        "color": "#3B82F6"
+      }
+    ],
+    "edges": [
+      {
+        "source": "Clust_Direct",
+        "target": "Clust_Delimiter",
+        "relation": "syntactic_overlap",
+        "weight": 0.72
+      },
+      {
+        "source": "Clust_Delimiter",
+        "target": "Clust_Catalog",
+        "relation": "evasion_technique",
+        "weight": 0.65
+      },
+      {
+        "source": "Clust_Approval",
+        "target": "Clust_Direct",
+        "relation": "semantic_urgency",
+        "weight": 0.58
+      },
+      {
+        "source": "Clust_AUID",
+        "target": "Clust_Catalog",
+        "relation": "metadata_manipulation",
+        "weight": 0.51
+      }
+    ]
+  },
+  "8_injection_propagation": {
+    "id": 8,
+    "name": "Injection Propagation Graph",
+    "description": "Visualizes the complete multi-stage propagation path of indirect log injection.",
+    "findings": "Injection penetrates untrusted log ingestion and LLM tokens, but terminates definitively at the Action Gate.",
+    "nodes": [
+      {
+        "id": "Stage_Log_Ingest",
+        "label": "Stage 1: Untrusted Log Ingestion",
+        "type": "stage",
+        "color": "#F43F5E"
+      },
+      {
+        "id": "Stage_LLM_Deliberation",
+        "label": "Stage 2: LLM Token Perturbation (74%)",
+        "type": "stage",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "Stage_Action_Gate",
+        "label": "Stage 3: YORU Action Gatekeeper",
+        "type": "defense_barrier",
+        "color": "#10B981"
+      },
+      {
+        "id": "Stage_OS_Execution",
+        "label": "Stage 4: Operating System Shell Execution",
+        "type": "destination",
+        "color": "#94A3B8"
+      }
+    ],
+    "edges": [
+      {
+        "source": "Stage_Log_Ingest",
+        "target": "Stage_LLM_Deliberation",
+        "relation": "propagates_text",
+        "weight": 1.0
+      },
+      {
+        "source": "Stage_LLM_Deliberation",
+        "target": "Stage_Action_Gate",
+        "relation": "submits_candidate_plan",
+        "weight": 0.74
+      },
+      {
+        "source": "Stage_Action_Gate",
+        "target": "Stage_OS_Execution",
+        "relation": "BLOCKED (ASR_action=0.0%)",
+        "weight": 0.0
+      }
+    ]
+  },
+  "9_decision_action": {
+    "id": 9,
+    "name": "LLM Decision–Action Graph",
+    "description": "Verifies that LLM decisions strictly resolve to discrete catalog IDs (K01–K10).",
+    "findings": "100% of admitted actions belong to the 40 discrete CIS primitives; invalid suggestions are dropped.",
+    "nodes": [
+      {
+        "id": "LLM_Output",
+        "label": "LLM Suggested Decision",
+        "type": "generator",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "Valid_K01",
+        "label": "yoructl K01 (Valid)",
+        "type": "valid_primitive",
+        "color": "#10B981"
+      },
+      {
+        "id": "Valid_K05",
+        "label": "yoructl K05 (Valid)",
+        "type": "valid_primitive",
+        "color": "#10B981"
+      },
+      {
+        "id": "Valid_K08",
+        "label": "yoructl K08 (Valid)",
+        "type": "valid_primitive",
+        "color": "#10B981"
+      },
+      {
+        "id": "Invalid_Raw_Bash",
+        "label": "Invalid: curl | bash",
+        "type": "dropped_action",
+        "color": "#F43F5E"
+      }
+    ],
+    "edges": [
+      {
+        "source": "LLM_Output",
+        "target": "Valid_K01",
+        "relation": "whitelisted_and_checked",
+        "weight": 1.0
+      },
+      {
+        "source": "LLM_Output",
+        "target": "Valid_K05",
+        "relation": "whitelisted_and_checked",
+        "weight": 1.0
+      },
+      {
+        "source": "LLM_Output",
+        "target": "Valid_K08",
+        "relation": "whitelisted_and_checked",
+        "weight": 1.0
+      },
+      {
+        "source": "LLM_Output",
+        "target": "Invalid_Raw_Bash",
+        "relation": "REJECTED_BY_SCHEMA",
+        "weight": 0.0
+      }
+    ]
+  },
+  "10_cis_dependencies": {
+    "id": 10,
+    "name": "CIS Control Dependency Graph",
+    "description": "Maps prerequisite and audit relationships across controls K01 to K10.",
+    "findings": "K08 (auditd) provides foundational audit telemetry for all other CIS controls.",
+    "nodes": [
+      {
+        "id": "K01",
+        "label": "K01: PermitRootLogin No",
+        "type": "ssh_control",
+        "color": "#3B82F6"
+      },
+      {
+        "id": "K02",
+        "label": "K02: PubkeyAuthentication Yes",
+        "type": "ssh_control",
+        "color": "#3B82F6"
+      },
+      {
+        "id": "K03",
+        "label": "K03: MaxAuthTries 3",
+        "type": "ssh_control",
+        "color": "#3B82F6"
+      },
+      {
+        "id": "K04",
+        "label": "K04: PasswordAuthentication No",
+        "type": "ssh_control",
+        "color": "#3B82F6"
+      },
+      {
+        "id": "K05",
+        "label": "K05: UFW Firewall Active",
+        "type": "network_control",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "K06",
+        "label": "K06: Bind Localhost Only",
+        "type": "network_control",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "K07",
+        "label": "K07: Automatic Security Updates",
+        "type": "maintenance_control",
+        "color": "#10B981"
+      },
+      {
+        "id": "K08",
+        "label": "K08: Linux Kernel Auditd Active",
+        "type": "telemetry_foundation",
+        "color": "#E8B64C"
+      },
+      {
+        "id": "K09",
+        "label": "K09: Journald Log Retention",
+        "type": "telemetry_foundation",
+        "color": "#10B981"
+      },
+      {
+        "id": "K10",
+        "label": "K10: Sysctl Kernel Hardening",
+        "type": "kernel_control",
+        "color": "#10B981"
+      }
+    ],
+    "edges": [
+      {
+        "source": "K02",
+        "target": "K04",
+        "relation": "prerequisite (Pubkey before disabling Passwd)",
+        "weight": 1.0
+      },
+      {
+        "source": "K08",
+        "target": "K01",
+        "relation": "monitors_drift_of",
+        "weight": 1.0
+      },
+      {
+        "source": "K08",
+        "target": "K05",
+        "relation": "monitors_drift_of",
+        "weight": 1.0
+      },
+      {
+        "source": "K08",
+        "target": "K06",
+        "relation": "monitors_drift_of",
+        "weight": 1.0
+      },
+      {
+        "source": "K08",
+        "target": "K10",
+        "relation": "monitors_drift_of",
+        "weight": 1.0
+      },
+      {
+        "source": "K09",
+        "target": "K08",
+        "relation": "retains_audit_logs",
+        "weight": 1.0
+      }
+    ]
+  },
+  "11_security_drift": {
+    "id": 11,
+    "name": "Security Drift Network",
+    "description": "Tracks configuration drift frequency across system services and CIS controls.",
+    "findings": "SSH port binding and MySQL 3306 binding exhibit highest empirical drift frequency.",
+    "nodes": [
+      {
+        "id": "Cfg_SSH",
+        "label": "/etc/ssh/sshd_config",
+        "type": "config",
+        "color": "#3B82F6"
+      },
+      {
+        "id": "Cfg_UFW",
+        "label": "/etc/ufw/user.rules",
+        "type": "config",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "Cfg_MySQL",
+        "label": "/etc/mysql/my.cnf",
+        "type": "config",
+        "color": "#F43F5E"
+      },
+      {
+        "id": "Drift_Port_3306",
+        "label": "Drift: 3306 -> 0.0.0.0",
+        "type": "drift_event",
+        "color": "#F43F5E"
+      },
+      {
+        "id": "Drift_Root_SSH",
+        "label": "Drift: PermitRoot -> yes",
+        "type": "drift_event",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "Ctrl_K06",
+        "label": "Remediated by K06",
+        "type": "control",
+        "color": "#10B981"
+      },
+      {
+        "id": "Ctrl_K01",
+        "label": "Remediated by K01",
+        "type": "control",
+        "color": "#10B981"
+      }
+    ],
+    "edges": [
+      {
+        "source": "Cfg_MySQL",
+        "target": "Drift_Port_3306",
+        "relation": "drifts_to",
+        "weight": 1.0
+      },
+      {
+        "source": "Drift_Port_3306",
+        "target": "Ctrl_K06",
+        "relation": "neutralized_by",
+        "weight": 1.0
+      },
+      {
+        "source": "Cfg_SSH",
+        "target": "Drift_Root_SSH",
+        "relation": "drifts_to",
+        "weight": 1.0
+      },
+      {
+        "source": "Drift_Root_SSH",
+        "target": "Ctrl_K01",
+        "relation": "neutralized_by",
+        "weight": 1.0
+      }
+    ]
+  },
+  "12_rollback_network": {
+    "id": 12,
+    "name": "Rollback Network",
+    "description": "Validates atomic reversibility pipeline from unauthorized drift to hash-verified restoration.",
+    "findings": "100.0% atomic reversibility achieved across all state reversals with exact SHA-256 parity.",
+    "nodes": [
+      {
+        "id": "State_Clean",
+        "label": "Secure Baseline (Hash: 0x9A4F)",
+        "type": "state",
+        "color": "#10B981"
+      },
+      {
+        "id": "State_Drifted",
+        "label": "Drifted State (Hash: 0xDEAD)",
+        "type": "state",
+        "color": "#F43F5E"
+      },
+      {
+        "id": "Backup_Archive",
+        "label": "/var/backups/yoru/snapshot.tar.gz",
+        "type": "snapshot",
+        "color": "#E8B64C"
+      },
+      {
+        "id": "Cmd_Kembalikan",
+        "label": "yoructl <Kxx> kembalikan",
+        "type": "rollback_command",
+        "color": "#3B82F6"
+      },
+      {
+        "id": "State_Restored",
+        "label": "Restored State (Hash: 0x9A4F)",
+        "type": "state",
+        "color": "#10B981"
+      }
+    ],
+    "edges": [
+      {
+        "source": "State_Clean",
+        "target": "Backup_Archive",
+        "relation": "atomic_snapshot_taken",
+        "weight": 1.0
+      },
+      {
+        "source": "State_Clean",
+        "target": "State_Drifted",
+        "relation": "unauthorized_drift_occurs",
+        "weight": 1.0
+      },
+      {
+        "source": "State_Drifted",
+        "target": "Cmd_Kembalikan",
+        "relation": "triggers_rollback",
+        "weight": 1.0
+      },
+      {
+        "source": "Backup_Archive",
+        "target": "Cmd_Kembalikan",
+        "relation": "provides_clean_state",
+        "weight": 1.0
+      },
+      {
+        "source": "Cmd_Kembalikan",
+        "target": "State_Restored",
+        "relation": "exact_byte_parity (100% PASS)",
+        "weight": 1.0
+      }
+    ]
+  },
+  "13_privilege_boundary": {
+    "id": 13,
+    "name": "Privilege Boundary Graph",
+    "description": "Models operational privilege escalation from unprivileged yoru-agent to audited root actions.",
+    "findings": "Agent operates without root login shell; privilege escalation is strictly restricted to /opt/yoru/bin/yoructl.",
+    "nodes": [
+      {
+        "id": "User_YoruAgent",
+        "label": "yoru-agent (Unprivileged UID=1001)",
+        "type": "user",
+        "color": "#3B82F6"
+      },
+      {
+        "id": "Sudoers_Boundary",
+        "label": "/etc/sudoers.d/yoru (Strict Whitelist)",
+        "type": "privilege_gate",
+        "color": "#E8B64C"
+      },
+      {
+        "id": "Bin_Yoructl",
+        "label": "/opt/yoru/bin/yoructl",
+        "type": "dispatcher",
+        "color": "#10B981"
+      },
+      {
+        "id": "Root_Action",
+        "label": "Root Execution (Confined CIS Only)",
+        "type": "target",
+        "color": "#10B981"
+      },
+      {
+        "id": "Arbitrary_Shell",
+        "label": "Arbitrary Shell (/bin/bash, /bin/sh)",
+        "type": "forbidden",
+        "color": "#F43F5E"
+      }
+    ],
+    "edges": [
+      {
+        "source": "User_YoruAgent",
+        "target": "Sudoers_Boundary",
+        "relation": "invokes_sudo",
+        "weight": 1.0
+      },
+      {
+        "source": "Sudoers_Boundary",
+        "target": "Bin_Yoructl",
+        "relation": "ALLOWED_EXCLUSIVELY",
+        "weight": 1.0
+      },
+      {
+        "source": "Bin_Yoructl",
+        "target": "Root_Action",
+        "relation": "executes_discrete_primitive",
+        "weight": 1.0
+      },
+      {
+        "source": "Sudoers_Boundary",
+        "target": "Arbitrary_Shell",
+        "relation": "HARD_DENIED (NoNOPASSWD /bin/bash)",
+        "weight": 0.0
+      }
+    ]
+  },
+  "14_temporal_attack": {
+    "id": 14,
+    "name": "Temporal Attack Graph",
+    "description": "Temporal progression from malicious probe at t0 to autonomous containment at t3.",
+    "findings": "Average time-to-containment is under 1.8 seconds upon telemetry arrival at yoru-watch.",
+    "nodes": [
+      {
+        "id": "T0_Probe",
+        "label": "T0 (03:14:00): SSH Brute & Log Injection",
+        "type": "timestamp",
+        "color": "#F43F5E"
+      },
+      {
+        "id": "T1_Kernel_Trap",
+        "label": "T1 (03:14:01): Kernel auditd Records Event",
+        "type": "timestamp",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "T2_Deliberate",
+        "label": "T2 (03:14:02): Deliberation & Action Gate",
+        "type": "timestamp",
+        "color": "#3B82F6"
+      },
+      {
+        "id": "T3_Remediate",
+        "label": "T3 (03:14:03): Atomic Rollback & Containment",
+        "type": "timestamp",
+        "color": "#10B981"
+      }
+    ],
+    "edges": [
+      {
+        "source": "T0_Probe",
+        "target": "T1_Kernel_Trap",
+        "relation": "latency: 0.8s",
+        "weight": 1.0
+      },
+      {
+        "source": "T1_Kernel_Trap",
+        "target": "T2_Deliberate",
+        "relation": "latency: 0.6s",
+        "weight": 1.0
+      },
+      {
+        "source": "T2_Deliberate",
+        "target": "T3_Remediate",
+        "relation": "latency: 0.4s (Total: 1.8s)",
+        "weight": 1.0
+      }
+    ]
+  },
+  "15_closed_loop": {
+    "id": 15,
+    "name": "YORU Closed-Loop Graph (Master Architecture)",
+    "description": "The foundational closed-loop control graph uniting log ingestion, deliberation, gatekeeper, execution, and kernel audit sink.",
+    "findings": "Complete non-repudiable bilateral loop: Kernel records attacker origin as well as autonomous agent remediation.",
+    "nodes": [
+      {
+        "id": "M_Kernel_Source",
+        "label": "1. Linux Kernel (Syscall & Drift Source)",
+        "type": "core_engine",
+        "color": "#E8B64C"
+      },
+      {
+        "id": "M_Log_Sanitizer",
+        "label": "2. Untrusted Log Ingestion & Delimiters",
+        "type": "sanitizer",
+        "color": "#3B82F6"
+      },
+      {
+        "id": "M_LLM_Proxy",
+        "label": "3. AI Deliberation Engine & Proxy",
+        "type": "intelligence",
+        "color": "#FBBF24"
+      },
+      {
+        "id": "M_Action_Gate",
+        "label": "4. Constrained Gatekeeper (Approval Check)",
+        "type": "governance",
+        "color": "#10B981"
+      },
+      {
+        "id": "M_Yoructl_Exec",
+        "label": "5. yoructl Discrete CIS Primitives",
+        "type": "execution",
+        "color": "#10B981"
+      },
+      {
+        "id": "M_Auditd_Sink",
+        "label": "6. Closed-Loop Audit Sink (AUID=1001)",
+        "type": "accountability",
+        "color": "#E8B64C"
+      }
+    ],
+    "edges": [
+      {
+        "source": "M_Kernel_Source",
+        "target": "M_Log_Sanitizer",
+        "relation": "emits_telemetry",
+        "weight": 1.0
+      },
+      {
+        "source": "M_Log_Sanitizer",
+        "target": "M_LLM_Proxy",
+        "relation": "delivers_structured_context",
+        "weight": 1.0
+      },
+      {
+        "source": "M_LLM_Proxy",
+        "target": "M_Action_Gate",
+        "relation": "proposes_discrete_action",
+        "weight": 1.0
+      },
+      {
+        "source": "M_Action_Gate",
+        "target": "M_Yoructl_Exec",
+        "relation": "authorizes_and_dispatches",
+        "weight": 1.0
+      },
+      {
+        "source": "M_Yoructl_Exec",
+        "target": "M_Auditd_Sink",
+        "relation": "records_remediation_AUID_1001",
+        "weight": 1.0
+      },
+      {
+        "source": "M_Auditd_Sink",
+        "target": "M_Kernel_Source",
+        "relation": "verifies_system_integrity (Closed Loop)",
+        "weight": 1.0
+      }
+    ]
+  }
+}

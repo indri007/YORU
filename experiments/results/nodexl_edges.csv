@@ -1,0 +1,72 @@
+Vertex 1,Vertex 2,Relationship,Weight,Network Graph,Network ID
+V1_Direct_Shell,LLM_Token_Space,perturbs_tokens,1.0,Attack–Action Network,1
+V2_Delimiter_Smuggle,LLM_Token_Space,perturbs_tokens,0.9,Attack–Action Network,1
+V3_Catalog_Escape,LLM_Token_Space,perturbs_tokens,0.8,Attack–Action Network,1
+V4_Approval_Misdirect,LLM_Token_Space,perturbs_tokens,0.6,Attack–Action Network,1
+V5_AUID_Spoof,LLM_Token_Space,perturbs_tokens,0.4,Attack–Action Network,1
+LLM_Token_Space,YORU_Gate,intercepted_by,1.0,Attack–Action Network,1
+YORU_Gate,OS_Root_Shell,BLOCKED (ASR=0.0%),0.0,Attack–Action Network,1
+YORU_Gate,CIS_K08_Audit,dispatched_safely,1.0,Attack–Action Network,1
+AUID_1000,Proc_Sudo,spawns_with_escalation,1.0,Audit Event Network,2
+Proc_Sudo,Event_Passwd_Mod,triggers,1.0,Audit Event Network,2
+Event_Passwd_Mod,Kernel_Audit_Log,recorded_under_auid_1000,1.0,Audit Event Network,2
+AUID_1001,Proc_Yoructl,executes_remediation,1.0,Audit Event Network,2
+Proc_Yoructl,Event_Sysctl_Mod,hardens_config,1.0,Audit Event Network,2
+Event_Sysctl_Mod,Kernel_Audit_Log,recorded_under_auid_1001,1.0,Audit Event Network,2
+Origin_Actor_Budi,Elevation_Sudo_Su,escalates_privilege,1.0,AUID Attribution Graph,3
+Elevation_Sudo_Su,Syslog_View,masks_identity_as_root (86% loss),0.86,AUID Attribution Graph,3
+Elevation_Sudo_Su,Auditd_AUID_View,preserves_auid_1002 (100% accuracy),1.0,AUID Attribution Graph,3
+Origin_Actor_Yoru,Auditd_AUID_View,preserves_auid_1001,1.0,AUID Attribution Graph,3
+P_sshd,F_sshd_config,reads,1.0,Process–File Network,4
+P_yoructl,F_sshd_config,hardens (K01/K02),1.0,Process–File Network,4
+P_yoructl,F_backup,writes_atomic_snapshot,1.0,Process–File Network,4
+P_yoructl,F_sysctl,writes (K10),1.0,Process–File Network,4
+P_vim,F_passwd,modifies (monitored by K08),1.0,Process–File Network,4
+P_vim,F_shadow,modifies (monitored by K08),1.0,Process–File Network,4
+Proc_Unconstrained_AI,Sys_execve,spawns_arbitrary_binaries,1.0,Process–Syscall Network,5
+Proc_Unconstrained_AI,Sys_ptrace,potential_process_injection,0.8,Process–Syscall Network,5
+Proc_YORU_Harness,Sys_flock,concurrency_lock,1.0,Process–Syscall Network,5
+Proc_YORU_Harness,Sys_openat,deterministic_file_io,1.0,Process–Syscall Network,5
+User_Admin,Act_K01_PermitRoot,approves_and_authorizes,1.0,User–Action Network,6
+User_Admin,Act_K05_UFW,approves_and_authorizes,1.0,User–Action Network,6
+User_YORU_Agent,Act_K08_Auditd,audits_and_verifies,1.0,User–Action Network,6
+User_YORU_Agent,Act_K10_Sysctl,audits_and_verifies,1.0,User–Action Network,6
+Clust_Direct,Clust_Delimiter,syntactic_overlap,0.72,Attack Vector Similarity,7
+Clust_Delimiter,Clust_Catalog,evasion_technique,0.65,Attack Vector Similarity,7
+Clust_Approval,Clust_Direct,semantic_urgency,0.58,Attack Vector Similarity,7
+Clust_AUID,Clust_Catalog,metadata_manipulation,0.51,Attack Vector Similarity,7
+Stage_Log_Ingest,Stage_LLM_Deliberation,propagates_text,1.0,Injection Propagation Graph,8
+Stage_LLM_Deliberation,Stage_Action_Gate,submits_candidate_plan,0.74,Injection Propagation Graph,8
+Stage_Action_Gate,Stage_OS_Execution,BLOCKED (ASR_action=0.0%),0.0,Injection Propagation Graph,8
+LLM_Output,Valid_K01,whitelisted_and_checked,1.0,LLM Decision–Action Graph,9
+LLM_Output,Valid_K05,whitelisted_and_checked,1.0,LLM Decision–Action Graph,9
+LLM_Output,Valid_K08,whitelisted_and_checked,1.0,LLM Decision–Action Graph,9
+LLM_Output,Invalid_Raw_Bash,REJECTED_BY_SCHEMA,0.0,LLM Decision–Action Graph,9
+K02,K04,prerequisite (Pubkey before disabling Passwd),1.0,CIS Control Dependency Graph,10
+K08,K01,monitors_drift_of,1.0,CIS Control Dependency Graph,10
+K08,K05,monitors_drift_of,1.0,CIS Control Dependency Graph,10
+K08,K06,monitors_drift_of,1.0,CIS Control Dependency Graph,10
+K08,K10,monitors_drift_of,1.0,CIS Control Dependency Graph,10
+K09,K08,retains_audit_logs,1.0,CIS Control Dependency Graph,10
+Cfg_MySQL,Drift_Port_3306,drifts_to,1.0,Security Drift Network,11
+Drift_Port_3306,Ctrl_K06,neutralized_by,1.0,Security Drift Network,11
+Cfg_SSH,Drift_Root_SSH,drifts_to,1.0,Security Drift Network,11
+Drift_Root_SSH,Ctrl_K01,neutralized_by,1.0,Security Drift Network,11
+State_Clean,Backup_Archive,atomic_snapshot_taken,1.0,Rollback Network,12
+State_Clean,State_Drifted,unauthorized_drift_occurs,1.0,Rollback Network,12
+State_Drifted,Cmd_Kembalikan,triggers_rollback,1.0,Rollback Network,12
+Backup_Archive,Cmd_Kembalikan,provides_clean_state,1.0,Rollback Network,12
+Cmd_Kembalikan,State_Restored,exact_byte_parity (100% PASS),1.0,Rollback Network,12
+User_YoruAgent,Sudoers_Boundary,invokes_sudo,1.0,Privilege Boundary Graph,13
+Sudoers_Boundary,Bin_Yoructl,ALLOWED_EXCLUSIVELY,1.0,Privilege Boundary Graph,13
+Bin_Yoructl,Root_Action,executes_discrete_primitive,1.0,Privilege Boundary Graph,13
+Sudoers_Boundary,Arbitrary_Shell,HARD_DENIED (NoNOPASSWD /bin/bash),0.0,Privilege Boundary Graph,13
+T0_Probe,T1_Kernel_Trap,latency: 0.8s,1.0,Temporal Attack Graph,14
+T1_Kernel_Trap,T2_Deliberate,latency: 0.6s,1.0,Temporal Attack Graph,14
+T2_Deliberate,T3_Remediate,latency: 0.4s (Total: 1.8s),1.0,Temporal Attack Graph,14
+M_Kernel_Source,M_Log_Sanitizer,emits_telemetry,1.0,YORU Closed-Loop Graph (Master Architecture),15
+M_Log_Sanitizer,M_LLM_Proxy,delivers_structured_context,1.0,YORU Closed-Loop Graph (Master Architecture),15
+M_LLM_Proxy,M_Action_Gate,proposes_discrete_action,1.0,YORU Closed-Loop Graph (Master Architecture),15
+M_Action_Gate,M_Yoructl_Exec,authorizes_and_dispatches,1.0,YORU Closed-Loop Graph (Master Architecture),15
+M_Yoructl_Exec,M_Auditd_Sink,records_remediation_AUID_1001,1.0,YORU Closed-Loop Graph (Master Architecture),15
+M_Auditd_Sink,M_Kernel_Source,verifies_system_integrity (Closed Loop),1.0,YORU Closed-Loop Graph (Master Architecture),15

@@ -109,6 +109,7 @@ PYTHON_FILES=(
     "experiments/test_rq5_model_proxy_resiliency.py"
     "experiments/plot_ablation.py"
     "experiments/plot_resource_overhead.py"
+    "experiments/generate_graph_analysis.py"
 )
 
 for py_file in "${PYTHON_FILES[@]}"; do
