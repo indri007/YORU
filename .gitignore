@@ -62,3 +62,9 @@ Thumbs.db
 # Project specific exclusions
 Claude outputs/
 manuscript/
+node_modules/
+landing/node_modules/
+landing/dist/
+dist/
+package-lock.json
+landing/package-lock.json
