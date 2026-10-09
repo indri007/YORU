@@ -1,0 +1,358 @@
+#!/usr/bin/env python3
+"""
+render_yoru_nodexl_topology.py - Render Authentic YORU Security Topology & NodeXL Graphs
+Generates a multi-panel, high-definition SVG & PNG mapping:
+1. RQ1: Attack–Action Infiltration & Gatekeeper Confinement
+2. RQ2: AUID Actor Forensics vs Syslog Masking
+3. RQ3: CIS K01–K10 Control Dependency & Rollback Mesh
+4. Graph #15: Master Closed-Loop Security Topology
+"""
+
+import subprocess
+from pathlib import Path
+
+ROOT_DIR = Path(__file__).resolve().parent.parent
+ASSETS_DIR = ROOT_DIR / "assets"
+ASSETS_DIR.mkdir(parents=True, exist_ok=True)
+
+SVG_CONTENT = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="100%" height="100%">
+  <defs>
+    <!-- Dark Cyber Gradients -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#08090D"/>
+      <stop offset="50%" stop-color="#0E1017"/>
+      <stop offset="100%" stop-color="#141824"/>
+    </linearGradient>
+    <linearGradient id="panelGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#151926" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#0E111A" stop-opacity="0.95"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFE39B"/>
+      <stop offset="100%" stop-color="#E8B64C"/>
+    </linearGradient>
+    <linearGradient id="redGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FB7185"/>
+      <stop offset="100%" stop-color="#E11D48"/>
+    </linearGradient>
+    <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#34D399"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#60A5FA"/>
+      <stop offset="100%" stop-color="#2563EB"/>
+    </linearGradient>
+
+    <!-- Marker Arrows -->
+    <marker id="arrowGold" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#E8B64C"/>
+    </marker>
+    <marker id="arrowRed" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#E11D48"/>
+    </marker>
+    <marker id="arrowGreen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#059669"/>
+    </marker>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#3B82F6"/>
+    </marker>
+  </defs>
+
+  <style>
+    .title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 800; font-size: 24px; fill: #F2EFE6; letter-spacing: 0.5px; }
+    .subtitle { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 13px; fill: #94A3B8; }
+    .panel-header { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 700; font-size: 14px; fill: #E8B64C; }
+    .node-text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 600; font-size: 11px; fill: #FFFFFF; }
+    .node-sub { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 9.5px; fill: #CBD5E1; }
+    .edge-text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 9px; font-weight: 600; fill: #94A3B8; }
+    .metric-val { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 800; font-size: 18px; fill: #E8B64C; }
+    .metric-lbl { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 10px; fill: #94A3B8; }
+  </style>
+
+  <!-- Background Canvas -->
+  <rect width="1200" height="800" rx="16" fill="url(#bgGrad)"/>
+
+  <!-- Canvas Border Glow -->
+  <rect x="2" y="2" width="1196" height="796" rx="15" fill="none" stroke="#E8B64C" stroke-width="1.5" stroke-opacity="0.3"/>
+
+  <!-- Master Header -->
+  <g transform="translate(40, 45)">
+    <circle cx="16" cy="12" r="14" fill="#E8B64C" fill-opacity="0.2"/>
+    <text x="16" y="17" text-anchor="middle" font-size="16">🌙</text>
+    <text x="42" y="16" class="title">YORU: Security Topology &amp; NodeXL Network Architecture</text>
+    <text x="42" y="34" class="subtitle">Empirical Verification across 15 Topological Invariants • NodeXL Pro Graph Schema • Dataset: experiments/results/nodexl_edges.csv</text>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- PANEL 1: Attack–Action Infiltration Network (RQ1) -->
+  <!-- ========================================================================= -->
+  <g transform="translate(40, 95)">
+    <rect width="545" height="325" rx="12" fill="url(#panelGrad)" stroke="#334155" stroke-width="1"/>
+    <text x="20" y="30" class="panel-header">1. RQ1: Attack–Action Network (Injection Confinement)</text>
+    <text x="20" y="46" class="subtitle">50 Adversarial Injection Payloads vs Closed-Loop Gatekeeper</text>
+
+    <!-- Attack Vectors (Left Column) -->
+    <g transform="translate(20, 65)">
+      <rect width="135" height="34" rx="6" fill="#1E293B" stroke="#E11D48" stroke-width="1.2"/>
+      <text x="10" y="18" class="node-text">V1: Direct Shell</text>
+      <text x="10" y="29" class="node-sub">rm -rf, curl evil.com</text>
+
+      <rect y="44" width="135" height="34" rx="6" fill="#1E293B" stroke="#E11D48" stroke-width="1.2"/>
+      <text x="10" y="62" class="node-text">V2: Delimiter Break</text>
+      <text x="10" y="73" class="node-sub">### SYSTEM OVERRIDE</text>
+
+      <rect y="88" width="135" height="34" rx="6" fill="#1E293B" stroke="#E11D48" stroke-width="1.2"/>
+      <text x="10" y="106" class="node-text">V3: Catalog Escape</text>
+      <text x="10" y="117" class="node-sub">Fabricated K11 Action</text>
+
+      <rect y="132" width="135" height="34" rx="6" fill="#1E293B" stroke="#E11D48" stroke-width="1.2"/>
+      <text x="10" y="150" class="node-text">V4: Approval Trick</text>
+      <text x="10" y="161" class="node-sub">Urgent Security Patch</text>
+
+      <rect y="176" width="135" height="34" rx="6" fill="#1E293B" stroke="#E11D48" stroke-width="1.2"/>
+      <text x="10" y="194" class="node-text">V5: AUID Spoofing</text>
+      <text x="10" y="205" class="node-sub">Fake auid=0 injection</text>
+    </g>
+
+    <!-- Intermediate: LLM Token Space -->
+    <g transform="translate(205, 135)">
+      <rect width="125" height="70" rx="8" fill="#1E293B" stroke="#F59E0B" stroke-width="1.5"/>
+      <text x="15" y="24" class="node-text" fill="#FBBF24">LLM Token Space</text>
+      <text x="15" y="38" class="node-sub">Token Perturbation</text>
+      <text x="15" y="52" class="metric-val" fill="#FBBF24">74.0%</text>
+      <text x="65" y="52" class="metric-lbl">ASR_token</text>
+    </g>
+
+    <!-- Barrier: YORU Gatekeeper -->
+    <g transform="translate(370, 135)">
+      <rect width="155" height="70" rx="8" fill="#064E3B" stroke="#10B981" stroke-width="2"/>
+      <text x="14" y="24" class="node-text" fill="#34D399">🛡️ YORU Gatekeeper</text>
+      <text x="14" y="38" class="node-sub">Constrained CIS Whitelist</text>
+      <text x="14" y="55" class="node-text" fill="#6EE7B7">ASR_action = 0.0%</text>
+    </g>
+
+    <!-- Outflow Nodes -->
+    <g transform="translate(370, 65)">
+      <rect width="155" height="42" rx="6" fill="#450A0A" stroke="#E11D48" stroke-width="1.5" stroke-dasharray="3,3"/>
+      <text x="12" y="18" class="node-text" fill="#FCA5A5">⛔ /bin/bash Root Shell</text>
+      <text x="12" y="32" class="node-sub" fill="#F87171">BLOCKED (Zero Execution)</text>
+    </g>
+    <g transform="translate(370, 235)">
+      <rect width="155" height="42" rx="6" fill="#1E3A8A" stroke="#3B82F6" stroke-width="1.5"/>
+      <text x="12" y="18" class="node-text" fill="#93C5FD">✅ CIS K08 Audit Log</text>
+      <text x="12" y="32" class="node-sub" fill="#BFDBFE">Dispatched Safely (auid=1001)</text>
+    </g>
+
+    <!-- Connecting Edges -->
+    <path d="M 155 82 L 205 155" stroke="#E11D48" stroke-width="1.2" fill="none" marker-end="url(#arrowRed)"/>
+    <path d="M 155 126 L 205 165" stroke="#E11D48" stroke-width="1.2" fill="none" marker-end="url(#arrowRed)"/>
+    <path d="M 155 170 L 205 175" stroke="#E11D48" stroke-width="1.2" fill="none" marker-end="url(#arrowRed)"/>
+    <path d="M 155 214 L 205 185" stroke="#E11D48" stroke-width="1.2" fill="none" marker-end="url(#arrowRed)"/>
+    <path d="M 155 258 L 205 195" stroke="#E11D48" stroke-width="1.2" fill="none" marker-end="url(#arrowRed)"/>
+    <path d="M 330 170 L 370 170" stroke="#F59E0B" stroke-width="1.8" fill="none" marker-end="url(#arrowGold)"/>
+    <path d="M 445 135 L 445 110" stroke="#E11D48" stroke-width="1.5" stroke-dasharray="3,3" fill="none" marker-end="url(#arrowRed)"/>
+    <path d="M 445 205 L 445 232" stroke="#10B981" stroke-width="1.8" fill="none" marker-end="url(#arrowGreen)"/>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- PANEL 2: AUID Forensic Attribution Network (RQ2) -->
+  <!-- ========================================================================= -->
+  <g transform="translate(615, 95)">
+    <rect width="545" height="325" rx="12" fill="url(#panelGrad)" stroke="#334155" stroke-width="1"/>
+    <text x="20" y="30" class="panel-header">2. RQ2: AUID Forensic Attribution Network</text>
+    <text x="20" y="46" class="subtitle">100.0% Kernel Identity Preservation vs 86.0% Syslog Masking</text>
+
+    <!-- Actors -->
+    <g transform="translate(25, 75)">
+      <rect width="130" height="50" rx="8" fill="#1E293B" stroke="#E11D48" stroke-width="1.5"/>
+      <text x="12" y="20" class="node-text">Attacker Session</text>
+      <text x="12" y="34" class="node-sub">User: budi (AUID=1000)</text>
+    </g>
+    <g transform="translate(25, 195)">
+      <rect width="130" height="50" rx="8" fill="#1E293B" stroke="#10B981" stroke-width="1.5"/>
+      <text x="12" y="20" class="node-text">YORU Agent</text>
+      <text x="12" y="34" class="node-sub">User: yoru (AUID=1001)</text>
+    </g>
+
+    <!-- Transition: Privilege Escalation -->
+    <g transform="translate(195, 135)">
+      <rect width="135" height="50" rx="8" fill="#1E293B" stroke="#E8B64C" stroke-width="1.5"/>
+      <text x="12" y="20" class="node-text">sudo su - (uid=0)</text>
+      <text x="12" y="34" class="node-sub">Privilege Transition</text>
+    </g>
+
+    <!-- Views Comparison (Right Column) -->
+    <g transform="translate(365, 75)">
+      <rect width="155" height="75" rx="8" fill="#450A0A" stroke="#E11D48" stroke-width="1.5"/>
+      <text x="12" y="20" class="node-text" fill="#FCA5A5">Standard Syslog View</text>
+      <text x="12" y="34" class="node-sub" fill="#F87171">Identitas Masked: "root"</text>
+      <text x="12" y="52" class="metric-val" fill="#FCA5A5">86.0%</text>
+      <text x="65" y="52" class="metric-lbl">Identity Loss Rate</text>
+    </g>
+    <g transform="translate(365, 180)">
+      <rect width="155" height="75" rx="8" fill="#064E3B" stroke="#10B981" stroke-width="1.5"/>
+      <text x="12" y="20" class="node-text" fill="#6EE7B7">Kernel auditd AUID</text>
+      <text x="12" y="34" class="node-sub" fill="#A7F3D0">Preserved: auid=1000 / 1001</text>
+      <text x="12" y="52" class="metric-val" fill="#6EE7B7">100.0%</text>
+      <text x="75" y="52" class="metric-lbl">Attribution Fidelity</text>
+    </g>
+
+    <!-- Edges -->
+    <path d="M 155 100 L 195 145" stroke="#E11D48" stroke-width="1.5" fill="none" marker-end="url(#arrowRed)"/>
+    <path d="M 155 220 L 195 175" stroke="#10B981" stroke-width="1.5" fill="none" marker-end="url(#arrowGreen)"/>
+    <path d="M 330 145 L 365 115" stroke="#E11D48" stroke-width="1.5" fill="none" marker-end="url(#arrowRed)"/>
+    <path d="M 330 175 L 365 210" stroke="#10B981" stroke-width="1.8" fill="none" marker-end="url(#arrowGreen)"/>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- PANEL 3: CIS K01–K10 Control Dependency & Rollback Network (RQ3) -->
+  <!-- ========================================================================= -->
+  <g transform="translate(40, 445)">
+    <rect width="545" height="325" rx="12" fill="url(#panelGrad)" stroke="#334155" stroke-width="1"/>
+    <text x="20" y="30" class="panel-header">3. RQ3: CIS Control Dependency &amp; Atomic Rollback Mesh</text>
+    <text x="20" y="46" class="subtitle">10 Hardening Controls • 100.0% Reversibility from /var/backups/yoru</text>
+
+    <!-- Safe Tier -->
+    <g transform="translate(20, 65)">
+      <rect width="235" height="35" rx="6" fill="#064E3B" stroke="#10B981" stroke-width="1"/>
+      <text x="12" y="18" class="node-text">SAFE: K03 Login Grace &amp; Tries</text>
+      <text x="12" y="28" class="node-sub">Autonomous Remediation</text>
+
+      <rect y="45" width="235" height="35" rx="6" fill="#064E3B" stroke="#10B981" stroke-width="1"/>
+      <text x="12" y="63" class="node-text">SAFE: K07 Unattended Upgrades</text>
+      <text x="12" y="73" class="node-sub">Autonomous Remediation</text>
+
+      <rect y="90" width="235" height="35" rx="6" fill="#064E3B" stroke="#10B981" stroke-width="1"/>
+      <text x="12" y="108" class="node-text">SAFE: K08 Auditd Path Rules</text>
+      <text x="12" y="118" class="node-sub">Autonomous Remediation</text>
+
+      <rect y="135" width="235" height="35" rx="6" fill="#064E3B" stroke="#10B981" stroke-width="1"/>
+      <text x="12" y="153" class="node-text">SAFE: K09 Journald Size Limit</text>
+      <text x="12" y="163" class="node-sub">Autonomous Remediation</text>
+
+      <rect y="180" width="235" height="35" rx="6" fill="#064E3B" stroke="#10B981" stroke-width="1"/>
+      <text x="12" y="198" class="node-text">SAFE: K10 Sysctl TCP Hardening</text>
+      <text x="12" y="208" class="node-sub">Autonomous Remediation</text>
+    </g>
+
+    <!-- Risky Tier -->
+    <g transform="translate(285, 65)">
+      <rect width="240" height="35" rx="6" fill="#451A03" stroke="#F59E0B" stroke-width="1"/>
+      <text x="12" y="18" class="node-text">RISKY: K01 Disable Root SSH</text>
+      <text x="12" y="28" class="node-sub">Requires Owner Approval</text>
+
+      <rect y="45" width="240" height="35" rx="6" fill="#451A03" stroke="#F59E0B" stroke-width="1"/>
+      <text x="12" y="63" class="node-text">RISKY: K02 Disable Password Auth</text>
+      <text x="12" y="73" class="node-sub">Requires Owner Approval</text>
+
+      <rect y="90" width="240" height="35" rx="6" fill="#451A03" stroke="#F59E0B" stroke-width="1"/>
+      <text x="12" y="108" class="node-text">RISKY: K04 Disable SHA1 Ciphers</text>
+      <text x="12" y="118" class="node-sub">Requires Owner Approval</text>
+
+      <rect y="135" width="240" height="35" rx="6" fill="#451A03" stroke="#F59E0B" stroke-width="1"/>
+      <text x="12" y="153" class="node-text">RISKY: K05 UFW Firewall Deny</text>
+      <text x="12" y="163" class="node-sub">Requires Owner Approval</text>
+
+      <rect y="180" width="240" height="35" rx="6" fill="#451A03" stroke="#F59E0B" stroke-width="1"/>
+      <text x="12" y="198" class="node-text">RISKY: K06 Close Unapproved Ports</text>
+      <text x="12" y="208" class="node-sub">Requires Owner Approval</text>
+    </g>
+
+    <!-- Atomic Rollback Bar -->
+    <g transform="translate(20, 260)">
+      <rect width="505" height="48" rx="8" fill="#1E293B" stroke="#3B82F6" stroke-width="1.5"/>
+      <text x="16" y="20" class="node-text" fill="#93C5FD">🔄 Atomic State Rollback Engine (/var/backups/yoru)</text>
+      <text x="16" y="36" class="node-sub" fill="#BFDBFE">10/10 Controls Reversible • Exact Byte-for-Byte Sha256 Match</text>
+      <text x="410" y="32" class="metric-val" fill="#60A5FA">100.0%</text>
+    </g>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- PANEL 4: Master Closed-Loop Security Topology (Graph #15) -->
+  <!-- ========================================================================= -->
+  <g transform="translate(615, 445)">
+    <rect width="545" height="325" rx="12" fill="url(#panelGrad)" stroke="#334155" stroke-width="1"/>
+    <text x="20" y="30" class="panel-header">4. Graph #15: Master Closed-Loop Security Topology</text>
+    <text x="20" y="46" class="subtitle">Complete Autonomous Defense Loop (Kernel &rarr; LLM &rarr; Gate &rarr; Audit)</text>
+
+    <!-- Ring Hexagon Nodes -->
+    <!-- Top: Kernel -->
+    <g transform="translate(195, 65)">
+      <rect width="155" height="42" rx="8" fill="#1E293B" stroke="#E8B64C" stroke-width="1.5"/>
+      <text x="12" y="18" class="node-text" fill="#FFE39B">1. Linux Kernel</text>
+      <text x="12" y="30" class="node-sub">Syscall &amp; Drift Detect</text>
+    </g>
+
+    <!-- Upper Right: Sanitizer -->
+    <g transform="translate(370, 115)">
+      <rect width="150" height="42" rx="8" fill="#1E293B" stroke="#3B82F6" stroke-width="1.5"/>
+      <text x="12" y="18" class="node-text" fill="#93C5FD">2. Log Sanitizer</text>
+      <text x="12" y="30" class="node-sub">Delimiter Encapsulation</text>
+    </g>
+
+    <!-- Lower Right: LLM Proxy -->
+    <g transform="translate(370, 205)">
+      <rect width="150" height="42" rx="8" fill="#1E293B" stroke="#F59E0B" stroke-width="1.5"/>
+      <text x="12" y="18" class="node-text" fill="#FCD34D">3. LLM Deliberation</text>
+      <text x="12" y="30" class="node-sub">yoru-model-proxy</text>
+    </g>
+
+    <!-- Bottom: Action Gatekeeper -->
+    <g transform="translate(195, 260)">
+      <rect width="155" height="42" rx="8" fill="#064E3B" stroke="#10B981" stroke-width="1.8"/>
+      <text x="12" y="18" class="node-text" fill="#6EE7B7">4. Action Gatekeeper</text>
+      <text x="12" y="30" class="node-sub">Approval Whitelist</text>
+    </g>
+
+    <!-- Lower Left: yoructl -->
+    <g transform="translate(25, 205)">
+      <rect width="145" height="42" rx="8" fill="#1E293B" stroke="#10B981" stroke-width="1.5"/>
+      <text x="12" y="18" class="node-text" fill="#6EE7B7">5. yoructl Dispatcher</text>
+      <text x="12" y="30" class="node-sub">40 CIS Primitives Only</text>
+    </g>
+
+    <!-- Upper Left: Audit Sink -->
+    <g transform="translate(25, 115)">
+      <rect width="145" height="42" rx="8" fill="#1E293B" stroke="#E8B64C" stroke-width="1.5"/>
+      <text x="12" y="18" class="node-text" fill="#FFE39B">6. Audit Sink</text>
+      <text x="12" y="30" class="node-sub">audit.log (auid=1001)</text>
+    </g>
+
+    <!-- Directed Loop Edges -->
+    <path d="M 350 86 Q 410 90 410 115" stroke="#E8B64C" stroke-width="1.6" fill="none" marker-end="url(#arrowGold)"/>
+    <path d="M 445 157 L 445 205" stroke="#3B82F6" stroke-width="1.6" fill="none" marker-end="url(#arrowBlue)"/>
+    <path d="M 410 247 Q 380 280 350 280" stroke="#F59E0B" stroke-width="1.6" fill="none" marker-end="url(#arrowGold)"/>
+    <path d="M 195 280 Q 140 280 115 247" stroke="#10B981" stroke-width="1.6" fill="none" marker-end="url(#arrowGreen)"/>
+    <path d="M 95 205 L 95 157" stroke="#10B981" stroke-width="1.6" fill="none" marker-end="url(#arrowGreen)"/>
+    <path d="M 125 115 Q 150 86 195 86" stroke="#E8B64C" stroke-width="1.6" fill="none" marker-end="url(#arrowGold)"/>
+
+    <!-- Center Badge -->
+    <circle cx="272" cy="183" r="32" fill="#0E1017" stroke="#E8B64C" stroke-width="1.2"/>
+    <text x="272" y="180" text-anchor="middle" font-size="16">🛡️</text>
+    <text x="272" y="196" text-anchor="middle" font-size="8.5" fill="#E8B64C" font-weight="700">CLOSED LOOP</text>
+  </g>
+</svg>
+"""
+
+
+def main():
+    svg_path = ASSETS_DIR / "yoru-nodexl-security-topology.svg"
+    svg_path.write_text(SVG_CONTENT, encoding="utf-8")
+    print(f"Generated SVG: {svg_path}")
+
+    # Render high-resolution PNG using macOS qlmanage
+    png_tmp = "/tmp/yoru-nodexl-security-topology.svg.png"
+    cmd = ["qlmanage", "-t", "-s", "1600", "-o", "/tmp", str(svg_path)]
+    subprocess.run(cmd, check=True)
+
+    target_png = ASSETS_DIR / "yoru-nodexl-security-topology.png"
+    if Path(png_tmp).exists():
+        subprocess.run(["cp", png_tmp, str(target_png)], check=True)
+        print(f"Generated PNG: {target_png} ({target_png.stat().st_size} bytes)")
+    else:
+        print("Warning: PNG generation via qlmanage failed to produce expected path")
+
+
+if __name__ == "__main__":
+    main()

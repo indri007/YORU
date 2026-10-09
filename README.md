@@ -135,9 +135,9 @@ To empirically analyze the security guarantees, attack propagation, and kernel-l
 ### 📊 Galeri Visualisasi NodeXL & Topologi Keamanan YORU
 
 <p align="center">
-  <img alt="NodeXL Security Network Analysis Graph" src="./assets/nodexl-graph-visualization.png" width="100%">
+  <img alt="YORU Security Topology & NodeXL Network Architecture" src="assets/yoru-nodexl-security-topology.png" width="100%">
   <br>
-  <em>Visualisasi Topologi Jaringan NodeXL Pro: Pemetaan Klaster Komunitas, Centrality, dan Aliran Relasi Aktor Keamanan</em>
+  <em>Visualisasi Empiris Topologi Keamanan YORU (NodeXL Pro & Gephi Schema): Pemetaan Infiltrasi Serangan RQ1, Atribusi Forensik AUID RQ2, Ketergantungan CIS K01–K10 RQ3, dan Master Closed-Loop Topology #15</em>
 </p>
 
 <p align="center">
@@ -203,5 +203,30 @@ YORU Harness adalah lapisan pengendali (*governance harness*) keamanan Linux ber
 2. **Evaluasi Injection-to-Action End-to-End:** Menguji ketahanan prompt injection pada log tak tepercaya langsung hingga level eksekusi OS, bukan sekadar respons token bahasa.
 3. **Ruang Aksi Tertutup (*Constrained Action Space*):** Menghilangkan shell interpreter bebas dan membatasi aksi agen hanya pada 40 primitif CIS Benchmark (`yoructl K01..K10`), dirancang hemat daya (< 50MB RAM, < 1% CPU) untuk VPS UMKM.
 
-## License
-MIT License. See [LICENSE](LICENSE) for details.
+## ⚖️ License
+
+Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for full legal text.
+
+```text
+MIT License
+
+Copyright (c) 2026 Indri Anjar Kartika Sari & Prof. Onno W. Purbo (indri007/YORU Contributors)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
