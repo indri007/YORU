@@ -108,6 +108,29 @@ flowchart LR
   <a href="./assets/graph15-closed-loop.svg">Vector SVG</a> &bull; <a href="./assets/graph15-closed-loop.html">Interactive HTML</a>
 </p>
 
+## 🖥️ Web Dashboard & Human-in-the-Loop Interface
+
+YORU menyediakan antarmuka web dashboard ringan (*FastAPI + Vanilla JS/CSS*) untuk memantau kontrol keamanan CIS, menginspeksi drift harian, meninjau log audit, dan memberikan persetujuan tindakan kontrol (*Human-in-the-Loop*):
+
+<p align="center">
+  <img alt="Dashboard YORU Overview" src="./docs/images/dashboard-report.png" width="95%">
+  <br>
+  <em>Dashboard Utama: Pemantauan 10 Kontrol CIS Ubuntu 24.04, Status Auditd, dan Eksekusi Tindakan</em>
+</p>
+
+### 🛡️ Human-in-the-Loop Approval & Drift Detection
+
+| **Persetujuan Kontrol Berisiko (Human-in-the-Loop)** | **Deteksi Drift & Perubahan Konfigurasi** |
+| :---: | :---: |
+| <img alt="Konfirmasi sebelum menerapkan" src="./docs/images/dashboard-approve.png" width="100%"> | <img alt="Pendeteksian Drift Keamanan" src="./docs/images/dashboard-drift.png" width="100%"> |
+| *Setiap tindakan berisiko (K01, K02, K04, K05, K06) wajib persetujuan eksplisit pemilik* | *Pelacakan otomatis konfigurasi yang berubah dari baseline harian* |
+
+<p align="center">
+  <img alt="Audit Log Tindakan Root" src="./docs/images/dashboard-log.png" width="95%">
+  <br>
+  <em>Audit Log: Jejak audit tindakan `/var/log/yoru/` yang terlindungi dari modifikasi agent</em>
+</p>
+
 ## 🕸️ 15 Security Topology & NodeXL Analysis Networks
 
 To empirically analyze the security guarantees, attack propagation, and kernel-level causality of YORU, the framework models its invariants across **15 distinct topological network graphs** compatible with **NodeXL Pro**, Gephi, and the interactive Streamlit dashboard. 8 selected networks are rendered as publication-ready vector figures for the manuscript:
