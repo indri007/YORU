@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-YORU Telegram Terminal Bridge
-Menjalankan perintah terminal secara aman melalui bot Telegram.
-HANYA memproses perintah dari TELEGRAM_CHAT_ID yang terdaftar.
+YORU Telegram Terminal & Hermes AI Bridge
+Menjalankan perintah terminal & tanya-jawab Hermes AI melalui bot Telegram.
+HANYA memproses permintaan dari TELEGRAM_CHAT_ID yang terdaftar.
 """
 import asyncio
 import json
@@ -13,12 +13,14 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
-# Konfigurasi Token dan Chat ID
+# Jalur konfigurasi
 CONFIG_PATHS = [
     Path(__file__).parent.parent / ".yoru.conf.secret",
     Path(__file__).parent.parent / ".env",
     Path("/etc/yoru/yoru.conf")
 ]
+
+HERMES_BIN = "/Users/jevin/.local/bin/hermes"
 
 def load_config():
     conf = {}
@@ -60,8 +62,19 @@ def send_message(chat_id: str, text: str, parse_mode: str = "Markdown"):
         with urllib.request.urlopen(req, timeout=15) as resp:
             return json.loads(resp.read().decode())
     except Exception as e:
-        print(f"[ERROR] Gagal kirim pesan: {e}")
-        return None
+        # Fallback without Markdown if parsing error occurs
+        try:
+            payload2 = json.dumps({"chat_id": chat_id, "text": text}).encode("utf-8")
+            req2 = urllib.request.Request(
+                f"{TELEGRAM_API}/bot{TOKEN}/sendMessage",
+                data=payload2,
+                headers={"Content-Type": "application/json"}
+            )
+            with urllib.request.urlopen(req2, timeout=15) as resp2:
+                return json.loads(resp2.read().decode())
+        except Exception:
+            print(f"[ERROR] Gagal kirim pesan: {e}")
+            return None
 
 async def execute_shell_command(cmd: str) -> str:
     parts = cmd.strip().split()
@@ -103,6 +116,36 @@ async def execute_shell_command(cmd: str) -> str:
     except Exception as ex:
         return f"❌ Terjadi kesalahan eksekusi: {ex}"
 
+async def query_hermes_ai(prompt: str) -> str:
+    if not os.path.exists(HERMES_BIN):
+        return "Hermes CLI binary tidak ditemukan di sistem."
+    try:
+        proc = await asyncio.create_subprocess_exec(
+            HERMES_BIN,
+            "-z",
+            prompt,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE
+        )
+        try:
+            stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=60.0)
+        except asyncio.TimeoutError:
+            try:
+                proc.kill()
+            except ProcessLookupError:
+                pass
+            return "⏱️ *Waktu habis:* Hermes membutuhkan waktu lebih dari 60 detik untuk merespons."
+
+        out = stdout.decode("utf-8", errors="replace").strip()
+        err = stderr.decode("utf-8", errors="replace").strip()
+        if out:
+            return out
+        if err:
+            return f"Hermes mengembalikan error:\n`{err}`"
+        return "Hermes tidak mengembalikan teks jawaban."
+    except Exception as ex:
+        return f"❌ Gagal menghubungi Hermes Agent: {ex}"
+
 async def handle_update(update: dict):
     msg = update.get("message")
     if not msg:
@@ -118,22 +161,32 @@ async def handle_update(update: dict):
     if not text:
         return
 
-    print(f"[COMMAND] Diterima dari {chat_id}: {text}")
+    print(f"[INPUT] Dari {chat_id}: {text}")
 
     if text in ("/start", "/help", "/bantuan"):
         help_text = (
-            "🖥️ *[YORU Remote Terminal Bot]*\n\n"
-            "Anda dapat menjalankan perintah server langsung dari chat ini:\n\n"
+            "🛡️ *[YORU Guardian & Hermes AI]*\n\n"
+            "Bot ini memiliki dua mode pintar yang aktif bersamaan:\n\n"
+            "1️⃣ *Mode Terminal (Eksekusi OS)*:\n"
             "• `/cmd <perintah>` atau `$ <perintah>`\n"
-            "  _Contoh:_ `/cmd uptime` atau `$ df -h`\n\n"
-            "• `/status` : Informasi sistem singkat\n"
-            "• `/ping` : Cek koneksi bot"
+            "  _Contoh:_ `/cmd uptime`, `/cmd df -h`, `$ git status`\n\n"
+            "2️⃣ *Mode Hermes AI (Tanya Jawab)*:\n"
+            "• Kirimkan pertanyaan atau kalimat apa saja langsung tanpa awalan!\n"
+            "  _Contoh:_ `Halo Hermes, jelaskan apa itu hardening SSH`\n\n"
+            "3️⃣ *Perintah Cepat*:\n"
+            "• `/status` : Ringkasan kesehatan sistem & disk\n"
+            "• `/model` : Info model Hermes aktif\n"
+            "• `/ping` : Uji responsivitas bot"
         )
         send_message(chat_id, help_text)
         return
 
     if text in ("/ping", "ping"):
-        send_message(chat_id, "🏓 Pong! Terminal bot aktif dan siap menerima perintah.")
+        send_message(chat_id, "🏓 Pong! Terminal & Hermes AI aktif melayani Anda.")
+        return
+
+    if text in ("/model", "model"):
+        send_message(chat_id, "🧠 *Model AI Aktif:* Hermes Agent v0.18.0 (Nous Research) ditenagai model penalaran *o3-mini*.")
         return
 
     if text in ("/status", "status"):
@@ -148,25 +201,27 @@ async def handle_update(update: dict):
         cmd = text[4:].strip()
     elif text.startswith("$ "):
         cmd = text[2:].strip()
-    elif text.startswith("/"):
-        # Jika user mengetik perintah diawali slash tanpa /cmd, misal: /uptime atau /ls
-        cmd = text[1:].strip()
 
     if cmd:
-        send_message(chat_id, f"⏳ *Menjalankan:* `{cmd}` ...")
+        send_message(chat_id, f"⏳ *Menjalankan perintah:* `{cmd}` ...")
         output = await execute_shell_command(cmd)
         reply = f"🖥️ *Hasil:* `{cmd}`\n```bash\n{output}\n```"
         send_message(chat_id, reply)
     else:
-        send_message(chat_id, "Gunakan awalan `/cmd <perintah>` atau `$ <perintah>`.\n_Contoh:_ `/cmd uptime`")
+        # Teks biasa -> Hermes AI
+        send_message(chat_id, "🧠 *Hermes sedang menalar pertanyaan Anda...*")
+        ai_reply = await query_hermes_ai(text)
+        send_message(chat_id, f"🤖 *Hermes AI:*\n\n{ai_reply}")
 
 async def main():
-    print(f"[*] YORU Telegram Terminal Bridge berjalan...")
+    print(f"[*] YORU Telegram Terminal & Hermes AI Bridge berjalan...")
     print(f"[*] Bot Token terpasang. Chat ID Whitelist: {ALLOWED_CHAT}")
     offset = None
     
-    # Kirim notifikasi terminal siap
-    send_message(ALLOWED_CHAT, "⚡ *[YORU Terminal Ready]*\nBot terminal aktif! Kirim `/cmd <perintah>` atau `$ <perintah>` untuk mengeksekusi.")
+    send_message(ALLOWED_CHAT, "⚡ *[Hermes AI & YORU Terminal Terhubung]*\n"
+                               "Halo Bu Sari! Hermes Agent (Nous Research) resmi terhubung ke bot ini.\n"
+                               "Anda bisa langsung kirim pertanyaan apa saja untuk dijawab AI, "
+                               "atau gunakan `/cmd <perintah>` untuk menjalankan terminal!")
 
     while True:
         try:
