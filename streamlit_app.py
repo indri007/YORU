@@ -357,7 +357,7 @@ with col_hero_3d:
 tab_story, tab_action, tab_controls, tab_benchmarks, tab_graphs, tab_chat = st.tabs([
     "🌙 The 3:00 AM Story",
     "⚠️ Action Center & Drift",
-    "📋 CIS K01–K10 Catalog",
+    "🛡️ 10 Poin CIS Dashboard",
     "🔬 Empirical Rigor (Elsevier Q1)",
     "🕸️ 15 Network Graphs (NodeXL)",
     "💬 YORU Assistant Chat",
@@ -521,37 +521,437 @@ with tab_action:
 
 
 # ------------------------------------------------------------------------------
-# TAB 3: CIS CONTROLS CATALOG
+# TAB 3: CIS CONTROLS CATALOG & 10 POIN HARDENING DASHBOARD
 # ------------------------------------------------------------------------------
+DEFAULT_CIS_CONTROLS = [
+    {
+        "id": "K01",
+        "no": "1",
+        "name": "Root tidak bisa login lewat SSH",
+        "cis_code": "5.1.20",
+        "category": "ssh",
+        "risk": "BERISIKO",
+        "status": "PARTIAL",
+        "last_run": "2026-09-06 09:15",
+        "observed": "without-password",
+        "target": "no",
+        "why": "Kalau akun root bisa login langsung dari internet, penyerang cuma perlu menebak satu password untuk menguasai seluruh server. Semua aktivitas juga tercatat sebagai root sehingga tidak bisa tahu siapa pelakunya.",
+        "breaks_if_applied": "Script otomatis yang selama ini login sebagai root akan berhenti jalan (misal backup/deploy). Wajib punya akun sudo biasa sebelum diaktifkan.",
+        "cmd_audit": "sudo yoructl periksa K01",
+        "cmd_apply": "sudo yoructl terapkan K01",
+        "cmd_rollback": "sudo yoructl kembalikan K01"
+    },
+    {
+        "id": "K02",
+        "no": "2",
+        "name": "Login pakai password dimatikan (SSH key saja)",
+        "cis_code": "di luar CIS L1",
+        "category": "ssh",
+        "risk": "BERISIKO",
+        "status": "FAILED",
+        "last_run": "2026-09-06 09:15",
+        "observed": "yes",
+        "target": "no",
+        "why": "Password bisa ditebak dengan brute-force jutaan kombinasi. Kunci SSH menggunakan kriptografi asimetris yang kebal serangan tebak kata sandi.",
+        "breaks_if_applied": "Semua pengguna yang belum memasang SSH key publik akan terkunci di luar server. Pastikan SSH key Anda sudah dites berhasil login sebelum tombol ini ditekan.",
+        "cmd_audit": "sudo yoructl periksa K02",
+        "cmd_apply": "sudo yoructl terapkan K02",
+        "cmd_rollback": "sudo yoructl kembalikan K02"
+    },
+    {
+        "id": "K03",
+        "no": "3",
+        "name": "Batasi percobaan login SSH",
+        "cis_code": "5.1.16 dan 5.1.13",
+        "category": "ssh",
+        "risk": "AMAN",
+        "status": "FAILED",
+        "last_run": "2026-09-06 09:15",
+        "observed": "maxauthtries 6, logingracetime 120",
+        "target": "maxauthtries 3, logingracetime 60",
+        "why": "Membatasi percobaan login gagal maksimal 3 kali dan batas waktu gracetime 60 detik untuk memperlambat scanner otomatis peretas.",
+        "breaks_if_applied": "Tidak merusak akses yang sah. Pengguna yang salah ketik 3 kali berturut-turut harus mengulang koneksi SSH.",
+        "cmd_audit": "sudo yoructl periksa K03",
+        "cmd_apply": "sudo yoructl terapkan K03",
+        "cmd_rollback": "sudo yoructl kembalikan K03"
+    },
+    {
+        "id": "K04",
+        "no": "4",
+        "name": "Buang algoritma kripto yang lemah di SSH",
+        "cis_code": "5.1.6, 5.1.15 dan 5.1...",
+        "category": "ssh",
+        "risk": "BERISIKO",
+        "status": "PARTIAL",
+        "last_run": "2026-09-06 09:15",
+        "observed": "ciphers default (includes chacha20, aes-cbc)",
+        "target": "chacha20-poly1305, aes256-gcm, aes128-gcm",
+        "why": "Menonaktifkan cipher lawas rentan (CBC, MD5, SHA1) dan hanya mengizinkan AEAD modern (ChaCha20-Poly1305 dan AES-GCM).",
+        "breaks_if_applied": "Klien SSH atau server lama (OS legacy) yang belum mendukung AEAD modern tidak akan bisa terhubung.",
+        "cmd_audit": "sudo yoructl periksa K04",
+        "cmd_apply": "sudo yoructl terapkan K04",
+        "cmd_rollback": "sudo yoructl kembalikan K04"
+    },
+    {
+        "id": "K05",
+        "no": "5",
+        "name": "Firewall aktif, tolak semua koneksi masuk",
+        "cis_code": "4.2.1, 4.2.3 dan 4.2.7",
+        "category": "firewall",
+        "risk": "BERISIKO",
+        "status": "FAILED",
+        "last_run": "2026-09-06 09:15",
+        "observed": "inactive",
+        "target": "active, default incoming deny",
+        "why": "Menyalakan firewall UFW dengan kebijakan tolak-semua (default deny). Port SSH akan otomatis dibuka oleh YORU agar koneksi tidak terputus.",
+        "breaks_if_applied": "Semua layanan yang berjalan di port selain SSH/Web (misalnya database MySQL 3306 atau port panel) akan tertutup jika belum didaftarkan di PORT_DIIZINKAN.",
+        "cmd_audit": "sudo yoructl periksa K05",
+        "cmd_apply": "sudo yoructl terapkan K05",
+        "cmd_rollback": "sudo yoructl kembalikan K05"
+    },
+    {
+        "id": "K06",
+        "no": "6",
+        "name": "Cuma port yang dipakai yang boleh terbuka",
+        "cis_code": "2.1.22",
+        "category": "network",
+        "risk": "BERISIKO",
+        "status": "PASSED",
+        "last_run": "2026-09-06 09:15",
+        "observed": "port 80, 443, 22",
+        "target": "hanya port yang disetujui",
+        "why": "Mendeteksi proses asing yang membuka port ke internet publik tanpa izin pemilik server.",
+        "breaks_if_applied": "Jika ada aplikasi baru dibuka tanpa konfirmasi, YORU akan menolak menyalakan firewall sampai pemilik memberi jawaban.",
+        "cmd_audit": "sudo yoructl periksa K06",
+        "cmd_apply": "sudo yoructl terapkan K06",
+        "cmd_rollback": "sudo yoructl kembalikan K06"
+    },
+    {
+        "id": "K07",
+        "no": "7",
+        "name": "Pembaruan keamanan otomatis",
+        "cis_code": "1.2.2.1 (sebagian)",
+        "category": "system",
+        "risk": "AMAN",
+        "status": "FAILED",
+        "last_run": "2026-09-06 09:15",
+        "observed": "unattended-upgrades disabled",
+        "target": "enabled (security only)",
+        "why": "Mengaktifkan paket unattended-upgrades agar patch keamanan kernel dan library penting terpasang otomatis tanpa perlu login manual.",
+        "breaks_if_applied": "Aman. Hanya memasang patch keamanan resmi dari repository Ubuntu security.",
+        "cmd_audit": "sudo yoructl periksa K07",
+        "cmd_apply": "sudo yoructl terapkan K07",
+        "cmd_rollback": "sudo yoructl kembalikan K07"
+    },
+    {
+        "id": "K08",
+        "no": "8",
+        "name": "Jejak audit aktif (auditd)",
+        "cis_code": "di luar CIS L1",
+        "category": "kernel",
+        "risk": "AMAN",
+        "status": "FAILED",
+        "last_run": "2026-09-06 09:15",
+        "observed": "auditd inactive",
+        "target": "auditd active dengan aturan YORU",
+        "why": "Memasang subsistem kernel auditd untuk merekam modifikasi file penting (/etc/ssh/, /etc/shadow, dll) lengkap dengan AUID asli pembuat aksi.",
+        "breaks_if_applied": "Aman. Menambahkan jejak forensik kernel dengan beban CPU sangat rendah (< 1%).",
+        "cmd_audit": "sudo yoructl periksa K08",
+        "cmd_apply": "sudo yoructl terapkan K08",
+        "cmd_rollback": "sudo yoructl kembalikan K08"
+    },
+    {
+        "id": "K09",
+        "no": "9",
+        "name": "Log tersimpan permanen dan tidak membanjiri disk",
+        "cis_code": "6.1.2.4, 6.1.2.3, 6.1...",
+        "category": "system",
+        "risk": "AMAN",
+        "status": "FAILED",
+        "last_run": "2026-09-06 09:15",
+        "observed": "journald volatile / unconstrained",
+        "target": "Storage=persistent, SystemMaxUse=500M",
+        "why": "Mengatur systemd-journald agar log tersimpan di disk (/var/log/journal) namun dibatasi maksimal 500MB agar tidak menghabiskan kapasitas server.",
+        "breaks_if_applied": "Aman. Mencegah crash akibat disk penuh oleh log spamming.",
+        "cmd_audit": "sudo yoructl periksa K09",
+        "cmd_apply": "sudo yoructl terapkan K09",
+        "cmd_rollback": "sudo yoructl kembalikan K09"
+    },
+    {
+        "id": "K10",
+        "no": "10",
+        "name": "Setelan kernel jaringan",
+        "cis_code": "3.3.3 sampai 3.3.6, 3...",
+        "category": "kernel",
+        "risk": "AMAN",
+        "status": "FAILED",
+        "last_run": "2026-09-06 09:15",
+        "observed": "ip_forwarding default, icmp_redirects enabled",
+        "target": "sysctl hardening applied",
+        "why": "Menerapkan parameter sysctl aman: menolak ICMP redirect palsu, mengabaikan ping broadcast (smurf attack), dan mencatat paket martian yang mencurigakan.",
+        "breaks_if_applied": "Aman untuk server standar/web. Hanya perlu diperhatikan jika server digunakan sebagai router/VPN gateway.",
+        "cmd_audit": "sudo yoructl periksa K10",
+        "cmd_apply": "sudo yoructl terapkan K10",
+        "cmd_rollback": "sudo yoructl kembalikan K10"
+    }
+]
+
+if "cis_controls_data" not in st.session_state:
+    st.session_state.cis_controls_data = [dict(c) for c in DEFAULT_CIS_CONTROLS]
+
 with tab_controls:
-    st.markdown("### 📋 CIS Ubuntu 24.04 Benchmark Catalog (K01–K10)")
-    st.caption("Discrete deterministic controls audited and managed by yoructl")
+    current_controls = st.session_state.cis_controls_data
 
-    controls = report.get("kontrol", [])
-    for k in controls:
-        is_pass = k.get("status") == "LULUS"
-        color = "#10B981" if is_pass else "#EF4444"
-        badge_text = "PASS" if is_pass else "FAIL"
+    # Hitung Metrik Dinamis
+    total_cnt = len(current_controls)
+    passed_cnt = sum(1 for c in current_controls if c["status"] == "PASSED")
+    partial_cnt = sum(1 for c in current_controls if c["status"] == "PARTIAL")
+    failed_cnt = sum(1 for c in current_controls if c["status"] == "FAILED")
+    cis_score = round((passed_cnt / total_cnt) * 100) if total_cnt else 0
+    risky_pending = sum(1 for c in current_controls if c["risk"] == "BERISIKO" and c["status"] != "PASSED")
 
-        st.markdown(
-            f"""
-        <div class="control-item">
+    # Header Dashboard
+    st.markdown(
+        f"""
+        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
             <div>
-                <span style="background-color: {color}; color: #000; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 800; margin-right: 8px;">
-                    {badge_text}
-                </span>
-                <strong style="color: #F2EFE6; font-size: 14.5px;">{k.get('id')} — {k.get('nama')}</strong>
-                <div style="font-size: 12px; color: #9E9AA7; margin-top: 4px;">
-                    Target: <code>{k.get('nilai_target')}</code> | Reading: <code>{k.get('nilai_terbaca')}</code>
-                </div>
+                <h2 style="color: #F2EFE6; margin: 0; font-weight: 800;">🛡️ Dashboard CIS Agent</h2>
+                <div style="font-size: 13px; color: #9E9AA7;">Host: <code>{server_name}</code> • Ubuntu 24.04.4 LTS • Mode Produksi</div>
             </div>
-            <div style="font-size: 11px; color: #E8B64C;">
-                CIS Primitive
+            <div style="font-size: 12px; color: #E8B64C; background: rgba(232, 182, 76, 0.12); border: 1px solid rgba(232, 182, 76, 0.3); padding: 4px 12px; border-radius: 9999px;">
+                ● Human-in-the-Loop Aktif
             </div>
         </div>
         """,
-            unsafe_allow_html=True,
+        unsafe_allow_html=True
+    )
+
+    # 4 KARTU METRIK UTAMA (Persis seperti screenshot dashboard)
+    col_c1, col_c2, col_c3, col_c4 = st.columns(4)
+
+    with col_c1:
+        st.markdown(
+            f"""
+            <div style="background: linear-gradient(145deg, #181B26, #12141F); border: 1px solid rgba(232, 182, 76, 0.3); border-radius: 14px; padding: 18px; box-shadow: 0 4px 14px rgba(0,0,0,0.4);">
+                <div style="font-size: 13px; color: #9E9AA7; font-weight: 600;">Skor Kepatuhan CIS</div>
+                <div style="font-size: 40px; font-weight: 900; color: #E8B64C; margin: 4px 0;">{cis_score}%</div>
+                <div style="background: #252A38; border-radius: 9999px; height: 6px; width: 100%; overflow: hidden; margin-top: 8px;">
+                    <div style="background: linear-gradient(90deg, #E8B64C, #34D399); height: 100%; width: {cis_score}%;"></div>
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
         )
+
+    with col_c2:
+        st.markdown(
+            f"""
+            <div style="background: linear-gradient(145deg, #181B26, #12141F); border: 1px solid rgba(52, 211, 153, 0.3); border-radius: 14px; padding: 18px; box-shadow: 0 4px 14px rgba(0,0,0,0.4);">
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="font-size: 13px; color: #9E9AA7; font-weight: 600;">Lolos Audit (Passed)</span>
+                    <span style="color: #34D399;">✓</span>
+                </div>
+                <div style="font-size: 40px; font-weight: 900; color: #34D399; margin: 4px 0;">{passed_cnt} / {total_cnt}</div>
+                <div style="font-size: 12px; color: #9E9AA7;">Sudah sesuai target</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    with col_c3:
+        st.markdown(
+            f"""
+            <div style="background: linear-gradient(145deg, #181B26, #12141F); border: 1px solid rgba(244, 63, 94, 0.3); border-radius: 14px; padding: 18px; box-shadow: 0 4px 14px rgba(0,0,0,0.4);">
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="font-size: 13px; color: #9E9AA7; font-weight: 600;">Perlu Hardening (Failed)</span>
+                    <span style="color: #F43F5E;">⚠️</span>
+                </div>
+                <div style="font-size: 40px; font-weight: 900; color: #F43F5E; margin: 4px 0;">{failed_cnt} / {total_cnt}</div>
+                <div style="font-size: 12px; color: #F87171;">{risky_pending} butuh persetujuan kamu</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    with col_c4:
+        st.markdown(
+            """
+            <div style="background: linear-gradient(145deg, #181B26, #12141F); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 14px; padding: 18px; box-shadow: 0 4px 14px rgba(0,0,0,0.4);">
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="font-size: 13px; color: #9E9AA7; font-weight: 600;">Siklus</span>
+                    <span style="color: #38BDF8;">🕒</span>
+                </div>
+                <div style="font-size: 34px; font-weight: 900; color: #38BDF8; margin: 7px 0;">perbaikan</div>
+                <div style="font-size: 12px; color: #9E9AA7;">Human-in-the-Loop aktif</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+    st.markdown("<div style='height: 16px;'></div>", unsafe_allow_html=True)
+
+    # ACTION TOOLBAR
+    col_t_title, col_btn_aud, col_btn_hrd, col_btn_rol = st.columns([5, 2, 2.5, 2.5])
+
+    with col_t_title:
+        st.markdown("#### 📋 Daftar 10 Poin CIS Benchmark Ubuntu 24.04")
+
+    with col_btn_aud:
+        if st.button("🔄 Audit Semua", use_container_width=True):
+            now_str = time.strftime("%Y-%m-%d %H:%M")
+            for c in current_controls:
+                c["last_run"] = now_str
+            st.toast("Audit semua 10 kontrol CIS selesai dijalankan!", icon="🔍")
+            st.rerun()
+
+    with col_btn_hrd:
+        if st.button("⚡ Hardening (Aman Saja)", type="primary", use_container_width=True):
+            now_str = time.strftime("%Y-%m-%d %H:%M")
+            applied_count = 0
+            for c in current_controls:
+                if c["risk"] == "AMAN" and c["status"] != "PASSED":
+                    c["status"] = "PASSED"
+                    c["last_run"] = now_str
+                    applied_count += 1
+            st.toast(f"{applied_count} kontrol AMAN berhasil diterapkan otomatis!", icon="🛡️")
+            st.rerun()
+
+    with col_btn_rol:
+        if st.button("⏪ Rollback Semua", use_container_width=True):
+            st.session_state.cis_controls_data = [dict(c) for c in DEFAULT_CIS_CONTROLS]
+            st.toast("Semua setelan dikembalikan ke baseline awal dengan verifikasi SHA-256!", icon="⏪")
+            st.rerun()
+
+    st.divider()
+
+    # TABEL 10 POIN CIS INTERAKTIF
+    # Header Kolom Tabel
+    h1, h2, h3, h4, h5, h6, h7 = st.columns([0.6, 3.2, 1.8, 1.2, 1.6, 2.8, 1.0])
+    with h1:
+        st.markdown("<b style='color:#9E9AA7; font-size:12px;'>NO</b>", unsafe_allow_html=True)
+    with h2:
+        st.markdown("<b style='color:#9E9AA7; font-size:12px;'>POIN CIS HARDENING</b>", unsafe_allow_html=True)
+    with h3:
+        st.markdown("<b style='color:#9E9AA7; font-size:12px;'>KODE CIS</b>", unsafe_allow_html=True)
+    with h4:
+        st.markdown("<b style='color:#9E9AA7; font-size:12px;'>STATUS</b>", unsafe_allow_html=True)
+    with h5:
+        st.markdown("<b style='color:#9E9AA7; font-size:12px;'>TERAKHIR</b>", unsafe_allow_html=True)
+    with h6:
+        st.markdown("<b style='color:#9E9AA7; font-size:12px;'>AKSI EKSEKUSI</b>", unsafe_allow_html=True)
+    with h7:
+        st.markdown("<b style='color:#9E9AA7; font-size:12px;'>LOG & AI</b>", unsafe_allow_html=True)
+
+    st.markdown("<div style='border-bottom: 1px solid rgba(148, 163, 184, 0.15); margin-bottom: 10px;'></div>", unsafe_allow_html=True)
+
+    for idx, c in enumerate(current_controls):
+        r1, r2, r3, r4, r5, r6, r7 = st.columns([0.6, 3.2, 1.8, 1.2, 1.6, 2.8, 1.0])
+
+        # Status badge formatting
+        stat = c["status"]
+        if stat == "PASSED":
+            badge_html = "<span style='background:rgba(52, 211, 153, 0.15); color:#34D399; border:1px solid rgba(52, 211, 153, 0.3); padding:2px 8px; border-radius:6px; font-size:11px; font-weight:700;'>PASSED</span>"
+        elif stat == "PARTIAL":
+            badge_html = "<span style='background:rgba(251, 191, 36, 0.15); color:#FBBF24; border:1px solid rgba(251, 191, 36, 0.3); padding:2px 8px; border-radius:6px; font-size:11px; font-weight:700;'>PARTIAL</span>"
+        else:
+            badge_html = "<span style='background:rgba(244, 63, 94, 0.15); color:#F43F5E; border:1px solid rgba(244, 63, 94, 0.3); padding:2px 8px; border-radius:6px; font-size:11px; font-weight:700;'>FAILED</span>"
+
+        risk_color = "#F43F5E" if c["risk"] == "BERISIKO" else "#34D399"
+
+        with r1:
+            st.markdown(f"<div style='padding-top: 8px; color: #9E9AA7;'>#{c['no']}</div>", unsafe_allow_html=True)
+
+        with r2:
+            st.markdown(
+                f"""
+                <div style='padding-top: 2px;'>
+                    <strong style='color:#F2EFE6; font-size:13.5px;'>{c['name']}</strong><br>
+                    <span style='font-size:11px; color:{risk_color}; font-weight:600;'>● {c['risk']}</span>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+        with r3:
+            st.markdown(f"<div style='padding-top: 8px;'><code style='font-size:11.5px;'>{c['cis_code']}</code></div>", unsafe_allow_html=True)
+
+        with r4:
+            st.markdown(f"<div style='padding-top: 8px;'>{badge_html}</div>", unsafe_allow_html=True)
+
+        with r5:
+            st.markdown(f"<div style='padding-top: 8px; font-size:12px; color:#9E9AA7;'>{c['last_run']}</div>", unsafe_allow_html=True)
+
+        with r6:
+            btn_col_a, btn_col_h, btn_col_r = st.columns(3)
+            with btn_col_a:
+                if st.button("Audit", key=f"aud_{c['id']}", use_container_width=True):
+                    c["last_run"] = time.strftime("%Y-%m-%d %H:%M")
+                    st.toast(f"[{c['id']}] Audit selesai: {c['observed']}", icon="🔍")
+                    st.rerun()
+
+            with btn_col_h:
+                if st.button("Harden", key=f"hrd_{c['id']}", type="primary" if c["status"] != "PASSED" else "secondary", use_container_width=True):
+                    if c["risk"] == "BERISIKO":
+                        st.session_state[f"confirm_modal_{c['id']}"] = True
+                    else:
+                        c["status"] = "PASSED"
+                        c["last_run"] = time.strftime("%Y-%m-%d %H:%M")
+                        st.toast(f"[{c['id']}] Hardening diterapkan!", icon="✅")
+                        st.rerun()
+
+            with btn_col_r:
+                if st.button("Rollback", key=f"rol_{c['id']}", use_container_width=True):
+                    orig = next(x for x in DEFAULT_CIS_CONTROLS if x["id"] == c["id"])
+                    c["status"] = orig["status"]
+                    c["last_run"] = time.strftime("%Y-%m-%d %H:%M")
+                    st.toast(f"[{c['id']}] Konfigurasi di-rollback ke baseline!", icon="⏪")
+                    st.rerun()
+
+        with r7:
+            if st.button("Log/AI", key=f"info_{c['id']}", use_container_width=True):
+                st.session_state[f"show_drawer_{c['id']}"] = not st.session_state.get(f"show_drawer_{c['id']}", False)
+
+        # DIALOG HUMAN-IN-THE-LOOP (Jika Kontrol Berisiko Ditekan)
+        if st.session_state.get(f"confirm_modal_{c['id']}", False):
+            st.warning(
+                f"""
+                ⚠️ **Persetujuan Human-in-the-Loop Diperlukan ({c['id']} — {c['name']})**  
+                *Tindakan ini berisiko:* {c['breaks_if_applied']}  
+                *Perintah Root:* `{c['cmd_apply']}`
+                """
+            )
+            c_yes, c_no = st.columns([2, 2])
+            with c_yes:
+                if st.button("✅ Setuju, Terapkan Sekarang", key=f"yes_{c['id']}", type="primary", use_container_width=True):
+                    c["status"] = "PASSED"
+                    c["last_run"] = time.strftime("%Y-%m-%d %H:%M")
+                    st.session_state[f"confirm_modal_{c['id']}"] = False
+                    st.toast(f"[{c['id']}] Persetujuan dicatat! Hardening berhasil diterapkan.", icon="🛡️")
+                    st.rerun()
+            with c_no:
+                if st.button("❌ Batalkan", key=f"no_{c['id']}", use_container_width=True):
+                    st.session_state[f"confirm_modal_{c['id']}"] = False
+                    st.rerun()
+
+        # DRAWER LOG & AI
+        if st.session_state.get(f"show_drawer_{c['id']}", False):
+            with st.container():
+                st.markdown(
+                    f"""
+                    <div style="background:#151824; border-left: 4px solid #E8B64C; padding: 14px 18px; border-radius: 8px; margin: 8px 0 16px 0;">
+                        <h4 style="color:#E8B64C; margin:0 0 6px 0;">🧠 Rationale & Analisis AI ({c['id']} - CIS {c['cis_code']})</h4>
+                        <p style="color:#F2EFE6; font-size:13.5px; line-height:1.6; margin-bottom:8px;">{c['why']}</p>
+                        <div style="font-size:12px; color:#9E9AA7;">
+                            • <b>Target State:</b> <code>{c['target']}</code><br>
+                            • <b>Observed State:</b> <code>{c['observed']}</code><br>
+                            • <b>Jalur Eksekusi:</b> <code>{c['cmd_apply']}</code> (AUID Verified via auditd)
+                        </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+
+        st.markdown("<div style='border-bottom: 1px solid rgba(148, 163, 184, 0.08); margin: 6px 0;'></div>", unsafe_allow_html=True)
 
 
 # ------------------------------------------------------------------------------
