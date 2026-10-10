@@ -1,95 +1,117 @@
 #!/usr/bin/env python3
 """
-demo.py - nyalakan dashboard Yoru dengan data contoh.
+demo.py - dashboard with sample data at http://127.0.0.1:8000. Windows, Linux
+or macOS: only Python, no bash and no curl. Data from examples/, no server
+touched.
 
-Jalan di Windows, Linux, dan macOS - cuma butuh Python. Tidak ada bash, tidak
-ada curl, tidak ada perintah yang beda antar sistem.
-
-    cd web
-    python -m pip install fastapi uvicorn
-    python demo.py
-
-Lalu buka http://127.0.0.1:8000
-
-Datanya dari examples/ di repo ini. Tidak ada server yang disentuh - ini murni
-buat melihat tampilan dan latihan presentasi.
-
-    python demo.py 9000        ganti port
-    python demo.py --bersih    hapus database demo, mulai dari nol
-    python demo.py --luar      biar bisa dibuka dari komputer lain
+    cd web; python -m pip install fastapi uvicorn; python demo.py
+    python demo.py 9000  port   --bersih  wipe the db   --luar  open to the network
 """
 
 import json
 import os
+import secrets
 import sqlite3
 import sys
 import time
 import webbrowser
 from pathlib import Path
 
-DIR = Path(__file__).resolve().parent
-REPO = DIR.parent
-DB = DIR / "yoru.db"
+HERE = Path(__file__).resolve().parent
+REPO = HERE.parent
+DB_FILE = HERE / "yoru.db"
 
-CONTOH = [
-    ("report-fix.json", "siklus perbaikan (server sakit, skor 10)"),
-    ("report-watch.json", "siklus penjagaan (server sehat, ada satu perubahan)"),
+# YORU_KONF is an env hook api.py already honours. With no config file the
+# dashboard falls back to this machine's hostname, and every button is disabled.
+DEMO_CONF = HERE / "yoru-demo.conf"
+DEMO_CONF_BODY = """# Dibuat demo.py. Bukan konfigurasi sungguhan - yang asli ada di
+# /etc/yoru/yoru.conf pada server yang dijaga.
+NAMA_SERVER="yoru-a"
+PORT_DIIZINKAN="80 443"
+LEWATI_KONTROL=""
+JAM_PENJAGAAN="03:17"
+ZONA_WAKTU="Asia/Jakarta"
+HERMES_URL=""
+AI_MODEL=""
+TELEGRAM_TOKEN=""
+TELEGRAM_CHAT_ID=""
+"""
+
+SAMPLES = [
+    ("report-fix.json", "yoru-b - siklus perbaikan (sakit, skor 10, ada port belum dijawab)"),
+    ("report-watch.json", "yoru-a - siklus penjagaan (sehat, skor 90, ada satu perubahan)"),
 ]
 
 
-def mati(pesan):
-    print(f"\n  GAGAL: {pesan}\n")
+def die(message):
+    print(f"\n  GAGAL: {message}\n")
     sys.exit(1)
 
 
-def isi_contoh():
-    """Ditulis langsung ke SQLite, bukan lewat HTTP.
+def load_samples():
+    """Straight into SQLite: in PowerShell curl is an alias with other arguments."""
+    import api  # noqa: F401  - importing this is what creates the tables
 
-    Lewat HTTP berarti harus menunggu server siap dulu lalu memanggil curl -
-    dan curl di PowerShell itu alias ke perintah lain yang bentuk argumennya
-    beda. Menulis langsung menghapus seluruh kelas masalah itu.
-    """
-    import api  # noqa: F401  - impor ini yang membuat tabelnya
-
-    k = sqlite3.connect(DB)
+    conn = sqlite3.connect(DB_FILE)
     try:
-        sudah = k.execute("SELECT COUNT(*) FROM laporan").fetchone()[0]
-        if sudah:
-            print(f"  --   database sudah berisi {sudah} laporan, tidak diisi ulang")
+        existing = conn.execute("SELECT COUNT(*) FROM report").fetchone()[0]
+        if existing:
+            print(f"  --   database sudah berisi {existing} laporan, tidak diisi ulang")
             return
-        for berkas, keterangan in CONTOH:
-            jalur = REPO / "examples" / berkas
-            if not jalur.exists():
-                print(f"  --   {berkas} tidak ada, dilewati")
+        for filename, label in SAMPLES:
+            path = REPO / "examples" / filename
+            if not path.exists():
+                print(f"  --   {filename} tidak ada, dilewati")
                 continue
-            d = json.loads(jalur.read_text(encoding="utf-8"))
-            k.execute(
-                "INSERT INTO laporan (server, waktu, siklus, skor, isi, diterima) VALUES (?,?,?,?,?,?)",
-                (str((d.get("server") or {}).get("nama") or "contoh"),
-                 str(d.get("waktu")), str(d.get("siklus")),
-                 int((d.get("ringkasan") or {}).get("skor") or 0),
-                 json.dumps(d, ensure_ascii=False), time.time()),
+            report = json.loads(path.read_text(encoding="utf-8"))
+            conn.execute(
+                "INSERT INTO report (server, time, cycle, score, body, received) VALUES (?,?,?,?,?,?)",
+                (str((report.get("server") or {}).get("name") or "contoh"),
+                 str(report.get("time")), str(report.get("cycle")),
+                 int((report.get("summary") or {}).get("score") or 0),
+                 json.dumps(report, ensure_ascii=False), time.time()),
             )
-            print(f"  ok   {keterangan}")
-        k.commit()
+            print(f"  ok   {label}")
+        seed_history(conn)
+        conn.commit()
     finally:
-        k.close()
+        conn.close()
+
+
+def seed_history(conn):
+    """Older reports so the chart has a line, not one bar; marked contoh in the JSON."""
+    base = json.loads((REPO / "examples" / "report-watch.json").read_text(encoding="utf-8"))
+    curve = [30, 30, 40, 50, 50, 60, 70, 70, 80, 80, 90, 90, 60, 90]
+    now = time.time()
+    for days_ago, score in enumerate(reversed(curve), start=1):
+        stamp = now - days_ago * 86400
+        report = dict(base)
+        report["time"] = time.strftime("%Y-%m-%dT%H:%M:%S+07:00", time.localtime(stamp))
+        report["cycle"] = "penjagaan"
+        report["contoh"] = True
+        report["summary"] = dict(base["summary"], score=score,
+                                 passed=round(score / 10), failed=10 - round(score / 10))
+        conn.execute(
+            "INSERT INTO report (server, time, cycle, score, body, received) VALUES (?,?,?,?,?,?)",
+            (base["server"]["name"], report["time"], "penjagaan", score,
+             json.dumps(report, ensure_ascii=False), stamp))
+    print("  ok   riwayat contoh %d hari untuk %s" % (len(curve), base["server"]["name"]))
 
 
 def main():
-    port, bersih, luar = 8000, False, False
-    for a in sys.argv[1:]:
-        if a == "--bersih":
-            bersih = True
-        elif a == "--luar":
-            luar = True
-        elif a in ("-h", "--help"):
+    port, wipe, external = 8000, False, False
+    for arg in sys.argv[1:]:
+        if arg == "--bersih":
+            wipe = True
+        elif arg == "--luar":
+            external = True
+        elif arg in ("-h", "--help"):
             print(__doc__)
             return 0
-        elif a.isdigit():
-            port = int(a)
+        elif arg.isdigit():
+            port = int(arg)
         else:
-            mati(f"argumen tidak dikenal: {a}")
+            die(f"argumen tidak dikenal: {arg}")
 
     print("\n  Yoru - demo dashboard\n")
 
@@ -97,28 +119,37 @@ def main():
         import fastapi  # noqa: F401
         import uvicorn
     except ImportError:
-        mati("fastapi/uvicorn belum ada. Jalankan dulu:\n"
-             "         python -m pip install fastapi uvicorn")
+        die("fastapi/uvicorn belum ada. Jalankan dulu:\n"
+            "         python -m pip install fastapi uvicorn")
 
-    if bersih:
-        for s in ("", "-wal", "-shm"):
-            Path(str(DB) + s).unlink(missing_ok=True)
+    if external:
+        os.environ.setdefault("YORU_TOKEN", secrets.token_hex(12))
+
+    DEMO_CONF.write_text(DEMO_CONF_BODY, encoding="utf-8")
+    os.environ.setdefault("YORU_KONF", str(DEMO_CONF))
+
+    if wipe:
+        for suffix in ("", "-wal", "-shm"):
+            Path(str(DB_FILE) + suffix).unlink(missing_ok=True)
         print("  ok   database demo dihapus")
 
-    os.chdir(DIR)   # supaya api.py menemukan dashboard.html di sebelahnya
-    isi_contoh()
+    os.chdir(HERE)   # so api.py finds dashboard.html next to it
+    load_samples()
 
-    host = "0.0.0.0" if luar else "127.0.0.1"
-    alamat = f"http://127.0.0.1:{port}"
-    print(f"\n  Buka: {alamat}")
-    if luar:
+    host = "0.0.0.0" if external else "127.0.0.1"
+    url = f"http://127.0.0.1:{port}"
+    print(f"\n  Buka: {url}")
+    if external:
         print("  (--luar aktif: bisa dibuka dari komputer lain di jaringan yang sama)")
+        print("\n  Dari komputer lain halaman ini minta token sekali. Tempel yang ini:\n")
+        print(f"      {os.environ['YORU_TOKEN']}\n")
+        print("  Dari 127.0.0.1 tidak pernah diminta.")
     print("\n  Tekan Ctrl-C untuk berhenti.\n")
 
     try:
-        webbrowser.open(alamat)
-    except (OSError, RuntimeError) as e:
-        print(f"  (Catatan: browser tidak dapat dibuka otomatis: {e})")
+        webbrowser.open(url)
+    except Exception:  # noqa: BLE001 - opening a browser is a convenience, not a requirement
+        pass
 
     uvicorn.run("api:app", host=host, port=port, log_level="warning")
     return 0

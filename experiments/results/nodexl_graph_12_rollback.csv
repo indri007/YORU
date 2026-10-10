@@ -1,0 +1,6 @@
+Vertex 1,Vertex 2,Relationship,Weight,Evidence Type,Source,Source Locator,Color,Width,Style,Visibility
+State_Clean,Backup_Snapshot,creates_atomic_tar_archive,1.0,EMPIRICAL_EXPERIMENT,experiments/results/rq3_hardening_determinism.json,rollback_trials=10,#3B82F6,1.8,Solid,Visible
+State_Clean,State_Drift,induced_unauthorized_modification,1.0,EMPIRICAL_EXPERIMENT,experiments/results/rq3_hardening_determinism.json,controls_breakdown[0..9] baseline_status,#EF4444,1.6,Dash,Visible
+State_Drift,Rollback_Cmd,triggers_reversal_invocation,1.0,EMPIRICAL_EXPERIMENT,bin/yoructl,kembalikan argument parser,#F59E0B,1.8,Solid,Visible
+Backup_Snapshot,Rollback_Cmd,supplies_original_byte_content,1.0,EMPIRICAL_EXPERIMENT,experiments/results/rq3_hardening_determinism.json,atomic_state_integrity exact match,#3B82F6,1.8,Solid,Visible
+Rollback_Cmd,State_Restored,atomic_unpack_and_daemon_reload,1.0,EMPIRICAL_EXPERIMENT,experiments/results/rq3_hardening_determinism.json,successful_rollbacks=10 (10/10 100.0%),#10B981,2.2,Solid,Visible

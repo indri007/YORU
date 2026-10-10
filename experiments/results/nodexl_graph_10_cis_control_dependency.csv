@@ -1,0 +1,7 @@
+Vertex 1,Vertex 2,Relationship,Weight,Evidence Type,Source,Source Locator,Color,Width,Style,Visibility
+K02,K04,prerequisite,1.0,EMPIRICAL_EXPERIMENT,catalog/K04.yaml,prasyarat: k02_harus_lulus_dulu,#3B82F6,1.8,Solid,Visible
+K08,K01,monitors_drift_of,1.0,EMPIRICAL_EXPERIMENT,catalog/K08.yaml,aturan: -w /etc/ssh/sshd_config -p wa -k yoru_kontrol,#E8B64C,1.6,Solid,Visible
+K08,K05,monitors_drift_of,1.0,EMPIRICAL_EXPERIMENT,catalog/K08.yaml,aturan: -w /etc/ufw/user.rules -p wa -k yoru_kontrol,#E8B64C,1.6,Solid,Visible
+K08,K06,monitors_drift_of,1.0,EMPIRICAL_EXPERIMENT,catalog/K08.yaml,aturan: -w /etc/services -p wa -k yoru_kontrol,#E8B64C,1.6,Solid,Visible
+K08,K10,monitors_drift_of,1.0,EMPIRICAL_EXPERIMENT,catalog/K08.yaml,aturan: -w /etc/sysctl.d -p wa -k yoru_kontrol,#E8B64C,1.6,Solid,Visible
+K09,K08,retains_audit_logs,1.0,EMPIRICAL_EXPERIMENT,catalog/K08.yaml,prasyarat: k09_sudah_diterapkan,#10B981,1.8,Solid,Visible

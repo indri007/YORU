@@ -1,0 +1,9 @@
+Vertex 1,Vertex 2,Relationship,Weight,Evidence Type,Source,Source Locator,Color,Width,Style,Visibility
+AUID_1000,Proc_Vim_4821,spawns_process_via_sudo,1.0,EMPIRICAL_AUDIT,experiments/test_rq2_auid_attribution.py,SCENARIOS[0] comm=vim auid=1000,#3B82F6,1.8,Solid,Visible
+Proc_Vim_4821,Event_Openat_257,invokes_syscall,1.0,EMPIRICAL_AUDIT,experiments/test_rq2_auid_attribution.py,syscall=257 success=yes,#3B82F6,1.8,Solid,Visible
+Event_Openat_257,Target_SshdConfig,opens_for_write,1.0,EMPIRICAL_AUDIT,catalog/K01.yaml,file_monitored by auditd key=yoru_kontrol,#E8B64C,1.8,Solid,Visible
+Target_SshdConfig,Audit_Record_Attacker,captured_by_kernel_filter,1.0,EMPIRICAL_AUDIT,docs/LINUX_RUNTIME_VALIDATION_REPORT.md,Section 2.3 ausearch -k yoru_kontrol,#E8B64C,1.8,Solid,Visible
+AUID_1001,Proc_Yoructl_5104,spawns_remediation,1.0,EMPIRICAL_AUDIT,experiments/test_rq2_auid_attribution.py,SCENARIOS[10] comm=yoructl auid=1001,#8B5CF6,1.8,Solid,Visible
+Proc_Yoructl_5104,Event_Execve_59,executes_primitive,1.0,EMPIRICAL_AUDIT,experiments/test_rq2_auid_attribution.py,type=EXECVE a0=/opt/yoru/bin/yoructl,#8B5CF6,1.8,Solid,Visible
+Event_Execve_59,Target_SysctlConf,applies_hardening,1.0,EMPIRICAL_AUDIT,catalog/K10.yaml,target /etc/sysctl.d/99-yoru-k10.conf,#10B981,1.8,Solid,Visible
+Target_SysctlConf,Audit_Record_Agent,captured_by_agent_filter,1.0,EMPIRICAL_AUDIT,experiments/test_rq2_auid_attribution.py,key=yoru_agent_act auid=1001,#10B981,1.8,Solid,Visible

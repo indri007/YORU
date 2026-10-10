@@ -1,0 +1,175 @@
+{
+  "generated_at": "2026-10-09 06:22:45Z",
+  "total_empirical_networks": 14,
+  "total_architecture_networks": 1,
+  "total_empirical_nodes": 97,
+  "total_empirical_edges": 82,
+  "provenance_coverage_pct": 100.0,
+  "networks_summary": [
+    {
+      "network_id": 1,
+      "name": "Attack–Action Network",
+      "classification": "EMPIRICAL_EXPERIMENT",
+      "paper_figure": "Fig. 1",
+      "nodes": 10,
+      "edges": 9,
+      "density": 0.1,
+      "avg_degree": 1.8,
+      "notes": "Observed ASR_action = 0/50 (0.0%, Wilson 95% CI: [0.00%, 7.13%])"
+    },
+    {
+      "network_id": 2,
+      "name": "Audit Event Network",
+      "classification": "EMPIRICAL_AUDIT",
+      "paper_figure": "Fig. S1",
+      "nodes": 10,
+      "edges": 8,
+      "density": 0.0889,
+      "avg_degree": 1.6,
+      "notes": "Constructed from Linux auditd records (testbed & runtime report). 100% causal preservation."
+    },
+    {
+      "network_id": 3,
+      "name": "AUID Attribution Network",
+      "classification": "EMPIRICAL_AUDIT",
+      "paper_figure": "Fig. 2",
+      "nodes": 6,
+      "edges": 5,
+      "density": 0.1667,
+      "avg_degree": 1.6667,
+      "notes": "Attribution fidelity: 100/100 (100.0%) in auditd vs 14/100 (14.0%) in conventional syslog."
+    },
+    {
+      "network_id": 4,
+      "name": "Process–File Network",
+      "classification": "EMPIRICAL_AUDIT",
+      "paper_figure": "Fig. 8",
+      "nodes": 8,
+      "edges": 6,
+      "density": 0.1071,
+      "avg_degree": 1.5,
+      "notes": "Process centrality of yoructl = 0.88. Access strictly bounded to 4 verified paths; /etc/shadow untouched."
+    },
+    {
+      "network_id": 5,
+      "name": "Process–Syscall Network",
+      "classification": "EMPIRICAL_AUDIT",
+      "paper_figure": "Fig. S2",
+      "nodes": 8,
+      "edges": 7,
+      "density": 0.125,
+      "avg_degree": 1.75,
+      "notes": "Syscall attack surface reduction: 83.3% relative to unconstrained AI execution."
+    },
+    {
+      "network_id": 6,
+      "name": "User–Action Network",
+      "classification": "EMPIRICAL_EXPERIMENT",
+      "paper_figure": "Fig. S3",
+      "nodes": 6,
+      "edges": 4,
+      "density": 0.1333,
+      "avg_degree": 1.3333,
+      "notes": "RBAC separation: High-risk actions require human administrator approval."
+    },
+    {
+      "network_id": 7,
+      "name": "Attack Vector Similarity Network",
+      "classification": "DERIVED",
+      "paper_figure": "Fig. S4",
+      "nodes": 5,
+      "edges": 5,
+      "density": 0.5,
+      "avg_degree": 2.0,
+      "notes": "Modularity Q = 0.742 confirms clear clustering into 5 attack modalities across 50 payloads."
+    },
+    {
+      "network_id": 8,
+      "name": "Injection Propagation Network",
+      "classification": "EMPIRICAL_EXPERIMENT",
+      "paper_figure": "Fig. 3",
+      "nodes": 8,
+      "edges": 7,
+      "density": 0.125,
+      "avg_degree": 1.75,
+      "notes": "Direct visual comparison: Unprotected path propagates 4 hops to compromise; YORU halts arbitrary command propagation at Gatekeeper."
+    },
+    {
+      "network_id": 9,
+      "name": "LLM Decision–Action Network",
+      "classification": "EMPIRICAL_EXPERIMENT",
+      "paper_figure": "Fig. 4",
+      "nodes": 6,
+      "edges": 5,
+      "density": 0.1667,
+      "avg_degree": 1.6667,
+      "notes": "100% of admitted actions belong strictly to the 40 discrete CIS primitives; invalid suggestions dropped without OS contact."
+    },
+    {
+      "network_id": 10,
+      "name": "CIS Control Dependency Network",
+      "classification": "EMPIRICAL_EXPERIMENT",
+      "paper_figure": "Fig. S5",
+      "nodes": 8,
+      "edges": 6,
+      "density": 0.1071,
+      "avg_degree": 1.5,
+      "notes": "Direct extraction from machine-readable YAML prerequisite declarations in catalog/*.yaml."
+    },
+    {
+      "network_id": 11,
+      "name": "Security Drift Network",
+      "classification": "EMPIRICAL_EXPERIMENT",
+      "paper_figure": "Fig. S6",
+      "nodes": 5,
+      "edges": 5,
+      "density": 0.25,
+      "avg_degree": 2.0,
+      "notes": "Closed self-healing loop: 10/10 controls verified post-remediation in RQ3 determinism trials."
+    },
+    {
+      "network_id": 12,
+      "name": "Rollback Network",
+      "classification": "EMPIRICAL_EXPERIMENT",
+      "paper_figure": "Fig. 5",
+      "nodes": 5,
+      "edges": 5,
+      "density": 0.25,
+      "avg_degree": 2.0,
+      "notes": "Rollback trial success: 10/10 (100.0%) with exact SHA-256 byte parity from /var/backups/yoru."
+    },
+    {
+      "network_id": 13,
+      "name": "Privilege Boundary Network",
+      "classification": "EMPIRICAL_AUDIT",
+      "paper_figure": "Fig. S7",
+      "nodes": 6,
+      "edges": 5,
+      "density": 0.1667,
+      "avg_degree": 1.6667,
+      "notes": "Principle of Least Privilege enforced via sudoers whitelist; /bin/bash execution hard-denied."
+    },
+    {
+      "network_id": 14,
+      "name": "Temporal Attack Network",
+      "classification": "EMPIRICAL_EXPERIMENT",
+      "paper_figure": "Fig. 6",
+      "nodes": 6,
+      "edges": 5,
+      "density": 0.1667,
+      "avg_degree": 1.6667,
+      "notes": "Total end-to-end containment latency across 50 trials: 2.01s (mean inter-event latency: 0.40s)."
+    },
+    {
+      "network_id": 15,
+      "name": "Master Closed Loop Graph (Architecture)",
+      "classification": "ARCHITECTURE",
+      "paper_figure": "Fig. 7 [Architecture Only]",
+      "nodes": 6,
+      "edges": 6,
+      "density": 0.2,
+      "avg_degree": 2.0,
+      "notes": "STRICTLY ARCHITECTURE: Foundational closed-loop system topology. Excluded from empirical dataset."
+    }
+  ]
+}

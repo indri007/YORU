@@ -1,0 +1,195 @@
+network_id,network_name,node,metric,score,rank,evidence_type
+1,Attack–Action Network,LLM_Deliberation,degree_centrality,0.6667,1,EMPIRICAL_EXPERIMENT
+1,Attack–Action Network,YORU_Gatekeeper,degree_centrality,0.3333,2,EMPIRICAL_EXPERIMENT
+1,Attack–Action Network,Candidate_Action,degree_centrality,0.2222,3,EMPIRICAL_EXPERIMENT
+1,Attack–Action Network,V1_Direct_Shell,degree_centrality,0.1111,4,EMPIRICAL_EXPERIMENT
+1,Attack–Action Network,V2_Delimiter_Smuggle,degree_centrality,0.1111,5,EMPIRICAL_EXPERIMENT
+1,Attack–Action Network,V3_Catalog_Escape,degree_centrality,0.1111,6,EMPIRICAL_EXPERIMENT
+1,Attack–Action Network,V4_Approval_Misdirect,degree_centrality,0.1111,7,EMPIRICAL_EXPERIMENT
+1,Attack–Action Network,V5_AUID_Spoof,degree_centrality,0.1111,8,EMPIRICAL_EXPERIMENT
+1,Attack–Action Network,OS_Root_Shell,degree_centrality,0.1111,9,EMPIRICAL_EXPERIMENT
+1,Attack–Action Network,CIS_Sanctioned_Action,degree_centrality,0.1111,10,EMPIRICAL_EXPERIMENT
+1,Attack–Action Network,LLM_Deliberation,betweenness_centrality,0.2778,1,EMPIRICAL_EXPERIMENT
+1,Attack–Action Network,Candidate_Action,betweenness_centrality,0.25,2,EMPIRICAL_EXPERIMENT
+1,Attack–Action Network,YORU_Gatekeeper,betweenness_centrality,0.1944,3,EMPIRICAL_EXPERIMENT
+1,Attack–Action Network,V1_Direct_Shell,betweenness_centrality,0.0,4,EMPIRICAL_EXPERIMENT
+1,Attack–Action Network,V2_Delimiter_Smuggle,betweenness_centrality,0.0,5,EMPIRICAL_EXPERIMENT
+1,Attack–Action Network,V3_Catalog_Escape,betweenness_centrality,0.0,6,EMPIRICAL_EXPERIMENT
+1,Attack–Action Network,V4_Approval_Misdirect,betweenness_centrality,0.0,7,EMPIRICAL_EXPERIMENT
+1,Attack–Action Network,V5_AUID_Spoof,betweenness_centrality,0.0,8,EMPIRICAL_EXPERIMENT
+1,Attack–Action Network,OS_Root_Shell,betweenness_centrality,0.0,9,EMPIRICAL_EXPERIMENT
+1,Attack–Action Network,CIS_Sanctioned_Action,betweenness_centrality,0.0,10,EMPIRICAL_EXPERIMENT
+2,Audit Event Network,Proc_Vim_4821,degree_centrality,0.2222,1,EMPIRICAL_AUDIT
+2,Audit Event Network,Proc_Yoructl_5104,degree_centrality,0.2222,2,EMPIRICAL_AUDIT
+2,Audit Event Network,Event_Openat_257,degree_centrality,0.2222,3,EMPIRICAL_AUDIT
+2,Audit Event Network,Event_Execve_59,degree_centrality,0.2222,4,EMPIRICAL_AUDIT
+2,Audit Event Network,Target_SshdConfig,degree_centrality,0.2222,5,EMPIRICAL_AUDIT
+2,Audit Event Network,Target_SysctlConf,degree_centrality,0.2222,6,EMPIRICAL_AUDIT
+2,Audit Event Network,AUID_1000,degree_centrality,0.1111,7,EMPIRICAL_AUDIT
+2,Audit Event Network,AUID_1001,degree_centrality,0.1111,8,EMPIRICAL_AUDIT
+2,Audit Event Network,Audit_Record_Attacker,degree_centrality,0.1111,9,EMPIRICAL_AUDIT
+2,Audit Event Network,Audit_Record_Agent,degree_centrality,0.1111,10,EMPIRICAL_AUDIT
+2,Audit Event Network,Event_Openat_257,betweenness_centrality,0.0556,1,EMPIRICAL_AUDIT
+2,Audit Event Network,Event_Execve_59,betweenness_centrality,0.0556,2,EMPIRICAL_AUDIT
+2,Audit Event Network,Proc_Vim_4821,betweenness_centrality,0.0417,3,EMPIRICAL_AUDIT
+2,Audit Event Network,Proc_Yoructl_5104,betweenness_centrality,0.0417,4,EMPIRICAL_AUDIT
+2,Audit Event Network,Target_SshdConfig,betweenness_centrality,0.0417,5,EMPIRICAL_AUDIT
+2,Audit Event Network,Target_SysctlConf,betweenness_centrality,0.0417,6,EMPIRICAL_AUDIT
+2,Audit Event Network,AUID_1000,betweenness_centrality,0.0,7,EMPIRICAL_AUDIT
+2,Audit Event Network,AUID_1001,betweenness_centrality,0.0,8,EMPIRICAL_AUDIT
+2,Audit Event Network,Audit_Record_Attacker,betweenness_centrality,0.0,9,EMPIRICAL_AUDIT
+2,Audit Event Network,Audit_Record_Agent,betweenness_centrality,0.0,10,EMPIRICAL_AUDIT
+3,AUID Attribution Network,Elevation_Sudo,degree_centrality,0.6,1,EMPIRICAL_AUDIT
+3,AUID Attribution Network,Root_Process,degree_centrality,0.6,2,EMPIRICAL_AUDIT
+3,AUID Attribution Network,Actor_User_1000,degree_centrality,0.2,3,EMPIRICAL_AUDIT
+3,AUID Attribution Network,Actor_Agent_1001,degree_centrality,0.2,4,EMPIRICAL_AUDIT
+3,AUID Attribution Network,Syslog_Masked_View,degree_centrality,0.2,5,EMPIRICAL_AUDIT
+3,AUID Attribution Network,Auditd_AUID_View,degree_centrality,0.2,6,EMPIRICAL_AUDIT
+3,AUID Attribution Network,Elevation_Sudo,betweenness_centrality,0.3,1,EMPIRICAL_AUDIT
+3,AUID Attribution Network,Root_Process,betweenness_centrality,0.3,2,EMPIRICAL_AUDIT
+3,AUID Attribution Network,Actor_User_1000,betweenness_centrality,0.0,3,EMPIRICAL_AUDIT
+3,AUID Attribution Network,Actor_Agent_1001,betweenness_centrality,0.0,4,EMPIRICAL_AUDIT
+3,AUID Attribution Network,Syslog_Masked_View,betweenness_centrality,0.0,5,EMPIRICAL_AUDIT
+3,AUID Attribution Network,Auditd_AUID_View,betweenness_centrality,0.0,6,EMPIRICAL_AUDIT
+4,Process–File Network,Proc_Yoructl_Main,degree_centrality,0.5714,1,EMPIRICAL_AUDIT
+4,Process–File Network,File_Sshd_Config,degree_centrality,0.2857,2,EMPIRICAL_AUDIT
+4,Process–File Network,File_Audit_Rules,degree_centrality,0.2857,3,EMPIRICAL_AUDIT
+4,Process–File Network,Proc_Sshd,degree_centrality,0.1429,4,EMPIRICAL_AUDIT
+4,Process–File Network,Proc_Auditd,degree_centrality,0.1429,5,EMPIRICAL_AUDIT
+4,Process–File Network,File_Sysctl_K10,degree_centrality,0.1429,6,EMPIRICAL_AUDIT
+4,Process–File Network,File_Backup_Store,degree_centrality,0.1429,7,EMPIRICAL_AUDIT
+4,Process–File Network,File_Shadow,degree_centrality,0.0,8,EMPIRICAL_AUDIT
+4,Process–File Network,Proc_Yoructl_Main,betweenness_centrality,0.0,1,EMPIRICAL_AUDIT
+4,Process–File Network,Proc_Sshd,betweenness_centrality,0.0,2,EMPIRICAL_AUDIT
+4,Process–File Network,Proc_Auditd,betweenness_centrality,0.0,3,EMPIRICAL_AUDIT
+4,Process–File Network,File_Sshd_Config,betweenness_centrality,0.0,4,EMPIRICAL_AUDIT
+4,Process–File Network,File_Sysctl_K10,betweenness_centrality,0.0,5,EMPIRICAL_AUDIT
+4,Process–File Network,File_Backup_Store,betweenness_centrality,0.0,6,EMPIRICAL_AUDIT
+4,Process–File Network,File_Audit_Rules,betweenness_centrality,0.0,7,EMPIRICAL_AUDIT
+4,Process–File Network,File_Shadow,betweenness_centrality,0.0,8,EMPIRICAL_AUDIT
+5,Process–Syscall Network,Proc_Unconstrained_AI,degree_centrality,0.5714,1,EMPIRICAL_AUDIT
+5,Process–Syscall Network,Proc_YORU_Agent,degree_centrality,0.4286,2,EMPIRICAL_AUDIT
+5,Process–Syscall Network,Sys_openat,degree_centrality,0.2857,3,EMPIRICAL_AUDIT
+5,Process–Syscall Network,Sys_flock,degree_centrality,0.1429,4,EMPIRICAL_AUDIT
+5,Process–Syscall Network,Sys_execve_bounded,degree_centrality,0.1429,5,EMPIRICAL_AUDIT
+5,Process–Syscall Network,Sys_execve_raw,degree_centrality,0.1429,6,EMPIRICAL_AUDIT
+5,Process–Syscall Network,Sys_ptrace,degree_centrality,0.1429,7,EMPIRICAL_AUDIT
+5,Process–Syscall Network,Sys_socket_raw,degree_centrality,0.1429,8,EMPIRICAL_AUDIT
+5,Process–Syscall Network,Proc_YORU_Agent,betweenness_centrality,0.0,1,EMPIRICAL_AUDIT
+5,Process–Syscall Network,Proc_Unconstrained_AI,betweenness_centrality,0.0,2,EMPIRICAL_AUDIT
+5,Process–Syscall Network,Sys_openat,betweenness_centrality,0.0,3,EMPIRICAL_AUDIT
+5,Process–Syscall Network,Sys_flock,betweenness_centrality,0.0,4,EMPIRICAL_AUDIT
+5,Process–Syscall Network,Sys_execve_bounded,betweenness_centrality,0.0,5,EMPIRICAL_AUDIT
+5,Process–Syscall Network,Sys_execve_raw,betweenness_centrality,0.0,6,EMPIRICAL_AUDIT
+5,Process–Syscall Network,Sys_ptrace,betweenness_centrality,0.0,7,EMPIRICAL_AUDIT
+5,Process–Syscall Network,Sys_socket_raw,betweenness_centrality,0.0,8,EMPIRICAL_AUDIT
+6,User–Action Network,User_Admin,degree_centrality,0.4,1,EMPIRICAL_EXPERIMENT
+6,User–Action Network,User_YORU_Agent,degree_centrality,0.4,2,EMPIRICAL_EXPERIMENT
+6,User–Action Network,Act_K01,degree_centrality,0.2,3,EMPIRICAL_EXPERIMENT
+6,User–Action Network,Act_K05,degree_centrality,0.2,4,EMPIRICAL_EXPERIMENT
+6,User–Action Network,Act_K08,degree_centrality,0.2,5,EMPIRICAL_EXPERIMENT
+6,User–Action Network,Act_K10,degree_centrality,0.2,6,EMPIRICAL_EXPERIMENT
+6,User–Action Network,User_Admin,betweenness_centrality,0.0,1,EMPIRICAL_EXPERIMENT
+6,User–Action Network,User_YORU_Agent,betweenness_centrality,0.0,2,EMPIRICAL_EXPERIMENT
+6,User–Action Network,Act_K01,betweenness_centrality,0.0,3,EMPIRICAL_EXPERIMENT
+6,User–Action Network,Act_K05,betweenness_centrality,0.0,4,EMPIRICAL_EXPERIMENT
+6,User–Action Network,Act_K08,betweenness_centrality,0.0,5,EMPIRICAL_EXPERIMENT
+6,User–Action Network,Act_K10,betweenness_centrality,0.0,6,EMPIRICAL_EXPERIMENT
+7,Attack Vector Similarity Network,Cluster_Direct,degree_centrality,0.75,1,DERIVED
+7,Attack Vector Similarity Network,Cluster_Delimiter,degree_centrality,0.5,2,DERIVED
+7,Attack Vector Similarity Network,Cluster_Catalog,degree_centrality,0.5,3,DERIVED
+7,Attack Vector Similarity Network,Cluster_Obfuscated,degree_centrality,0.5,4,DERIVED
+7,Attack Vector Similarity Network,Cluster_Approval,degree_centrality,0.25,5,DERIVED
+7,Attack Vector Similarity Network,Cluster_Direct,betweenness_centrality,0.6667,1,DERIVED
+7,Attack Vector Similarity Network,Cluster_Catalog,betweenness_centrality,0.5,2,DERIVED
+7,Attack Vector Similarity Network,Cluster_Delimiter,betweenness_centrality,0.0,3,DERIVED
+7,Attack Vector Similarity Network,Cluster_Approval,betweenness_centrality,0.0,4,DERIVED
+7,Attack Vector Similarity Network,Cluster_Obfuscated,betweenness_centrality,0.0,5,DERIVED
+8,Injection Propagation Network,Log_Input,degree_centrality,0.2857,1,EMPIRICAL_EXPERIMENT
+8,Injection Propagation Network,LLM_Unprotected,degree_centrality,0.2857,2,EMPIRICAL_EXPERIMENT
+8,Injection Propagation Network,Shell_Unprotected,degree_centrality,0.2857,3,EMPIRICAL_EXPERIMENT
+8,Injection Propagation Network,LLM_YORU,degree_centrality,0.2857,4,EMPIRICAL_EXPERIMENT
+8,Injection Propagation Network,Gate_YORU,degree_centrality,0.2857,5,EMPIRICAL_EXPERIMENT
+8,Injection Propagation Network,Catalog_Discrete,degree_centrality,0.2857,6,EMPIRICAL_EXPERIMENT
+8,Injection Propagation Network,OS_Compromised,degree_centrality,0.1429,7,EMPIRICAL_EXPERIMENT
+8,Injection Propagation Network,OS_Secure_Action,degree_centrality,0.1429,8,EMPIRICAL_EXPERIMENT
+8,Injection Propagation Network,Gate_YORU,betweenness_centrality,0.0952,1,EMPIRICAL_EXPERIMENT
+8,Injection Propagation Network,LLM_YORU,betweenness_centrality,0.0714,2,EMPIRICAL_EXPERIMENT
+8,Injection Propagation Network,Catalog_Discrete,betweenness_centrality,0.0714,3,EMPIRICAL_EXPERIMENT
+8,Injection Propagation Network,LLM_Unprotected,betweenness_centrality,0.0476,4,EMPIRICAL_EXPERIMENT
+8,Injection Propagation Network,Shell_Unprotected,betweenness_centrality,0.0476,5,EMPIRICAL_EXPERIMENT
+8,Injection Propagation Network,Log_Input,betweenness_centrality,0.0,6,EMPIRICAL_EXPERIMENT
+8,Injection Propagation Network,OS_Compromised,betweenness_centrality,0.0,7,EMPIRICAL_EXPERIMENT
+8,Injection Propagation Network,OS_Secure_Action,betweenness_centrality,0.0,8,EMPIRICAL_EXPERIMENT
+9,LLM Decision–Action Network,LLM_Output_Decisions,degree_centrality,1.0,1,EMPIRICAL_EXPERIMENT
+9,LLM Decision–Action Network,Valid_K01,degree_centrality,0.2,2,EMPIRICAL_EXPERIMENT
+9,LLM Decision–Action Network,Valid_K05,degree_centrality,0.2,3,EMPIRICAL_EXPERIMENT
+9,LLM Decision–Action Network,Valid_K08,degree_centrality,0.2,4,EMPIRICAL_EXPERIMENT
+9,LLM Decision–Action Network,Invalid_Bash,degree_centrality,0.2,5,EMPIRICAL_EXPERIMENT
+9,LLM Decision–Action Network,Invalid_K99,degree_centrality,0.2,6,EMPIRICAL_EXPERIMENT
+9,LLM Decision–Action Network,LLM_Output_Decisions,betweenness_centrality,0.0,1,EMPIRICAL_EXPERIMENT
+9,LLM Decision–Action Network,Valid_K01,betweenness_centrality,0.0,2,EMPIRICAL_EXPERIMENT
+9,LLM Decision–Action Network,Valid_K05,betweenness_centrality,0.0,3,EMPIRICAL_EXPERIMENT
+9,LLM Decision–Action Network,Valid_K08,betweenness_centrality,0.0,4,EMPIRICAL_EXPERIMENT
+9,LLM Decision–Action Network,Invalid_Bash,betweenness_centrality,0.0,5,EMPIRICAL_EXPERIMENT
+9,LLM Decision–Action Network,Invalid_K99,betweenness_centrality,0.0,6,EMPIRICAL_EXPERIMENT
+10,CIS Control Dependency Network,K08,degree_centrality,0.7143,1,EMPIRICAL_EXPERIMENT
+10,CIS Control Dependency Network,K01,degree_centrality,0.1429,2,EMPIRICAL_EXPERIMENT
+10,CIS Control Dependency Network,K02,degree_centrality,0.1429,3,EMPIRICAL_EXPERIMENT
+10,CIS Control Dependency Network,K04,degree_centrality,0.1429,4,EMPIRICAL_EXPERIMENT
+10,CIS Control Dependency Network,K05,degree_centrality,0.1429,5,EMPIRICAL_EXPERIMENT
+10,CIS Control Dependency Network,K06,degree_centrality,0.1429,6,EMPIRICAL_EXPERIMENT
+10,CIS Control Dependency Network,K09,degree_centrality,0.1429,7,EMPIRICAL_EXPERIMENT
+10,CIS Control Dependency Network,K10,degree_centrality,0.1429,8,EMPIRICAL_EXPERIMENT
+10,CIS Control Dependency Network,K08,betweenness_centrality,0.0952,1,EMPIRICAL_EXPERIMENT
+10,CIS Control Dependency Network,K01,betweenness_centrality,0.0,2,EMPIRICAL_EXPERIMENT
+10,CIS Control Dependency Network,K02,betweenness_centrality,0.0,3,EMPIRICAL_EXPERIMENT
+10,CIS Control Dependency Network,K04,betweenness_centrality,0.0,4,EMPIRICAL_EXPERIMENT
+10,CIS Control Dependency Network,K05,betweenness_centrality,0.0,5,EMPIRICAL_EXPERIMENT
+10,CIS Control Dependency Network,K06,betweenness_centrality,0.0,6,EMPIRICAL_EXPERIMENT
+10,CIS Control Dependency Network,K09,betweenness_centrality,0.0,7,EMPIRICAL_EXPERIMENT
+10,CIS Control Dependency Network,K10,betweenness_centrality,0.0,8,EMPIRICAL_EXPERIMENT
+11,Security Drift Network,Config_Baseline,degree_centrality,0.5,1,EMPIRICAL_EXPERIMENT
+11,Security Drift Network,Drift_Event,degree_centrality,0.5,2,EMPIRICAL_EXPERIMENT
+11,Security Drift Network,Detection_Watch,degree_centrality,0.5,3,EMPIRICAL_EXPERIMENT
+11,Security Drift Network,Control_Selection,degree_centrality,0.5,4,EMPIRICAL_EXPERIMENT
+11,Security Drift Network,Remediation_Apply,degree_centrality,0.5,5,EMPIRICAL_EXPERIMENT
+11,Security Drift Network,Config_Baseline,betweenness_centrality,0.5,1,EMPIRICAL_EXPERIMENT
+11,Security Drift Network,Drift_Event,betweenness_centrality,0.5,2,EMPIRICAL_EXPERIMENT
+11,Security Drift Network,Detection_Watch,betweenness_centrality,0.5,3,EMPIRICAL_EXPERIMENT
+11,Security Drift Network,Control_Selection,betweenness_centrality,0.5,4,EMPIRICAL_EXPERIMENT
+11,Security Drift Network,Remediation_Apply,betweenness_centrality,0.5,5,EMPIRICAL_EXPERIMENT
+12,Rollback Network,Rollback_Cmd,degree_centrality,0.75,1,EMPIRICAL_EXPERIMENT
+12,Rollback Network,State_Clean,degree_centrality,0.5,2,EMPIRICAL_EXPERIMENT
+12,Rollback Network,Backup_Snapshot,degree_centrality,0.5,3,EMPIRICAL_EXPERIMENT
+12,Rollback Network,State_Drift,degree_centrality,0.5,4,EMPIRICAL_EXPERIMENT
+12,Rollback Network,State_Restored,degree_centrality,0.25,5,EMPIRICAL_EXPERIMENT
+12,Rollback Network,Rollback_Cmd,betweenness_centrality,0.25,1,EMPIRICAL_EXPERIMENT
+12,Rollback Network,Backup_Snapshot,betweenness_centrality,0.0833,2,EMPIRICAL_EXPERIMENT
+12,Rollback Network,State_Drift,betweenness_centrality,0.0833,3,EMPIRICAL_EXPERIMENT
+12,Rollback Network,State_Clean,betweenness_centrality,0.0,4,EMPIRICAL_EXPERIMENT
+12,Rollback Network,State_Restored,betweenness_centrality,0.0,5,EMPIRICAL_EXPERIMENT
+13,Privilege Boundary Network,Sudoers_Whitelist,degree_centrality,0.6,1,EMPIRICAL_AUDIT
+13,Privilege Boundary Network,Yoructl_Dispatcher,degree_centrality,0.4,2,EMPIRICAL_AUDIT
+13,Privilege Boundary Network,CIS_Primitive,degree_centrality,0.4,3,EMPIRICAL_AUDIT
+13,Privilege Boundary Network,Agent_User,degree_centrality,0.2,4,EMPIRICAL_AUDIT
+13,Privilege Boundary Network,Root_OS_Action,degree_centrality,0.2,5,EMPIRICAL_AUDIT
+13,Privilege Boundary Network,Arbitrary_Shell,degree_centrality,0.2,6,EMPIRICAL_AUDIT
+13,Privilege Boundary Network,Sudoers_Whitelist,betweenness_centrality,0.2,1,EMPIRICAL_AUDIT
+13,Privilege Boundary Network,Yoructl_Dispatcher,betweenness_centrality,0.2,2,EMPIRICAL_AUDIT
+13,Privilege Boundary Network,CIS_Primitive,betweenness_centrality,0.15,3,EMPIRICAL_AUDIT
+13,Privilege Boundary Network,Agent_User,betweenness_centrality,0.0,4,EMPIRICAL_AUDIT
+13,Privilege Boundary Network,Root_OS_Action,betweenness_centrality,0.0,5,EMPIRICAL_AUDIT
+13,Privilege Boundary Network,Arbitrary_Shell,betweenness_centrality,0.0,6,EMPIRICAL_AUDIT
+14,Temporal Attack Network,T1_Detection,degree_centrality,0.4,1,EMPIRICAL_EXPERIMENT
+14,Temporal Attack Network,T2_Deliberation,degree_centrality,0.4,2,EMPIRICAL_EXPERIMENT
+14,Temporal Attack Network,T3_Gatekeeper,degree_centrality,0.4,3,EMPIRICAL_EXPERIMENT
+14,Temporal Attack Network,T4_Action_Exec,degree_centrality,0.4,4,EMPIRICAL_EXPERIMENT
+14,Temporal Attack Network,T0_Attack_Start,degree_centrality,0.2,5,EMPIRICAL_EXPERIMENT
+14,Temporal Attack Network,T5_Audit_Sink,degree_centrality,0.2,6,EMPIRICAL_EXPERIMENT
+14,Temporal Attack Network,T2_Deliberation,betweenness_centrality,0.3,1,EMPIRICAL_EXPERIMENT
+14,Temporal Attack Network,T3_Gatekeeper,betweenness_centrality,0.3,2,EMPIRICAL_EXPERIMENT
+14,Temporal Attack Network,T1_Detection,betweenness_centrality,0.2,3,EMPIRICAL_EXPERIMENT
+14,Temporal Attack Network,T4_Action_Exec,betweenness_centrality,0.2,4,EMPIRICAL_EXPERIMENT
+14,Temporal Attack Network,T0_Attack_Start,betweenness_centrality,0.0,5,EMPIRICAL_EXPERIMENT
+14,Temporal Attack Network,T5_Audit_Sink,betweenness_centrality,0.0,6,EMPIRICAL_EXPERIMENT

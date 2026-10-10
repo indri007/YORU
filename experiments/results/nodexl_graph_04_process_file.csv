@@ -1,0 +1,7 @@
+Vertex 1,Vertex 2,Relationship,Weight,Evidence Type,Source,Source Locator,Color,Width,Style,Visibility
+Proc_Yoructl_Main,File_Sshd_Config,hardens_atomic (K01/K02),1.0,EMPIRICAL_AUDIT,catalog/K01.yaml,drop-in /etc/ssh/sshd_config.d/99-yoru-k01.conf,#10B981,1.8,Solid,Visible
+Proc_Yoructl_Main,File_Sysctl_K10,writes_conf (K10),1.0,EMPIRICAL_AUDIT,catalog/K10.yaml,drop-in /etc/sysctl.d/99-yoru-k10.conf,#10B981,1.8,Solid,Visible
+Proc_Yoructl_Main,File_Backup_Store,creates_and_restores,1.0,EMPIRICAL_AUDIT,experiments/results/rq3_hardening_determinism.json,atomic_state_integrity snapshot path,#3B82F6,1.8,Solid,Visible
+Proc_Yoructl_Main,File_Audit_Rules,deploys_rules (K08),1.0,EMPIRICAL_AUDIT,catalog/K08.yaml,drop-in /etc/audit/rules.d/99-yoru-k08.rules,#E8B64C,1.8,Solid,Visible
+Proc_Sshd,File_Sshd_Config,reads_daemon_opts,1.0,EMPIRICAL_AUDIT,catalog/K01.yaml,sshd -T test invocation,#3B82F6,1.4,Dash,Visible
+Proc_Auditd,File_Audit_Rules,loads_kernel_watchlist,1.0,EMPIRICAL_AUDIT,catalog/K08.yaml,augenrules --load,#E8B64C,1.4,Dash,Visible

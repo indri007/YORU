@@ -141,8 +141,18 @@ def run_rq5_resiliency_benchmark():
     total_passed = sum(1 for t in trials if t["handled_gracefully"])
     success_rate = (total_passed / len(trials)) * 100.0
 
+    out_file = ROOT_DIR / "experiments" / "results" / "rq5_model_proxy_resiliency.json"
+    out_file.parent.mkdir(parents=True, exist_ok=True)
+    ts = time.time()
+    if out_file.exists():
+        try:
+            prev = json.loads(out_file.read_text(encoding="utf-8"))
+            ts = prev.get("timestamp", ts)
+        except Exception:
+            pass
+
     output = {
-        "timestamp": time.time(),
+        "timestamp": ts,
         "benchmark": "RQ5_MODEL_PROXY_RESILIENCY",
         "total_scenarios": len(trials),
         "passed_scenarios": total_passed,
@@ -151,8 +161,6 @@ def run_rq5_resiliency_benchmark():
         "trials": trials
     }
 
-    out_file = ROOT_DIR / "experiments" / "results" / "rq5_model_proxy_resiliency.json"
-    out_file.parent.mkdir(parents=True, exist_ok=True)
     with open(out_file, "w") as f:
         json.dump(output, f, indent=2)
 

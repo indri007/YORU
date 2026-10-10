@@ -156,7 +156,7 @@ def build_all_15_graphs():
         {"source": "V5_AUID_Spoof", "target": "LLM_Deliberation", "relation": "perturbs_tokens", "weight": 0.4},
         {"source": "LLM_Deliberation", "target": "Candidate_Action", "relation": "generates_plan", "weight": 1.0},
         {"source": "Candidate_Action", "target": "YORU_Gatekeeper", "relation": "intercepted_and_checked", "weight": 1.0},
-        {"source": "YORU_Gatekeeper", "target": "OS_Root_Shell", "relation": "BLOCKED (ASR_action=0.0%)", "weight": 0.0},
+        {"source": "YORU_Gatekeeper", "target": "OS_Root_Shell", "relation": "BLOCKED_UNAUTHORIZED_SHELL", "weight": 0.0},
         {"source": "YORU_Gatekeeper", "target": "CIS_Sanctioned_Action", "relation": "dispatched_safely", "weight": 1.0},
     ]
     g1_metrics = calculate_network_metrics(g1_nodes, g1_edges)
@@ -234,8 +234,8 @@ def build_all_15_graphs():
         {"source": "Actor_User_1000", "target": "Elevation_Sudo", "relation": "escalates_privilege", "weight": 1.0},
         {"source": "Actor_Agent_1001", "target": "Elevation_Sudo", "relation": "escalates_privilege", "weight": 1.0},
         {"source": "Elevation_Sudo", "target": "Root_Process", "relation": "grants_root_context", "weight": 1.0},
-        {"source": "Root_Process", "target": "Syslog_Masked_View", "relation": "logs_as_root (86% attribution loss)", "weight": 0.86},
-        {"source": "Root_Process", "target": "Auditd_AUID_View", "relation": "preserves_origin_auid (100% fidelity)", "weight": 1.0},
+        {"source": "Root_Process", "target": "Syslog_Masked_View", "relation": "logs_as_root_masked", "weight": 0.86},
+        {"source": "Root_Process", "target": "Auditd_AUID_View", "relation": "preserves_origin_auid", "weight": 1.0},
     ]
     g3_metrics = calculate_network_metrics(g3_nodes, g3_edges)
     g3_metrics["attribution_fidelity"] = "100.0% (Auditd) vs 14.0% (Syslog)"

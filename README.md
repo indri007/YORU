@@ -41,7 +41,7 @@ From that vulnerability, **YORU** was born.
 
 We did not build YORU to showcase conversational chatbot parlor tricks. We built it with uncompromising **Clean Code** discipline—because in security, every edge case is a fault line that can shatter someone's livelihood.
 
-We stripped away arbitrary shell execution, confining the AI into a **Constrained Action Space** of 40 deterministic CIS Benchmark primitives (`yoructl K01..K10`). Even when battered by 50 adversarial prompt injection payloads, its operating system penetration remains exactly zero ($ASR_{\text{action}} = 0.0\%$).
+We stripped away arbitrary shell execution, confining the AI into a **Constrained Action Space** of 40 deterministic CIS Benchmark primitives (`yoructl K01..K10`). Even when battered by 50 adversarial prompt injection payloads, its operating system penetration remains strictly zero ($ASR_{\text{action}} = 0/50$, $0.0\%$, Wilson 95% CI: $[0.0\%, 7.11\%]$).
 
 And we anchored truth at the deepest layer: the Linux Kernel (`auditd`). Through Audit User ID (**AUID**), the originating human or AI actor is immutably preserved. Whether an adversary uses `sudo`, `su`, or nested shells, the truth remains non-repudiable.
 
@@ -110,27 +110,32 @@ flowchart LR
 
 ## 🕸️ 15 Security Topology & NodeXL Analysis Networks
 
-To empirically analyze the security guarantees, attack propagation, and kernel-level causality of YORU, the framework models its invariants across **15 distinct topological network graphs** compatible with **NodeXL Pro**, Gephi, and the interactive Streamlit dashboard:
+To empirically analyze the security guarantees, attack propagation, and kernel-level causality of YORU, the framework models its invariants across **15 distinct topological network graphs** compatible with **NodeXL Pro**, Gephi, and the interactive Streamlit dashboard. 8 selected networks are rendered as publication-ready vector figures for the manuscript:
 
-| # | Graph / Analisis | Node | Edge | Apa yang bisa ditemukan |
-|---|---|---|---|---|
-| **1** | **Attack–Action Network** | Attack vector, action | attack → action | Apakah prompt injection dapat mencapai aksi OS ($ASR_{\text{action}} = 0.0\%$) |
-| **2** | **Audit Event Network** | AUID, process, event | actor → event | Siapa melakukan perubahan sistem |
-| **3** | **AUID Attribution Graph** | AUID/user/process | AUID → process | Akurasi atribusi YORU vs attacker (100% Preservation) |
-| **4** | **Process–File Network** | Process, file | process → file | File sensitif apa yang disentuh proses |
-| **5** | **Process–Syscall Network** | Process, syscall | process → syscall | Pola syscall berisiko |
-| **6** | **User–Action Network** | User/AUID, YORU action | user → action | Distribusi tindakan berdasarkan identitas |
-| **7** | **Attack Vector Similarity** | Injection vector | similarity edge | Cluster serangan yang memiliki pola sama |
-| **8** | **Injection Propagation Graph** | Log → LLM → decision → action | stage → stage | Seberapa jauh injection merambat |
-| **9** | **LLM Decision–Action Graph** | LLM decision, catalog action | decision → action | Apakah keputusan LLM selalu terbatasi katalog |
-| **10** | **CIS Control Dependency Graph** | K01–K10 | dependency | Kontrol CIS mana yang saling bergantung |
-| **11** | **Security Drift Network** | Config, event, control | drift → control | Konfigurasi mana yang paling sering berubah |
-| **12** | **Rollback Network** | Change, backup, restore | change → backup → restore | Keberhasilan recovery (100% Atomic Reversibility) |
-| **13** | **Privilege Boundary Graph** | user → yoructl → root action | transition | Titik perpindahan privilege |
-| **14** | **Temporal Attack Graph** | event + timestamp | event_t → event_t+1 | Urutan serangan sebelum mitigasi |
-| **15** | **YORU Closed-Loop Graph** | Log → LLM → Gate → Action → Audit | directed edges | **Graph utama arsitektur keamanan YORU** |
+| # | Graph / Analisis | Manuscript Figure | Node | Edge | Apa yang bisa ditemukan | Evidence Dataset |
+|---|---|---|---|---|---|---|
+| **1** | **Attack–Action Network** | [Figure 1](assets/network_figures/figure_01.svg) | Attack vector, action | attack → action | Prompt injection terblokir sebelum aksi OS ($ASR_{\text{action}} = 0/50$, $[0.0\%, 7.11\%]$) | [`nodexl_graph_01_attack_action.csv`](experiments/results/nodexl_graph_01_attack_action.csv) |
+| **2** | **Audit Event Network** | Fig. S1 | AUID, process, event | actor → event | Kausalitas ausearch/auditd syscall ke file target | [`nodexl_graph_02_audit_event.csv`](experiments/results/nodexl_graph_02_audit_event.csv) |
+| **3** | **AUID Attribution Graph** | [Figure 2](assets/network_figures/figure_02.svg) | AUID/user/process | AUID → process | Akurasi atribusi YORU vs attacker (100/100 Auditd vs 14/100 Syslog) | [`nodexl_graph_03_auid_attribution.csv`](experiments/results/nodexl_graph_03_auid_attribution.csv) |
+| **4** | **Process–File Network** | [Figure 8](assets/network_figures/figure_08.svg) | Process, file | process → file | Least-privilege file touchpoints & isolasi target sensitif | [`nodexl_graph_04_process_file.csv`](experiments/results/nodexl_graph_04_process_file.csv) |
+| **5** | **Process–Syscall Network** | Fig. S2 | Process, syscall | process → syscall | Reduksi attack surface syscall berisiko (83.3% reduksi) | [`nodexl_graph_05_process_syscall.csv`](experiments/results/nodexl_graph_05_process_syscall.csv) |
+| **6** | **User–Action Network** | Fig. S3 | User/AUID, YORU action | user → action | Matriks otorisasi RBAC berdasarkan identitas AUID | [`nodexl_graph_06_user_action.csv`](experiments/results/nodexl_graph_06_user_action.csv) |
+| **7** | **Attack Vector Similarity** | Fig. S4 | Injection vector | similarity edge | Komunitas dan klaster serangan berbasis modularitas ($Q=0.742$) | [`nodexl_graph_07_attack_vector_similarity.csv`](experiments/results/nodexl_graph_07_attack_vector_similarity.csv) |
+| **8** | **Injection Propagation Graph** | [Figure 3](assets/network_figures/figure_03.svg) | Log → LLM → Gate → OS | stage → stage | Komparasi unconstrained vs constrained agent (chokepoint gate) | [`nodexl_graph_08_injection_propagation.csv`](experiments/results/nodexl_graph_08_injection_propagation.csv) |
+| **9** | **LLM Decision–Action Graph** | [Figure 4](assets/network_figures/figure_04.svg) | Decision, catalog action | decision → action | Admission whitelist gatekeeper vs pemotongan arbitrary shell | [`nodexl_graph_09_llm_decision_action.csv`](experiments/results/nodexl_graph_09_llm_decision_action.csv) |
+| **10** | **CIS Control Dependency Graph** | Fig. S5 | K01–K10 | dependency | Prasyarat telemetri dan dependensi antar kontrol CIS | [`nodexl_graph_10_cis_control_dependency.csv`](experiments/results/nodexl_graph_10_cis_control_dependency.csv) |
+| **11** | **Security Drift Network** | Fig. S6 | Config, event, control | drift → control | Siklus deteksi penyimpangan dan self-healing konfigurasi | [`nodexl_graph_11_security_drift.csv`](experiments/results/nodexl_graph_11_security_drift.csv) |
+| **12** | **Rollback Network** | [Figure 5](assets/network_figures/figure_05.svg) | Change, backup, restore | change → backup → restore | Keberhasilan recovery deterministik (10/10 SHA-256 Parity Match) | [`nodexl_graph_12_rollback.csv`](experiments/results/nodexl_graph_12_rollback.csv) |
+| **13** | **Privilege Boundary Graph** | Fig. S7 | User → yoructl → root | transition | Titik transisi privilege dan sudoers execution whitelist | [`nodexl_graph_13_privilege_boundary.csv`](experiments/results/nodexl_graph_13_privilege_boundary.csv) |
+| **14** | **Temporal Attack Graph** | [Figure 6](assets/network_figures/figure_06.svg) | Event + timestamp | event_t → event_t+1 | Timeline penahanan insiden otonom (latency 2.01s) | [`nodexl_graph_14_temporal_attack.csv`](experiments/results/nodexl_graph_14_temporal_attack.csv) |
+| **15** | **YORU Closed-Loop Graph** | [Figure 7](assets/network_figures/figure_07.svg) | Log → LLM → Gate → Audit | directed edges | **Master Security Topology (Foundational Architecture Only)** | [`nodexl_graph_15_architecture.csv`](experiments/results/nodexl_graph_15_architecture.csv) |
 
-> 📥 **NodeXL Pro & Gephi Datasets:** Ekspor dataset relasi lengkap tersedia dalam format Excel siap pakai [`YORU_NodeXL_15_Graphs.xlsx`](experiments/results/YORU_NodeXL_15_Graphs.xlsx) serta CSV [`nodexl_edges.csv`](experiments/results/nodexl_edges.csv) dan [`nodexl_vertices.csv`](experiments/results/nodexl_vertices.csv), siap diimpor ke NodeXL Graph Gallery untuk analisis SNA tingkat lanjut.
+> 📥 **Scopus Q1 Empirical Datasets & Provenance:**
+> - **Empirical Edge Registry (82 edges, 100% provenance):** [`nodexl_edges_empirical.csv`](experiments/results/nodexl_edges_empirical.csv), [`nodexl_vertices_empirical.csv`](experiments/results/nodexl_vertices_empirical.csv), [`nodexl_provenance.csv`](experiments/results/nodexl_provenance.csv)
+> - **Full NodeXL Workbook:** [`YORU_NodeXL_15_Graphs.xlsx`](experiments/results/YORU_NodeXL_15_Graphs.xlsx)
+> - **Topological SNA Metrics & Centrality:** [`network_metrics.csv`](experiments/results/network_metrics.csv), [`network_centrality.csv`](experiments/results/network_centrality.csv), [`community_detection.csv`](experiments/results/community_detection.csv)
+> - **Row-Level Ground Truth Datasets:** [RQ1 50 Injections](experiments/results/raw_evidence_rq1_injection_trials.csv) &bull; [RQ2 100 AUID Trials](experiments/results/raw_evidence_rq2_auditd_vs_syslog.csv) &bull; [RQ2 Kernel Log](experiments/results/raw_kernel_audit.log) &bull; [RQ3 CIS Controls](experiments/results/raw_evidence_rq3_cis_controls.csv) &bull; [RQ3 Rollback Hashes](experiments/results/raw_evidence_rq3_rollback_hashes.csv) &bull; [RQ4 RSS Measurements](experiments/results/raw_evidence_rq4_resource_measurements.csv) &bull; [RQ4 Latency](experiments/results/raw_evidence_rq4_latency_timeline.csv) &bull; [RQ5 Proxy](experiments/results/raw_evidence_rq5_proxy_resiliency.csv)
+> - **Scientific Audit Gate (12/12 PASS):** [`docs/Q1_NETWORK_ANALYSIS_AUDIT.md`](experiments/results/Q1_NETWORK_ANALYSIS_AUDIT.md) &bull; [`figure_selection.md`](experiments/results/figure_selection.md)
 
 ### 📊 Galeri Visualisasi NodeXL & Topologi Keamanan YORU
 
@@ -173,23 +178,31 @@ multipass exec yoru-a -- bash -lc 'cd /home/ubuntu/yoru && sudo ./install.sh'
 | Item | Status | Verification & Evidence |
 | --- | --- | --- |
 | Static Validation (Shell, Python, Git) | **PASS** | `bash -n`, `ruff`, 43/43 checks in [`run_yoru_validation.sh`](run_yoru_validation.sh) |
-| yoru-model-proxy (Error Handling & API) | **PASS (100% Robust)** | 100% verified via [`experiments/test_model_proxy.py`](experiments/test_model_proxy.py) & [`test_rq5_model_proxy_resiliency.py`](experiments/test_rq5_model_proxy_resiliency.py) |
-| RQ1: Action-Space Confinement | **PASS** | $ASR_{\text{action}} = 0.0\%$ in [`experiments/test_injection_to_action.py`](experiments/test_injection_to_action.py) |
-| RQ2: AUID Forensic Attribution | **PASS** | 100.0% attribution fidelity in [`experiments/test_rq2_auid_attribution.py`](experiments/test_rq2_auid_attribution.py) |
-| RQ3: CIS Hardening Determinism (K01-K10) | **PASS** | 100.0% atomic reversibility in [`experiments/test_rq3_hardening_determinism.py`](experiments/test_rq3_hardening_determinism.py) |
-| RQ4: VPS Resource Footprint | **PASS** | Peak RSS 42.1MB (< 50MB threshold) in [`experiments/test_rq4_overhead.py`](experiments/test_rq4_overhead.py) |
+| 12/12 Scientific & NodeXL Audit Gate | **PASS (100%)** | 12/12 steps clean in [`experiments/run_scientific_audit.sh`](experiments/run_scientific_audit.sh) & [`docs/Q1_NETWORK_ANALYSIS_AUDIT.md`](experiments/results/Q1_NETWORK_ANALYSIS_AUDIT.md) |
+| yoru-model-proxy (Error Handling & API) | **PASS (100% Robust)** | 6/6 failover scenarios in [`experiments/results/raw_evidence_rq5_proxy_resiliency.csv`](experiments/results/raw_evidence_rq5_proxy_resiliency.csv) |
+| RQ1: Action-Space Confinement | **PASS** | $ASR_{\text{action}} = 0/50$ (0.0%, Wilson 95% CI: $[0.0\%, 7.11\%]$) in [`experiments/results/raw_evidence_rq1_injection_trials.csv`](experiments/results/raw_evidence_rq1_injection_trials.csv) |
+| RQ2: AUID Forensic Attribution | **PASS** | 100/100 (100.0%, Wilson 95% CI: $[96.3\%, 100.0\%]$) vs Syslog 86/100 (86.0%) identity masking in [`experiments/results/raw_evidence_rq2_auditd_vs_syslog.csv`](experiments/results/raw_evidence_rq2_auditd_vs_syslog.csv) & [`raw_kernel_audit.log`](experiments/results/raw_kernel_audit.log) |
+| RQ3: CIS Hardening Determinism (K01-K10) | **PASS** | 10/10 (100.0%) atomic reversibility with cryptographic SHA-256 parity in [`experiments/results/raw_evidence_rq3_rollback_hashes.csv`](experiments/results/raw_evidence_rq3_rollback_hashes.csv) |
+| RQ4: VPS Resource Footprint | **PASS** | Peak RSS 42.1MB (< 50MB) & 2.01s latency in [`experiments/results/raw_evidence_rq4_resource_measurements.csv`](experiments/results/raw_evidence_rq4_resource_measurements.csv) & [`raw_evidence_rq4_latency_timeline.csv`](experiments/results/raw_evidence_rq4_latency_timeline.csv) |
 | Linux auditd & K08 Runtime | **PASS (Ubuntu 24.04)** | Verified via CI/CD runner ([`.github/workflows/validate.yml`](.github/workflows/validate.yml)) & Multipass VM ([`docs/LINUX_RUNTIME_VALIDATION_REPORT.md`](docs/LINUX_RUNTIME_VALIDATION_REPORT.md)) |
 | yoru-watch & yoru-web Daemons | **PASS (systemd)** | Verified di Ubuntu 24.04 environment; local development via `./demo.sh` / `streamlit run` |
 
 ## 📂 Project Structure
-- `bin/`: Executables (`yoru-agent`, `yoructl`, `yoru-model-proxy`).
+- `bin/`: Executables (`yoru-agent` with Telegram alerts & drift detection, `yoructl` v0.2.0 CIS runner, `yoru-model-proxy`, `yoru-watch`).
 - `catalog/`: Control YAML definitions (K01-K10).
-- `systemd/`: Daemons (`yoru-watch.service`, `yoru-web.service`).
-- `web/`: Dashboard application.
-- `docs/`: Extensive documentation.
+- `install.sh`: Automated enterprise Linux VPS installer (Ubuntu, Debian, RHEL, Rocky) with `--check-only` mode.
+- `systemd/`: Daemons & Timers (`yoru-watch.service`, `yoru-watch.timer` [03:17], `yoru-web.service`).
+- `web/`: Production modular dashboard (`dashboard.html`, `dashboard.js`, `dashboard.css`), backend API with SQLite & Telegram bot polling/webhook (`api.py`), API test suite (`test_api.py`), and Streamlit app.
+- `landing/`: 3D Three.js & React/Vite interactive mascot web experience.
+- `experiments/`: Scientific audit testbed, prompt injection evaluator (RQ1-RQ5), and 15 NodeXL network analysis models.
+- `docs/`: Extensive documentation and evidence ledgers.
 
 ## 📖 Documentation
+- [Peta Kode Arsitektur YORU (Panduan Lengkap)](docs/peta-kode.md)
+- [Deploy VPS Production Guide](docs/deploy-vps.md)
+- [How It Works: Data Flow & Security Model](docs/how-it-works.md)
 - [Linux Runtime Validation Report (FINAL PASS)](docs/LINUX_RUNTIME_VALIDATION_REPORT.md)
+- [Scientific Evidence Ledger (Scopus Q1 Audit)](docs/EVIDENCE_LEDGER.md)
 - [PRD (Product Requirements)](docs/PRD.md)
 - [ERD (Entity-Relationship)](docs/ERD.md)
 - [Schema](docs/SCHEMA.md)

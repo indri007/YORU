@@ -1,0 +1,8 @@
+Vertex 1,Vertex 2,Relationship,Weight,Evidence Type,Source,Source Locator,Color,Width,Style,Visibility
+Log_Input,LLM_Unprotected,penetrates_prompt (50/50),1.0,EMPIRICAL_EXPERIMENT,experiments/results/rq1_injection_results.json,total_payloads=50,#EF4444,1.8,Solid,Visible
+LLM_Unprotected,Shell_Unprotected,suggests_raw_bash (37/50),0.74,EMPIRICAL_EXPERIMENT,experiments/results/rq1_injection_results.json,asr_token=74.0 (37/50),#EF4444,1.8,Solid,Visible
+Shell_Unprotected,OS_Compromised,executes_arbitrary_root,1.0,EMPIRICAL_EXPERIMENT,experiments/test_injection_to_action.py,unconstrained baseline simulation,#EF4444,2.2,Solid,Visible
+Log_Input,LLM_YORU,wrapped_in_delimiters,1.0,EMPIRICAL_EXPERIMENT,bin/yoru-agent,<untrusted_system_log> sanitizer,#3B82F6,1.8,Solid,Visible
+LLM_YORU,Gate_YORU,proposes_candidate_plan,1.0,EMPIRICAL_EXPERIMENT,experiments/test_injection_to_action.py,candidate plan proposal,#F59E0B,1.8,Solid,Visible
+Gate_YORU,Catalog_Discrete,filters_to_catalog_only,1.0,EMPIRICAL_EXPERIMENT,experiments/results/rq1_injection_results.json,gate_filtered=true (50/50),#10B981,2.2,Solid,Visible
+Catalog_Discrete,OS_Secure_Action,dispatches_verified_primitive,1.0,EMPIRICAL_EXPERIMENT,experiments/results/rq1_injection_results.json,action_penetrated=false (0/50),#10B981,2.0,Solid,Visible

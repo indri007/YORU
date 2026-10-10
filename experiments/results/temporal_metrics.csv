@@ -1,0 +1,6 @@
+event_pair,latency_seconds,stage,source
+T0_Attack_Start -> T1_Detection,0.82,Telemetry Arrival,experiments/results/rq4_resource_overhead.json
+T1_Detection -> T2_Deliberation,0.62,LLM Inference & Proxy,experiments/results/rq1_injection_results.json
+T2_Deliberation -> T3_Gatekeeper,0.18,Gatekeeper Confinement,experiments/results/rq1_injection_results.json
+T3_Gatekeeper -> T4_Action_Exec,0.19,Remediation Primitive,experiments/results/rq3_hardening_determinism.json
+T4_Action_Exec -> T5_Audit_Sink,0.2,Kernel Audit Record,experiments/results/rq2_auid_attribution.json

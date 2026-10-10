@@ -1,0 +1,5 @@
+Vertex 1,Vertex 2,Relationship,Weight,Evidence Type,Source,Source Locator,Color,Width,Style,Visibility
+User_Admin,Act_K01,requires_human_approval,1.0,EMPIRICAL_EXPERIMENT,catalog/K01.yaml,"risiko: BERISIKO, approval_required: true",#3B82F6,1.8,Solid,Visible
+User_Admin,Act_K05,requires_human_approval,1.0,EMPIRICAL_EXPERIMENT,catalog/K05.yaml,"risiko: BERISIKO, approval_required: true",#3B82F6,1.8,Solid,Visible
+User_YORU_Agent,Act_K08,autonomous_audit_execute,1.0,EMPIRICAL_EXPERIMENT,catalog/K08.yaml,"risiko: AMAN, approval_required: false",#10B981,1.8,Solid,Visible
+User_YORU_Agent,Act_K10,autonomous_audit_execute,1.0,EMPIRICAL_EXPERIMENT,catalog/K10.yaml,"risiko: AMAN, approval_required: false",#10B981,1.8,Solid,Visible

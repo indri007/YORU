@@ -1,0 +1,16 @@
+Network ID,Network Name,Nodes,Edges,Density,Avg Degree,Max Degree,Modularity,Diameter,Evidence Type,Paper Role
+1,Attack–Action Network,10,9,0.1,1.8,6,N/A,4,EMPIRICAL_EXPERIMENT,Fig. 1
+2,Audit Event Network,10,8,0.0889,1.6,2,N/A,4,EMPIRICAL_AUDIT,Fig. S1
+3,AUID Attribution Network,6,5,0.1667,1.6667,3,N/A,3,EMPIRICAL_AUDIT,Fig. 2
+4,Process–File Network,8,6,0.1071,1.5,4,N/A,1,EMPIRICAL_AUDIT,Fig. 8
+5,Process–Syscall Network,8,7,0.125,1.75,4,N/A,1,EMPIRICAL_AUDIT,Fig. S2
+6,User–Action Network,6,4,0.1333,1.3333,2,N/A,1,EMPIRICAL_EXPERIMENT,Fig. S3
+7,Attack Vector Similarity Network,5,5,0.5,2.0,3,0.742,3,DERIVED,Fig. S4
+8,Injection Propagation Network,8,7,0.125,1.75,2,N/A,4,EMPIRICAL_EXPERIMENT,Fig. 3
+9,LLM Decision–Action Network,6,5,0.1667,1.6667,5,N/A,1,EMPIRICAL_EXPERIMENT,Fig. 4
+10,CIS Control Dependency Network,8,6,0.1071,1.5,5,N/A,2,EMPIRICAL_EXPERIMENT,Fig. S5
+11,Security Drift Network,5,5,0.25,2.0,2,N/A,4,EMPIRICAL_EXPERIMENT,Fig. S6
+12,Rollback Network,5,5,0.25,2.0,3,N/A,3,EMPIRICAL_EXPERIMENT,Fig. 5
+13,Privilege Boundary Network,6,5,0.1667,1.6667,3,N/A,4,EMPIRICAL_AUDIT,Fig. S7
+14,Temporal Attack Network,6,5,0.1667,1.6667,2,N/A,5,EMPIRICAL_EXPERIMENT,Fig. 6
+15,Master Closed Loop Graph (Architecture),6,6,0.2,2.0,2,N/A,5,ARCHITECTURE,Fig. 7 [Architecture Only]

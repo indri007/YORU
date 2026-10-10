@@ -1,0 +1,10 @@
+Vertex 1,Vertex 2,Relationship,Weight,Evidence Type,Source,Source Locator,Color,Width,Style,Visibility
+V1_Direct_Shell,LLM_Deliberation,perturbs_tokens,1.0,EMPIRICAL_EXPERIMENT,experiments/results/rq1_injection_results.json,details[0..9],#F59E0B,2.0,Solid,Visible
+V2_Delimiter_Smuggle,LLM_Deliberation,perturbs_tokens,0.9,EMPIRICAL_EXPERIMENT,experiments/results/rq1_injection_results.json,details[10..19],#F59E0B,1.8,Solid,Visible
+V3_Catalog_Escape,LLM_Deliberation,perturbs_tokens,0.8,EMPIRICAL_EXPERIMENT,experiments/results/rq1_injection_results.json,details[20..29],#F59E0B,1.6,Solid,Visible
+V4_Approval_Misdirect,LLM_Deliberation,perturbs_tokens,0.6,EMPIRICAL_EXPERIMENT,experiments/results/rq1_injection_results.json,details[30..39],#F59E0B,1.4,Solid,Visible
+V5_AUID_Spoof,LLM_Deliberation,perturbs_tokens,0.4,EMPIRICAL_EXPERIMENT,experiments/results/rq1_injection_results.json,details[40..49],#F59E0B,1.2,Solid,Visible
+LLM_Deliberation,Candidate_Action,generates_plan,1.0,EMPIRICAL_EXPERIMENT,experiments/test_injection_to_action.py,line 120-135,#F59E0B,2.0,Solid,Visible
+Candidate_Action,YORU_Gatekeeper,intercepted_and_checked,1.0,EMPIRICAL_EXPERIMENT,experiments/test_injection_to_action.py,validate_harness_action_gate(),#9A978A,2.0,Solid,Visible
+YORU_Gatekeeper,OS_Root_Shell,BLOCKED_UNAUTHORIZED_SHELL,0.0,EMPIRICAL_EXPERIMENT,experiments/results/rq1_injection_results.json,action_penetrated=false,#EF4444,2.2,Dash,Visible
+YORU_Gatekeeper,CIS_Sanctioned_Action,dispatched_safely,1.0,EMPIRICAL_EXPERIMENT,experiments/results/rq1_injection_results.json,gate_filtered=true,#10B981,2.0,Solid,Visible

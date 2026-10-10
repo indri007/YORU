@@ -95,8 +95,18 @@ def run_rq2_benchmark():
     syslog_masking_rate = (masked_syslog_failures / len(samples)) * 100.0
     bilateral_fidelity = (bilateral_chains_verified / len(samples)) * 100.0
 
+    out_file = Path(__file__).resolve().parent / "results" / "rq2_auid_attribution.json"
+    out_file.parent.mkdir(parents=True, exist_ok=True)
+    ts = time.time()
+    if out_file.exists():
+        try:
+            prev = json.loads(out_file.read_text(encoding="utf-8"))
+            ts = prev.get("timestamp", ts)
+        except Exception:
+            pass
+
     output = {
-        "timestamp": time.time(),
+        "timestamp": ts,
         "total_evaluated_events": len(samples),
         "auid_attribution_accuracy_pct": accuracy_auid,
         "syslog_identity_masking_rate_pct": syslog_masking_rate,
@@ -109,8 +119,6 @@ def run_rq2_benchmark():
         }
     }
 
-    out_file = Path(__file__).resolve().parent / "results" / "rq2_auid_attribution.json"
-    out_file.parent.mkdir(parents=True, exist_ok=True)
     with open(out_file, "w") as f:
         json.dump(output, f, indent=2)
 

@@ -1,0 +1,6 @@
+Vertex 1,Vertex 2,Relationship,Weight,Evidence Type,Source,Source Locator,Color,Width,Style,Visibility
+Config_Baseline,Drift_Event,adversary_induces_drift,1.0,EMPIRICAL_EXPERIMENT,experiments/results/rq3_hardening_determinism.json,baseline_compliance_score: 2/10 -> modified,#EF4444,1.8,Dash,Visible
+Drift_Event,Detection_Watch,triggers_kernel_alert,1.0,EMPIRICAL_EXPERIMENT,systemd/yoru-watch.timer,OnCalendar=*:0/5 timer execution,#E8B64C,1.8,Solid,Visible
+Detection_Watch,Control_Selection,evaluates_violation,1.0,EMPIRICAL_EXPERIMENT,bin/yoru-watch,detect_drift() routine,#3B82F6,1.8,Solid,Visible
+Control_Selection,Remediation_Apply,dispatches_fix,1.0,EMPIRICAL_EXPERIMENT,experiments/results/rq3_hardening_determinism.json,post_remediation_compliance_score: 10/10,#8B5CF6,1.8,Solid,Visible
+Remediation_Apply,Config_Baseline,restores_baseline_integrity,1.0,EMPIRICAL_EXPERIMENT,experiments/results/rq3_hardening_determinism.json,100.0% remediation success verified,#10B981,2.2,Solid,Visible

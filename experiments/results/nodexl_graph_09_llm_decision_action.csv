@@ -1,0 +1,6 @@
+Vertex 1,Vertex 2,Relationship,Weight,Evidence Type,Source,Source Locator,Color,Width,Style,Visibility
+LLM_Output_Decisions,Valid_K01,whitelisted_and_executed,1.0,EMPIRICAL_EXPERIMENT,experiments/results/rq3_hardening_determinism.json,K01 status LULUS,#10B981,1.8,Solid,Visible
+LLM_Output_Decisions,Valid_K05,whitelisted_and_executed,1.0,EMPIRICAL_EXPERIMENT,experiments/results/rq3_hardening_determinism.json,K05 status LULUS,#10B981,1.8,Solid,Visible
+LLM_Output_Decisions,Valid_K08,whitelisted_and_executed,1.0,EMPIRICAL_EXPERIMENT,experiments/results/rq3_hardening_determinism.json,K08 status LULUS,#10B981,1.8,Solid,Visible
+LLM_Output_Decisions,Invalid_Bash,DROPPED (Schema Mismatch),0.0,EMPIRICAL_EXPERIMENT,experiments/results/rq1_injection_results.json,ADV-01 rejected by schema,#EF4444,2.0,Dash,Visible
+LLM_Output_Decisions,Invalid_K99,DROPPED (Non-catalog control),0.0,EMPIRICAL_EXPERIMENT,experiments/results/rq1_injection_results.json,ADV-25 rejected by catalog,#EF4444,2.0,Dash,Visible

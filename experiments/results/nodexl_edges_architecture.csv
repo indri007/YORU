@@ -1,0 +1,7 @@
+Vertex 1,Vertex 2,Relationship,Weight,Network Graph,Network ID,Evidence Type,Source,Source Locator
+M1_Kernel_Source,M2_Log_Sanitizer,emits_raw_audit_telemetry,1.0,Master Closed Loop Graph (Architecture),15,ARCHITECTURE,docs/PRD.md,Architecture Section 4.1
+M2_Log_Sanitizer,M3_LLM_Proxy,delivers_structured_context,1.0,Master Closed Loop Graph (Architecture),15,ARCHITECTURE,docs/PRD.md,Architecture Section 4.2
+M3_LLM_Proxy,M4_Action_Gate,proposes_candidate_plan,1.0,Master Closed Loop Graph (Architecture),15,ARCHITECTURE,docs/PRD.md,Architecture Section 4.3
+M4_Action_Gate,M5_Yoructl_Dispatcher,authorizes_whitelisted_primitive,1.0,Master Closed Loop Graph (Architecture),15,ARCHITECTURE,docs/PRD.md,Architecture Section 4.3
+M5_Yoructl_Dispatcher,M6_Auditd_Sink,records_remediation_AUID_1001,1.0,Master Closed Loop Graph (Architecture),15,ARCHITECTURE,docs/PRD.md,Architecture Section 4.4
+M6_Auditd_Sink,M1_Kernel_Source,closes_loop_via_kernel_verification,1.0,Master Closed Loop Graph (Architecture),15,ARCHITECTURE,docs/PRD.md,Architecture Section 4.5
