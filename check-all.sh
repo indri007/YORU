@@ -75,11 +75,30 @@ check "K10 log_martians" \
 check "K10 secure_redirects" \
     "$(sysctl -n net.ipv4.conf.all.secure_redirects 2>/dev/null)" "0"
 
+check_k10_ipv6() {
+    local v
+    v=$(sysctl -n net.ipv6.conf.all.accept_ra 2>/dev/null)
+    case "${v:-na}" in
+        0|na) echo "ya" ;;
+        *) echo "tidak - $v" ;;
+    esac
+}
+
+check_k10_count() {
+    local n
+    n=$(sysctl -a 2>/dev/null | grep -cE 'conf\.(all|default)\.(accept_redirects|secure_redirects|accept_source_route|log_martians|accept_ra) |^net\.ipv4\.(icmp_echo_ignore_broadcasts|icmp_ignore_bogus_error_responses|tcp_syncookies|ip_forward) ')
+    if [ "${n:-0}" -ge 12 ]; then
+        echo "ya"
+    else
+        echo "tidak - $n"
+    fi
+}
+
 check "K10 ipv6 accept_ra (0, atau na kalau tanpa IPv6)" \
-    "$(v=$(sysctl -n net.ipv6.conf.all.accept_ra 2>/dev/null); case "${v:-na}" in 0|na) echo ya ;; *) echo "tidak ($v)" ;; esac)" "ya"
+    "$(check_k10_ipv6)" "ya"
 
 check "K10 jumlah setelan terbaca (min 12)" \
-    "$(n=$(sysctl -a 2>/dev/null | grep -cE 'conf\.(all|default)\.(accept_redirects|secure_redirects|accept_source_route|log_martians|accept_ra) |^net\.ipv4\.(icmp_echo_ignore_broadcasts|icmp_ignore_bogus_error_responses|tcp_syncookies|ip_forward) '); [ "${n:-0}" -ge 12 ] && echo ya || echo "tidak ($n)")" "ya"
+    "$(check_k10_count)" "ya"
 
 echo
 echo "  ------------------------------------------------------------"
