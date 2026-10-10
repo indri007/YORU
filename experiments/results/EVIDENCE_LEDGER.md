@@ -1,9 +1,9 @@
 # YORU Scientific Evidence Ledger & Reproducibility Audit
 > **Manuscript Standard:** Scopus Q1 Peer-Review Compliance (Cybersecurity / Software Engineering)  
 > **Repository:** [https://github.com/indri007/YORU](https://github.com/indri007/YORU)  
-> **Audit Generated:** 2026-10-09 13:25:02 UTC  
-> **Environment:** `macOS-15.3.1-arm64-arm-64bit` | Python `3.9.6` | Architecture: `arm64`  
-> **Code Version (Git):** `076d765ad1342b8ebb9942b90a98701c212f88bd` (Branch: `main`, Working Tree Clean: `False`)
+> **Audit Generated:** 2026-10-10 11:48:49 UTC  
+> **Environment:** `macOS-15.3.1-arm64-arm-64bit-Mach-O` | Python `3.13.11` | Architecture: `arm64`  
+> **Code Version (Git):** `61c496eb45633147c446e662f6895d94dc080d8e` (Branch: `feat/production-runtime-merge`, Working Tree Clean: `True`)
 
 ---
 

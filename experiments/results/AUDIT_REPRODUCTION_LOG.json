@@ -1,14 +1,14 @@
 {
   "audit_version": "1.0-scopus-q1",
   "environment": {
-    "timestamp_utc": "2026-10-09 13:25:02 UTC",
-    "os_platform": "macOS-15.3.1-arm64-arm-64bit",
-    "python_version": "3.9.6",
+    "timestamp_utc": "2026-10-10 11:48:49 UTC",
+    "os_platform": "macOS-15.3.1-arm64-arm-64bit-Mach-O",
+    "python_version": "3.13.11",
     "machine": "arm64",
     "processor": "arm",
-    "git_commit": "076d765ad1342b8ebb9942b90a98701c212f88bd",
-    "git_branch": "main",
-    "git_clean": false
+    "git_commit": "61c496eb45633147c446e662f6895d94dc080d8e",
+    "git_branch": "feat/production-runtime-merge",
+    "git_clean": true
   },
   "files_registry": [
     {

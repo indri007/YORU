@@ -188,14 +188,21 @@ multipass exec yoru-a -- bash -lc 'cd /home/ubuntu/yoru && sudo ./install.sh'
 | yoru-watch & yoru-web Daemons | **PASS (systemd)** | Verified di Ubuntu 24.04 environment; local development via `./demo.sh` / `streamlit run` |
 
 ## 📂 Project Structure
-- `bin/`: Executables (`yoru-agent`, `yoructl`, `yoru-model-proxy`).
+- `bin/`: Executables (`yoru-agent` with Telegram alerts & drift detection, `yoructl` v0.2.0 CIS runner, `yoru-model-proxy`, `yoru-watch`).
 - `catalog/`: Control YAML definitions (K01-K10).
-- `systemd/`: Daemons (`yoru-watch.service`, `yoru-web.service`).
-- `web/`: Dashboard application.
-- `docs/`: Extensive documentation.
+- `install.sh`: Automated enterprise Linux VPS installer (Ubuntu, Debian, RHEL, Rocky) with `--check-only` mode.
+- `systemd/`: Daemons & Timers (`yoru-watch.service`, `yoru-watch.timer` [03:17], `yoru-web.service`).
+- `web/`: Production modular dashboard (`dashboard.html`, `dashboard.js`, `dashboard.css`), backend API with SQLite & Telegram bot polling/webhook (`api.py`), API test suite (`test_api.py`), and Streamlit app.
+- `landing/`: 3D Three.js & React/Vite interactive mascot web experience.
+- `experiments/`: Scientific audit testbed, prompt injection evaluator (RQ1-RQ5), and 15 NodeXL network analysis models.
+- `docs/`: Extensive documentation and evidence ledgers.
 
 ## 📖 Documentation
+- [Peta Kode Arsitektur YORU (Panduan Lengkap)](docs/peta-kode.md)
+- [Deploy VPS Production Guide](docs/deploy-vps.md)
+- [How It Works: Data Flow & Security Model](docs/how-it-works.md)
 - [Linux Runtime Validation Report (FINAL PASS)](docs/LINUX_RUNTIME_VALIDATION_REPORT.md)
+- [Scientific Evidence Ledger (Scopus Q1 Audit)](docs/EVIDENCE_LEDGER.md)
 - [PRD (Product Requirements)](docs/PRD.md)
 - [ERD (Entity-Relationship)](docs/ERD.md)
 - [Schema](docs/SCHEMA.md)
